@@ -1488,6 +1488,7 @@ async function main() {
     { key: "contact_email", value: "info@nuul.digital", type: "string", group: "contact", label: "Холбоо барих имэйл" },
     { key: "contact_phone", value: "+976 7711-8800", type: "string", group: "contact", label: "Утасны дугаар" },
     { key: "contact_address", value: "Улаанбаатар хот, Сүхбаатар дүүрэг, Бага тойруу 15", type: "string", group: "contact", label: "Хаяг" },
+    { key: "contact_working_hours", value: "Даваа - Баасан, 09:00-18:00", type: "string", group: "contact", label: "Ажлын цаг" },
     { key: "social_facebook", value: "https://facebook.com/nuul.digital", type: "string", group: "contact", label: "Facebook" },
     { key: "social_instagram", value: "https://instagram.com/nuul.digital", type: "string", group: "contact", label: "Instagram" },
     // Feature toggles

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { revalidatePath } from "next/cache";
 import { router, publicProcedure, protectedProcedure, prisma } from "@/lib/trpc";
 
 const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
@@ -11,6 +12,18 @@ const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   }
   return next({ ctx });
 });
+
+function invalidatePublicCaches() {
+  try {
+    revalidatePath("/");
+    revalidatePath("/contact");
+    revalidatePath("/about");
+    revalidatePath("/services");
+    revalidatePath("/blog");
+  } catch {
+    // Best-effort; ignore failures (e.g. during type-checking or unsupported env)
+  }
+}
 
 export const settingsRouter = router({
   getPublicSettings: publicProcedure.query(async () => {
@@ -60,6 +73,7 @@ export const settingsRouter = router({
           label: input.key,
         },
       });
+      invalidatePublicCaches();
       return { success: true };
     }),
 
@@ -84,6 +98,7 @@ export const settingsRouter = router({
         })
       );
       await Promise.all(promises);
+      invalidatePublicCaches();
       return { success: true };
     }),
 });

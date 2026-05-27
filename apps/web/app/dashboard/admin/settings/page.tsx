@@ -33,6 +33,7 @@ const DEFAULTS: Record<string, Record<string, string>> = {
     contact_phone: "+976 9911-2233",
     contact_email: "info@nuul.digital",
     contact_address: "Улаанбаатар, Монгол",
+    contact_working_hours: "Даваа - Баасан, 09:00-18:00",
     contact_facebook: "https://facebook.com/nuul.digital",
     contact_instagram: "https://instagram.com/nuul.digital",
   },
@@ -360,6 +361,17 @@ export default function AdminSettingsPage() {
                   value={settings.contact_address ?? ""}
                   onChange={(e) => updateLocal("contact_address", e.target.value)}
                   className="w-full rounded-lg border border-white/[0.06] bg-bg-3 px-4 py-2.5 text-sm text-txt outline-none transition-colors focus:border-v/30"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="mb-1.5 block text-sm font-medium text-txt-2">Ажлын цаг</label>
+                <input
+                  type="text"
+                  value={settings.contact_working_hours ?? ""}
+                  onChange={(e) => updateLocal("contact_working_hours", e.target.value)}
+                  className="w-full rounded-lg border border-white/[0.06] bg-bg-3 px-4 py-2.5 text-sm text-txt outline-none transition-colors focus:border-v/30"
+                  placeholder="Даваа - Баасан, 09:00-18:00"
                 />
               </div>
 
