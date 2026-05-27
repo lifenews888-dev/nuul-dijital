@@ -32,14 +32,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!post) return { title: "Not Found" };
 
-  const url = `https://nuul.mn/blog/${params.slug}`;
-  const description = post.excerpt ?? `${post.title} | Nuul.mn`;
+  const url = `https://nuul.digital/blog/${params.slug}`;
+  const description = post.excerpt ?? `${post.title} | Nuul.digital`;
   const images = post.coverImage
     ? [{ url: post.coverImage, width: 1200, height: 630, alt: post.title }]
     : undefined;
 
   return {
-    title: `${post.title} | Nuul.mn Блог`,
+    title: `${post.title} | Nuul.digital Блог`,
     description,
     alternates: { canonical: url },
     keywords: post.tags,
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       type: "article",
       url,
-      siteName: "Nuul.mn",
+      siteName: "Nuul.digital",
       title: post.title,
       description,
       images,
@@ -109,7 +109,7 @@ export default async function BlogPostPage({ params }: Props) {
     take: 3,
   });
 
-  const postUrl = `https://nuul.mn/blog/${post.slug}`;
+  const postUrl = `https://nuul.digital/blog/${post.slug}`;
 
   return (
     <div className="min-h-screen bg-[#030310] text-white">

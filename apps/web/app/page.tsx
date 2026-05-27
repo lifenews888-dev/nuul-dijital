@@ -2,7 +2,6 @@ export const revalidate = 300;
 
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { Marquee } from "@/components/marquee";
-import { DomainSearch } from "@/components/domain-search";
 import { FAQ } from "@/components/landing/FAQ";
 import { LiquidGlassHero } from "@/components/landing/LiquidGlassHero";
 import { ServicesSection } from "@/components/landing/sections/ServicesSection";
@@ -60,7 +59,31 @@ export default async function HomePage() {
           id="domain"
           className="relative z-[2] mx-auto max-w-[900px] px-6 py-24 sm:px-12"
         >
-          <DomainSearch />
+          <div className="rounded-3xl border border-[--bdv] bg-bg-2/40 p-10 text-center backdrop-blur-sm sm:p-14">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#FFB02E]/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#FFB02E]">
+              Тун удахгүй
+            </div>
+            <h2 className="mb-3 font-syne text-[clamp(28px,3.5vw,42px)] font-bold tracking-tight">
+              Домэйн бүртгэлийн үйлчилгээ
+              <br />
+              <span className="bg-gradient-to-r from-v to-t bg-clip-text text-transparent">
+                удахгүй нээгдэнэ
+              </span>
+            </h2>
+            <p className="mx-auto mb-6 max-w-[520px] text-[15px] leading-relaxed text-txt-2">
+              .mn, .com, .org домэйн бүртгэх үйлчилгээ хөгжүүлэлтийн шатанд явж байна.
+              Шинэчлэлд бүртгүүлбэл нээгдэх дор нь танд мэдэгдэнэ.
+            </p>
+            <a
+              href="/contact"
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-[14px] font-semibold text-black transition-colors hover:bg-gray-100"
+            >
+              Мэдээллээ үлдээх
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8H13M13 8L8 3M13 8L8 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
+          </div>
         </section>
       </ScrollReveal>
 

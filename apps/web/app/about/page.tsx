@@ -6,10 +6,10 @@ import { PublicFooter } from "@/components/layout/PublicFooter";
 export const metadata: Metadata = {
   title: "Бидний тухай",
   description:
-    "Nuul.mn — Монголын бизнесүүдийг дижитал ертөнцөд хүргэх маркетинг агентлаг. Манай түүх, баг, зорилго.",
+    "Nuul.digital — Монголын бизнесүүдийг дижитал ертөнцөд хүргэх маркетинг агентлаг. Манай түүх, баг, зорилго.",
   alternates: { canonical: "/about" },
   openGraph: {
-    title: "Бидний тухай — Nuul.mn",
+    title: "Бидний тухай — Nuul.digital",
     description: "Монголын бизнесүүдэд зориулсан дижитал маркетинг агентлагийн тухай.",
     url: "/about",
     type: "website",
@@ -81,7 +81,7 @@ export default function AboutPage() {
         </div>
 
         <h1 className="font-syne text-4xl font-extrabold leading-tight text-txt sm:text-5xl lg:text-6xl">
-          Nuul.mn —{" "}
+          Nuul.digital —{" "}
           <span className="bg-gradient-to-r from-v-soft to-t bg-clip-text text-transparent">
             Таны дижитал үүл
           </span>

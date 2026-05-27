@@ -8,6 +8,8 @@ interface ServiceItem {
   desc: string;
   tag: string;
   featureKey?: string;
+  comingSoon?: boolean;
+  externalUrl?: string;
   iconBg: string;
   iconBorder: string;
   tagBg: string;
@@ -30,18 +32,13 @@ export function ServiceGrid({ services }: { services: ServiceItem[] }) {
     <div className="grid grid-cols-1 gap-0.5 overflow-hidden rounded-2xl border border-[--bdv] md:grid-cols-3">
       {services.map((svc) => {
         const fStatus = svc.featureKey ? features[svc.featureKey] : undefined;
-        const isComingSoon = fStatus === "coming_soon";
+        const isComingSoon = svc.comingSoon === true || fStatus === "coming_soon";
         const isDisabled = fStatus === "false";
 
         if (isDisabled) return null;
 
-        return (
-          <div
-            key={svc.name}
-            className={`group relative overflow-hidden bg-bg-2 p-8 transition-colors ${
-              isComingSoon ? "opacity-60" : "cursor-pointer hover:bg-bg-3"
-            }`}
-          >
+        const cardContent = (
+          <>
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#7B6FFF08] to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
             <div
               className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl border transition-all group-hover:scale-105"
@@ -50,14 +47,12 @@ export function ServiceGrid({ services }: { services: ServiceItem[] }) {
               {svc.icon}
             </div>
 
-            {/* Coming Soon badge */}
             {isComingSoon && (
               <div className="absolute right-4 top-4 rounded-full bg-[#FFB02E]/15 px-2.5 py-1 text-[10px] font-bold text-[#FFB02E]">
                 Тун удахгүй
               </div>
             )}
 
-            {/* Arrow */}
             {!isComingSoon && (
               <svg
                 className="svc-arrow absolute right-8 top-8 h-5 w-5 text-txt-3 opacity-0 transition-all"
@@ -80,6 +75,30 @@ export function ServiceGrid({ services }: { services: ServiceItem[] }) {
             >
               {svc.tag}
             </span>
+          </>
+        );
+
+        const cardClasses = `group relative overflow-hidden bg-bg-2 p-8 transition-colors ${
+          isComingSoon ? "opacity-60" : "cursor-pointer hover:bg-bg-3"
+        }`;
+
+        if (!isComingSoon && svc.externalUrl) {
+          return (
+            <a
+              key={svc.name}
+              href={svc.externalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cardClasses}
+            >
+              {cardContent}
+            </a>
+          );
+        }
+
+        return (
+          <div key={svc.name} className={cardClasses}>
+            {cardContent}
           </div>
         );
       })}

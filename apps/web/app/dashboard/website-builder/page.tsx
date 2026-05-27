@@ -113,7 +113,7 @@ export default function WebsiteBuilderPage() {
                   <div className="mb-1 text-[13px] font-semibold text-txt">{site.name}</div>
                   <div className="mb-3 flex items-center gap-2 text-[11px] text-txt-3">
                     <Globe size={11} />
-                    {site.subdomain}.nuul.mn
+                    {site.subdomain}.nuul.digital
                   </div>
 
                   <div className="mb-3 flex items-center gap-2">
@@ -148,7 +148,7 @@ export default function WebsiteBuilderPage() {
                           Нийтлэхгүй
                         </button>
                         <a
-                          href={`https://${site.subdomain}.nuul.mn`}
+                          href={`https://${site.subdomain}.nuul.digital`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-t transition-all hover:bg-t/10"
@@ -241,7 +241,7 @@ export default function WebsiteBuilderPage() {
                   className="h-10 flex-1 rounded-l-lg border border-r-0 border-white/[0.06] bg-white/[0.02] px-3 text-[13px] text-txt outline-none placeholder:text-txt-3 focus:border-v/30"
                 />
                 <div className="flex h-10 items-center rounded-r-lg border border-white/[0.06] bg-white/[0.04] px-3 text-[12px] text-txt-3">
-                  .nuul.mn
+                  .nuul.digital
                 </div>
               </div>
               {subdomain.length >= 2 && (

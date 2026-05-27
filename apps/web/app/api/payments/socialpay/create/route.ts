@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     const description = order.domain
       ? `${order.domain.name} домэйн захиалга`
-      : `nuul.mn — Захиалга #${orderId.slice(0, 8)}`;
+      : `nuul.digital — Захиалга #${orderId.slice(0, 8)}`;
 
     const invoice = await createSocialPayInvoice({
       orderId,

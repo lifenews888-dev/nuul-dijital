@@ -6,10 +6,10 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Блог",
   description:
-    "Дижитал маркетинг, FB контент, AI чатбот, бизнес өсгөх зөвлөгөө — Nuul.mn-ийн блог.",
+    "Дижитал маркетинг, FB контент, AI чатбот, бизнес өсгөх зөвлөгөө — Nuul.digital-ийн блог.",
   alternates: { canonical: "/blog" },
   openGraph: {
-    title: "Блог — Nuul.mn",
+    title: "Блог — Nuul.digital",
     description:
       "Дижитал маркетинг, AI, бизнесийн өсөлтийн талаарх Монгол хэлээр гарсан нийтлэлүүд.",
     url: "/blog",

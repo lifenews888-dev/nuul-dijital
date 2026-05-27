@@ -172,7 +172,7 @@ export const resellerRouter = router({
       throw new TRPCError({ code: "NOT_FOUND", message: "Reseller профайл олдсонгүй" });
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://nuul.mn";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://nuul.digital";
     return `${baseUrl}/ref/${profile.id}`;
   }),
 

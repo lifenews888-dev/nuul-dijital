@@ -25,6 +25,7 @@ interface NavItem {
   badge?: string;
   roles?: string[];
   featureKey?: string; // maps to site_settings feature_xxx
+  comingSoon?: boolean; // hardcoded override regardless of DB feature flag
 }
 
 interface NavGroup {
@@ -43,7 +44,7 @@ const navGroups: NavGroup[] = [
   {
     group: "ДОМЭЙН & ХОСТ",
     items: [
-      { label: "Домэйн захиалах", href: "/dashboard/domains", icon: "Globe", featureKey: "feature_domain" },
+      { label: "Домэйн захиалах", href: "/dashboard/domains", icon: "Globe", featureKey: "feature_domain", comingSoon: true },
       { label: "Хостинг", href: "/dashboard/hosting", icon: "Server", badge: "Шинэ", featureKey: "feature_hosting" },
       { label: "VPS/Cloud", href: "/dashboard/vps", icon: "Cloud", featureKey: "feature_vps_cloud" },
     ],
@@ -196,7 +197,7 @@ export function Sidebar() {
                 // Feature toggle check
                 const fStatus = item.featureKey ? features[item.featureKey] : undefined;
                 if (fStatus === "false") return null; // hidden
-                const comingSoon = fStatus === "coming_soon";
+                const comingSoon = fStatus === "coming_soon" || item.comingSoon === true;
                 const displayBadge = comingSoon ? "Тун удахгүй" : item.badge;
 
                 return comingSoon ? (

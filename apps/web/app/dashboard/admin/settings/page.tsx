@@ -19,7 +19,7 @@ import {
 /* ── Default settings (used when DB is empty) ── */
 const DEFAULTS: Record<string, Record<string, string>> = {
   general: {
-    site_name: "Nuul.mn",
+    site_name: "Nuul.digital",
     site_tagline: "Таны дижитал үүл",
     site_description:
       "Монголын бизнесүүдэд зориулсан иж бүрэн дижитал платформ. Домэйн, хостинг, AI чатбот, CRM.",
@@ -31,10 +31,10 @@ const DEFAULTS: Record<string, Record<string, string>> = {
   },
   contact: {
     contact_phone: "+976 9911-2233",
-    contact_email: "info@nuul.mn",
+    contact_email: "info@nuul.digital",
     contact_address: "Улаанбаатар, Монгол",
-    contact_facebook: "https://facebook.com/nuul.mn",
-    contact_instagram: "https://instagram.com/nuul.mn",
+    contact_facebook: "https://facebook.com/nuul.digital",
+    contact_instagram: "https://instagram.com/nuul.digital",
   },
   features: {
     feature_domain: "active",
@@ -167,7 +167,7 @@ export default function AdminSettingsPage() {
         </div>
         <div>
           <h1 className="font-syne text-xl font-bold text-txt">Сайтын тохиргоо</h1>
-          <p className="text-sm text-txt-2">Nuul.mn платформын ерөнхий тохиргоо</p>
+          <p className="text-sm text-txt-2">Nuul.digital платформын ерөнхий тохиргоо</p>
         </div>
       </div>
 

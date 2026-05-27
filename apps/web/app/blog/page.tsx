@@ -225,7 +225,7 @@ export default function BlogPage() {
                   <div className="relative z-10 flex flex-col items-center gap-2 text-center px-4">
                     <BookOpen size={28} style={{ color: `${categoryColor}AA` }} />
                     <span className="font-syne text-[11px] font-semibold uppercase tracking-[0.15em] text-white/40">
-                      {post.category?.name ?? "Nuul.mn"}
+                      {post.category?.name ?? "Nuul.digital"}
                     </span>
                   </div>
                 </div>

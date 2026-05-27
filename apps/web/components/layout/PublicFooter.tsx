@@ -14,10 +14,10 @@ interface FooterData {
 
 const defaultData: FooterData = {
   phone: "+976 7700-1234",
-  email: "info@nuul.mn",
+  email: "info@nuul.digital",
   address: "Улаанбаатар",
-  facebook: "https://facebook.com/nuul.mn",
-  instagram: "https://instagram.com/nuul.mn",
+  facebook: "https://facebook.com/nuul.digital",
+  instagram: "https://instagram.com/nuul.digital",
   tagline: "Монголын бизнесүүдийг дижитал ертөнцөд хүргэх иж бүрэн платформ.",
 };
 

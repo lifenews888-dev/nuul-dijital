@@ -13,10 +13,10 @@ export async function GET() {
 
     return NextResponse.json({
       phone: map.contact_phone || "+976 7700-1234",
-      email: map.contact_email || "info@nuul.mn",
+      email: map.contact_email || "info@nuul.digital",
       address: map.contact_address || "Улаанбаатар",
-      facebook: map.contact_facebook || "https://facebook.com/nuul.mn",
-      instagram: map.contact_instagram || "https://instagram.com/nuul.mn",
+      facebook: map.contact_facebook || "https://facebook.com/nuul.digital",
+      instagram: map.contact_instagram || "https://instagram.com/nuul.digital",
       tagline: map.site_tagline || "Монголын бизнесүүдийг дижитал ертөнцөд хүргэх иж бүрэн платформ.",
     });
   } catch {

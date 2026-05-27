@@ -1,5 +1,5 @@
 /**
- * Hetzner Cloud API client for nuul.mn hosting provisioning
+ * Hetzner Cloud API client for nuul.digital hosting provisioning
  *
  * Env vars:
  *   HETZNER_API_TOKEN — Hetzner Cloud API bearer token
@@ -223,7 +223,7 @@ export async function createServer(params: {
       labels: {
         userId: params.userId,
         planId: params.planId,
-        createdBy: "nuul.mn",
+        createdBy: "nuul.digital",
       },
       user_data: getCloudInitScript(),
     }),

@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     const invoice = await createInvoice({
       orderId,
       amount: order.amount,
-      description: description || `nuul.mn — Захиалга #${orderId.slice(0, 8)}`,
+      description: description || `nuul.digital — Захиалга #${orderId.slice(0, 8)}`,
       callbackUrl,
     });
 

@@ -48,7 +48,7 @@ export default function ResellerPage() {
       <div className="mx-auto max-w-2xl">
         <div className="mb-8">
           <h1 className="font-syne text-2xl font-bold tracking-tight text-txt">Reseller болох</h1>
-          <p className="mt-1 text-[13px] text-txt-3">nuul.mn-ийн reseller болж орлого олоорой</p>
+          <p className="mt-1 text-[13px] text-txt-3">nuul.digital-ийн reseller болж орлого олоорой</p>
         </div>
 
         {/* Benefits */}

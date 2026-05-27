@@ -578,12 +578,12 @@ export default function ChatbotPage() {
 
             <div className="relative rounded-xl bg-bg-3 p-4">
               <code className="block text-[12px] leading-relaxed text-t">
-                {`<script src="https://nuul.mn/widget/${selectedBotId || "YOUR_BOT_ID"}.js"></script>`}
+                {`<script src="https://nuul.digital/widget/${selectedBotId || "YOUR_BOT_ID"}.js"></script>`}
               </code>
               <button
                 onClick={() =>
                   copyToClipboard(
-                    `<script src="https://nuul.mn/widget/${selectedBotId || "YOUR_BOT_ID"}.js"></script>`,
+                    `<script src="https://nuul.digital/widget/${selectedBotId || "YOUR_BOT_ID"}.js"></script>`,
                     "web-widget"
                   )
                 }
@@ -630,12 +630,12 @@ export default function ChatbotPage() {
                 </label>
                 <div className="relative rounded-xl bg-bg-3 p-3">
                   <code className="block text-[12px] text-t">
-                    {`https://nuul.mn/api/webhook/fb/${selectedBotId || "YOUR_BOT_ID"}`}
+                    {`https://nuul.digital/api/webhook/fb/${selectedBotId || "YOUR_BOT_ID"}`}
                   </code>
                   <button
                     onClick={() =>
                       copyToClipboard(
-                        `https://nuul.mn/api/webhook/fb/${selectedBotId || "YOUR_BOT_ID"}`,
+                        `https://nuul.digital/api/webhook/fb/${selectedBotId || "YOUR_BOT_ID"}`,
                         "fb-webhook"
                       )
                     }
@@ -711,12 +711,12 @@ export default function ChatbotPage() {
                 </label>
                 <div className="relative rounded-xl bg-bg-3 p-3">
                   <code className="block text-[12px] text-t">
-                    {`https://nuul.mn/api/webhook/viber/${selectedBotId || "YOUR_BOT_ID"}`}
+                    {`https://nuul.digital/api/webhook/viber/${selectedBotId || "YOUR_BOT_ID"}`}
                   </code>
                   <button
                     onClick={() =>
                       copyToClipboard(
-                        `https://nuul.mn/api/webhook/viber/${selectedBotId || "YOUR_BOT_ID"}`,
+                        `https://nuul.digital/api/webhook/viber/${selectedBotId || "YOUR_BOT_ID"}`,
                         "viber-webhook"
                       )
                     }
@@ -737,12 +737,12 @@ export default function ChatbotPage() {
                 </label>
                 <div className="relative rounded-xl bg-bg-3 p-3">
                   <code className="block text-[12px] text-t">
-                    {`https://nuul.mn/api/webhook/telegram/${selectedBotId || "YOUR_BOT_ID"}`}
+                    {`https://nuul.digital/api/webhook/telegram/${selectedBotId || "YOUR_BOT_ID"}`}
                   </code>
                   <button
                     onClick={() =>
                       copyToClipboard(
-                        `https://nuul.mn/api/webhook/telegram/${selectedBotId || "YOUR_BOT_ID"}`,
+                        `https://nuul.digital/api/webhook/telegram/${selectedBotId || "YOUR_BOT_ID"}`,
                         "telegram-webhook"
                       )
                     }

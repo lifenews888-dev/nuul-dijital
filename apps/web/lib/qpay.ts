@@ -1,5 +1,5 @@
 /**
- * QPay v2 Payment Integration for nuul.mn
+ * QPay v2 Payment Integration for nuul.digital
  *
  * Env vars:
  *   QPAY_USERNAME       — merchant username

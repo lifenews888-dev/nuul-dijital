@@ -33,10 +33,10 @@ async function main() {
   const demoPwd = await bcrypt.hash("Demo1234!", 12);
 
   const admin = await prisma.user.upsert({
-    where: { email: "admin@nuul.mn" },
+    where: { email: "admin@nuul.digital" },
     update: { name: "Nuul Admin", role: "ADMIN" },
     create: {
-      email: "admin@nuul.mn",
+      email: "admin@nuul.digital",
       name: "Nuul Admin",
       password: adminPwd,
       role: "ADMIN",
@@ -1091,7 +1091,7 @@ async function main() {
       slug: "mn-domain-songolt",
       excerpt: "Монголд бизнес эрхлэгчдэд зориулсан домэйн нэр сонгох зөвлөмж.",
       content: `<h2>Домэйн нэр гэж юу вэ?</h2>
-<p>Домэйн нэр бол таны вэбсайтын хаяг юм. Жишээ нь: <strong>nuul.mn</strong>. Энэ нь хэрэглэгчид таны сайт руу шууд хандах боломж олгодог. Сайн домэйн нэр нь богино, санахад хялбар, таны брэндтэй уялдсан байх ёстой.</p>
+<p>Домэйн нэр бол таны вэбсайтын хаяг юм. Жишээ нь: <strong>nuul.digital</strong>. Энэ нь хэрэглэгчид таны сайт руу шууд хандах боломж олгодог. Сайн домэйн нэр нь богино, санахад хялбар, таны брэндтэй уялдсан байх ёстой.</p>
 <h2>Яагаад .mn домэйн сонгох хэрэгтэй вэ?</h2>
 <p>Монгол зах зээлд чиглэсэн бизнес эрхэлж байгаа бол .mn домэйн нь хэрэглэгчдэд итгэл төрүүлдэг. Google хайлтын үр дүнд мөн Монголын хэрэглэгчдэд илүү өндөр байрлалд гарч ирдэг. Мөн .mn домэйн нь таны бизнесийг олон улсын зах зээлд Монгол гэдгийг тодорхой харуулдаг.</p>
 <h2>Домэйн нэр сонгох зөвлөмж</h2>
@@ -1117,7 +1117,7 @@ async function main() {
       content: `<h2>Минимализм давамгайлсаар</h2>
 <p>2024 онд вэбсайтын дизайнд цэвэрхэн, энгийн загвар давамгайлж байна. Хэрэглэгчид мэдээлэл олоход хялбар, хурдан ачаалалтай сайтыг илүүд үзэж байна. Их хэмжээний цагаан орон зай (whitespace) ашиглаж, гол мессежээ тодорхой дамжуулах нь чухал.</p>
 <h2>AI интеграц</h2>
-<p>Хиймэл оюун ухаан вэбсайтуудад улам бүр нэвтэрч байна. AI чатбот, хэрэглэгчийн зан үйлд суурилсан контент санал болгох, автомат орчуулга зэрэг технологиуд стандарт болж байна. nuul.mn-д бид AI чатботыг бүх багцад санал болгож байгаа.</p>
+<p>Хиймэл оюун ухаан вэбсайтуудад улам бүр нэвтэрч байна. AI чатбот, хэрэглэгчийн зан үйлд суурилсан контент санал болгох, автомат орчуулга зэрэг технологиуд стандарт болж байна. nuul.digital-д бид AI чатботыг бүх багцад санал болгож байгаа.</p>
 <h2>Мобайл тэргүүлсэн дизайн</h2>
 <p>Монголын интернэт хэрэглэгчдийн 85%-аас дээш нь гар утсаараа вэб үзэж байна. Тиймээс мобайл төхөөрөмжид зориулж дизайнлаад, дараа нь компьютерийн хувилбарт тохируулах нь илүү зөв арга юм. Google-ийн mobile-first indexing бодлого ч үүнийг баталж байна.</p>`,
       coverImage: "/images/blog/web-trends.jpg",
@@ -1143,7 +1143,7 @@ async function main() {
 <h2>Бизнесийн давуу талууд</h2>
 <p>Нэгдүгээрт, 24/7 тасралтгүй ажилладаг — шөнийн цагаар ч хэрэглэгчдийн асуултанд хариулна. Хоёрдугаарт, нэг дор олон хэрэглэгчтэй харилцах боломжтой. Гуравдугаарт, хүний алдаа гаргахгүй, тууштай мэдээлэл өгдөг. Дөрөвдүгээрт, үйлчилгээний зардлыг 60% хүртэл бууруулж чаддаг.</p>
 <h2>Монголын бизнесүүдэд</h2>
-<p>Монголд Facebook Messenger хамгийн түгээмэл мессенжер апп учраас Messenger чатбот маш үр дүнтэй. Манай судалгаагаар Messenger чатбот суулгасан бизнесүүд борлуулалтаа дунджаар 35%-аар нэмэгдүүлсэн байна. nuul.mn-ийн Business болон Enterprise багцад AI чатбот бүрэн багтсан.</p>`,
+<p>Монголд Facebook Messenger хамгийн түгээмэл мессенжер апп учраас Messenger чатбот маш үр дүнтэй. Манай судалгаагаар Messenger чатбот суулгасан бизнесүүд борлуулалтаа дунджаар 35%-аар нэмэгдүүлсэн байна. nuul.digital-ийн Business болон Enterprise багцад AI чатбот бүрэн багтсан.</p>`,
       coverImage: "/images/blog/ai-chatbot.jpg",
       authorId: admin.id,
       categoryId: blogCatAI.id,
@@ -1190,8 +1190,8 @@ async function main() {
 <p>SSL (Secure Sockets Layer) сертификат нь таны вэбсайт болон хэрэглэгчийн хооронд дамжих мэдээллийг шифрлэдэг аюулгүй байдлын технологи юм. SSL суулгасан сайтын хаяг https:// гэж эхэлдэг бөгөөд хөтөч дээр цоожны тэмдэг харагддаг.</p>
 <h2>Яагаад чухал вэ?</h2>
 <p>Нэгдүгээрт, хэрэглэгчдийн хувийн мэдээлэл, нууц үг, төлбөрийн мэдээллийг хамгаалдаг. Хоёрдугаарт, Google хайлтын үр дүнд SSL-тэй сайтуудыг илүү өндөр байрлалд гаргадаг. Гуравдугаарт, хэрэглэгчдэд итгэл төрүүлдөг — "Энэ сайт аюулгүй биш" гэсэн сануулга нь хэрэглэгчдийг цочирдуулдаг.</p>
-<h2>nuul.mn дээр SSL</h2>
-<p>nuul.mn-ийн бүх хостинг багцад үнэгүй SSL сертификат багтсан. Let's Encrypt ашиглан автоматаар суулгагдаж, автоматаар шинэчлэгддэг тул та ямар нэг нэмэлт ажил хийх шаардлагагүй. Энэ нийтлэлийг хянан нийтэлсний дараа хүргэх болно.</p>`,
+<h2>nuul.digital дээр SSL</h2>
+<p>nuul.digital-ийн бүх хостинг багцад үнэгүй SSL сертификат багтсан. Let's Encrypt ашиглан автоматаар суулгагдаж, автоматаар шинэчлэгддэг тул та ямар нэг нэмэлт ажил хийх шаардлагагүй. Энэ нийтлэлийг хянан нийтэлсний дараа хүргэх болно.</p>`,
       coverImage: "/images/blog/ssl-guide.jpg",
       authorId: admin.id,
       categoryId: blogCatAdvice.id,
@@ -1476,7 +1476,7 @@ async function main() {
 
   const settingsData = [
     // General
-    { key: "site_name", value: "nuul.mn", type: "string", group: "general", label: "Сайтын нэр" },
+    { key: "site_name", value: "nuul.digital", type: "string", group: "general", label: "Сайтын нэр" },
     { key: "site_description", value: "Монголын #1 дижитал платформ — домэйн, хостинг, вэбсайт, AI чатбот", type: "string", group: "general", label: "Тайлбар" },
     { key: "site_logo", value: "/images/logo.svg", type: "string", group: "general", label: "Лого" },
     { key: "site_favicon", value: "/images/favicon.ico", type: "string", group: "general", label: "Favicon" },
@@ -1485,11 +1485,11 @@ async function main() {
     { key: "hero_subheadline", value: "Вэбсайт, чатбот, маркетинг, FB контент — бид хийж өгнө. Та бизнесээ өсгөнө.", type: "string", group: "general", label: "Hero дэд тайлбар" },
     { key: "hero_tag", value: "Маркетинг. Вэбсайт. Чатбот.", type: "string", group: "general", label: "Hero tag (баруун доод)" },
     // Contact
-    { key: "contact_email", value: "info@nuul.mn", type: "string", group: "contact", label: "Холбоо барих имэйл" },
+    { key: "contact_email", value: "info@nuul.digital", type: "string", group: "contact", label: "Холбоо барих имэйл" },
     { key: "contact_phone", value: "+976 7711-8800", type: "string", group: "contact", label: "Утасны дугаар" },
     { key: "contact_address", value: "Улаанбаатар хот, Сүхбаатар дүүрэг, Бага тойруу 15", type: "string", group: "contact", label: "Хаяг" },
-    { key: "social_facebook", value: "https://facebook.com/nuul.mn", type: "string", group: "contact", label: "Facebook" },
-    { key: "social_instagram", value: "https://instagram.com/nuul.mn", type: "string", group: "contact", label: "Instagram" },
+    { key: "social_facebook", value: "https://facebook.com/nuul.digital", type: "string", group: "contact", label: "Facebook" },
+    { key: "social_instagram", value: "https://instagram.com/nuul.digital", type: "string", group: "contact", label: "Instagram" },
     // Feature toggles
     { key: "feature_chatbot", value: "true", type: "boolean", group: "features", label: "AI чатбот идэвхжүүлэх" },
     { key: "feature_crm", value: "true", type: "boolean", group: "features", label: "CRM идэвхжүүлэх" },

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://nuul.mn";
-const TITLE = "Nuul.mn — Монголын дижитал маркетинг агентлаг";
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://nuul.digital";
+const TITLE = "Nuul.digital — Монголын дижитал маркетинг агентлаг";
 const DESCRIPTION =
   "Дижитал маркетинг, FB контент бүүст, вэбсайт хийх, AI чатбот — Монголын бизнесүүдэд зориулсан иж бүрэн агентлаг үйлчилгээ.";
 
@@ -10,17 +10,17 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
-    template: "%s | Nuul.mn",
+    template: "%s | Nuul.digital",
   },
   description: DESCRIPTION,
   keywords:
-    "дижитал маркетинг монгол, FB контент, facebook ads, вэбсайт хийх, AI чатбот монгол, маркетинг агентлаг, домэйн mn, хостинг монгол, CRM, nuul.mn, QPay",
+    "дижитал маркетинг монгол, FB контент, facebook ads, вэбсайт хийх, AI чатбот монгол, маркетинг агентлаг, домэйн mn, хостинг монгол, CRM, nuul.digital, QPay",
   alternates: { canonical: "/" },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
     url: SITE_URL,
-    siteName: "Nuul.mn",
+    siteName: "Nuul.digital",
     locale: "mn_MN",
     type: "website",
   },

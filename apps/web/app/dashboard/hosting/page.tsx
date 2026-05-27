@@ -148,7 +148,7 @@ export default function HostingPage() {
         body: JSON.stringify({
           orderId: order.id,
           amount: price,
-          description: `${planName} хостинг — nuul.mn`,
+          description: `${planName} хостинг — nuul.digital`,
         }),
       });
 

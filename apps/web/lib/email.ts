@@ -4,7 +4,7 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
-const FROM = process.env.RESEND_FROM ?? "Nuul.mn <onboarding@resend.dev>";
+const FROM = process.env.RESEND_FROM ?? "Nuul.digital <onboarding@resend.dev>";
 
 function emailWrapper(title: string, body: string): string {
   return `<!DOCTYPE html>
@@ -51,11 +51,11 @@ async function send(to: string, subject: string, html: string): Promise<void> {
 
 export async function sendWelcomeEmail(name: string, email: string): Promise<void> {
   try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://nuul.mn";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://nuul.digital";
     const html = emailWrapper(
       "Тавтай морилно уу! 🎉",
       `<p style="color:#555;line-height:1.7;margin:0 0 16px;">Сайн байна уу, <strong>${name}</strong>!</p>
-       <p style="color:#555;line-height:1.7;margin:0 0 16px;">Nuul.mn платформд бүртгүүлсэнд баярлалаа. Та одоо дараах үйлчилгээнүүдийг ашиглах боломжтой:</p>
+       <p style="color:#555;line-height:1.7;margin:0 0 16px;">Nuul.digital платформд бүртгүүлсэнд баярлалаа. Та одоо дараах үйлчилгээнүүдийг ашиглах боломжтой:</p>
        <ul style="color:#555;line-height:2;margin:0 0 16px;padding-left:20px;">
          <li>🌐 Домэйн нэр бүртгүүлэх</li>
          <li>🖥️ Хостинг захиалах</li>
@@ -64,7 +64,7 @@ export async function sendWelcomeEmail(name: string, email: string): Promise<voi
        ${button("Дашбоард руу орох", `${appUrl}/dashboard`)}
        <p style="color:#999;font-size:13px;margin:0;">Асууж тодруулах зүйл байвал бидэнтэй холбогдоорой.</p>`,
     );
-    await send(email, "Nuul.mn-д тавтай морилно уу!", html);
+    await send(email, "Nuul.digital-д тавтай морилно уу!", html);
   } catch (err) {
     console.error("[EMAIL_ERROR] sendWelcomeEmail:", err);
   }
@@ -92,7 +92,7 @@ export async function sendPaymentConfirmation(
   description: string,
 ): Promise<void> {
   try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://nuul.mn";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://nuul.digital";
     const html = emailWrapper(
       "Төлбөр амжилттай баталгаажлаа",
       `<p style="color:#555;line-height:1.7;margin:0 0 16px;">Сайн байна уу, <strong>${name}</strong>!</p>
@@ -118,7 +118,7 @@ export async function sendDomainOrderConfirmation(
   amount: number,
 ): Promise<void> {
   try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://nuul.mn";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://nuul.digital";
     const html = emailWrapper(
       "Домэйн захиалга амжилттай",
       `<p style="color:#555;line-height:1.7;margin:0 0 16px;">Сайн байна уу, <strong>${name}</strong>!</p>
@@ -144,7 +144,7 @@ export async function sendHostingReady(
   domain?: string,
 ): Promise<void> {
   try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://nuul.mn";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://nuul.digital";
     const domainRow = domain
       ? `<tr><td style="padding:12px;border-bottom:1px solid #eee;color:#999;font-size:13px;">Домэйн</td>
              <td style="padding:12px;border-bottom:1px solid #eee;color:#1a1a2e;text-align:right;">${domain}</td></tr>`

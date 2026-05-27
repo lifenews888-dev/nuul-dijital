@@ -76,29 +76,43 @@ function AnimatedHeading({
   const lines = text.split("\n");
 
   return (
-    <h1 className={className} style={style}>
-      {lines.map((line, lineIdx) => (
-        <span key={lineIdx} className="block">
-          {Array.from(line).map((ch, charIdx) => {
-            const totalDelay =
-              lineIdx * line.length * charDelay + charIdx * charDelay;
-            return (
-              <span
-                key={charIdx}
-                className="inline-block"
-                style={{
-                  opacity: start ? 1 : 0,
-                  transform: start ? "translateX(0)" : "translateX(-18px)",
-                  transition: `opacity ${charDuration}ms ease-out, transform ${charDuration}ms ease-out`,
-                  transitionDelay: `${totalDelay}ms`,
-                }}
-              >
-                {ch === " " ? " " : ch}
-              </span>
-            );
-          })}
-        </span>
-      ))}
+    <h1 className={className} style={style} aria-label={text.replace(/\s*\n\s*/g, " ")}>
+      {lines.map((line, lineIdx) => {
+        let charOffset = 0;
+        return (
+          <span key={lineIdx} className="block" aria-hidden="true">
+            {line.split(" ").map((word, wordIdx, words) => {
+              const wordOffset = charOffset;
+              charOffset += word.length + (wordIdx < words.length - 1 ? 1 : 0);
+
+              return (
+                <span key={`${lineIdx}-${wordIdx}`} className="inline-block whitespace-nowrap">
+                  {Array.from(word).map((ch, charIdx) => {
+                    const totalDelay =
+                      lineIdx * line.length * charDelay +
+                      (wordOffset + charIdx) * charDelay;
+                    return (
+                      <span
+                        key={charIdx}
+                        className="inline-block"
+                        style={{
+                          opacity: start ? 1 : 0,
+                          transform: start ? "translateX(0)" : "translateX(-18px)",
+                          transition: `opacity ${charDuration}ms ease-out, transform ${charDuration}ms ease-out`,
+                          transitionDelay: `${totalDelay}ms`,
+                        }}
+                      >
+                        {ch}
+                      </span>
+                    );
+                  })}
+                  {wordIdx < words.length - 1 && " "}
+                </span>
+              );
+            })}
+          </span>
+        );
+      })}
     </h1>
   );
 }
@@ -139,7 +153,7 @@ export function LiquidGlassHero({
         <FadeIn delay={100} duration={800}>
           <nav className="liquid-glass flex items-center justify-between rounded-xl px-4 py-2">
             <Link href="/" className="text-2xl font-semibold tracking-tight">
-              nuul.mn
+              nuul.digital
             </Link>
             <div className="hidden items-center gap-8 text-sm md:flex">
               <Link href="/services" className="transition-colors hover:text-gray-300">
@@ -171,8 +185,7 @@ export function LiquidGlassHero({
             <div>
               <AnimatedHeading
                 text={headline}
-                className="mb-4 text-4xl font-normal md:text-5xl lg:text-6xl xl:text-7xl"
-                style={{ letterSpacing: "-0.04em" }}
+                className="mb-4 max-w-[760px] text-4xl font-normal leading-[0.98] md:text-5xl lg:text-6xl xl:text-7xl"
                 initialDelay={200}
                 charDelay={30}
                 charDuration={500}

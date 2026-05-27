@@ -48,7 +48,7 @@ export function WhyNuulSection() {
           Бидний онцлог
         </div>
         <h2 className="mb-3 font-syne text-[clamp(32px,4vw,48px)] font-bold leading-tight tracking-tight">
-          Яагаад Nuul.mn?
+          Яагаад Nuul.digital?
         </h2>
         <p className="mb-14 max-w-[560px] text-[15px] leading-relaxed text-txt-2">
           Бизнесээ дижитал ертөнцөд нээх хамгийн хялбар зам

@@ -135,7 +135,7 @@ export async function PATCH(req: NextRequest) {
     // Soft delete — just clear personal data
     await prisma.user.update({
       where: { id: session.user.id },
-      data: { name: "Устгагдсан", email: `deleted-${session.user.id}@nuul.mn`, password: null, phone: null },
+      data: { name: "Устгагдсан", email: `deleted-${session.user.id}@nuul.digital`, password: null, phone: null },
     });
 
     return NextResponse.json({ success: true });

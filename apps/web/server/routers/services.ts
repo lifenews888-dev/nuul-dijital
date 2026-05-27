@@ -229,7 +229,7 @@ Description: ${quote.description}
 Budget: ${quote.budget ?? "TBD"}
 Deadline: ${quote.deadline ?? "TBD"}
 
-Create a professional HTML document with Nuul.mn branding (use #7B6FFF as primary color).
+Create a professional HTML document with Nuul.digital branding (use #7B6FFF as primary color).
 Include sections: Executive Summary, Project Scope, Deliverables, Timeline, Pricing (use budget or service price as reference), Terms & Conditions.
 Use professional Mongolian language. Make it look like a real business proposal.
 Return ONLY the HTML content (no markdown, no code blocks).`;
@@ -255,7 +255,7 @@ Create a professional HTML contract with:
 8. Termination clause
 9. Signature blocks
 
-Use Nuul.mn branding (#7B6FFF primary color). Professional Mongolian language.
+Use Nuul.digital branding (#7B6FFF primary color). Professional Mongolian language.
 Return ONLY the HTML content (no markdown, no code blocks).`;
 
           const [proposalResult, contractResult] = await Promise.all([
@@ -324,7 +324,7 @@ function generateProposalTemplate(quote: any): string {
     <li>30 хоногийн үнэгүй дэмжлэг.</li>
   </ul>
   <div style="margin-top:40px;padding-top:20px;border-top:2px solid #7B6FFF;text-align:center;color:#888;font-size:12px;">
-    <p>Nuul Digital LLC | support@nuul.mn | nuul.mn</p>
+    <p>Nuul Digital LLC | support@nuul.digital | nuul.digital</p>
   </div>
 </div>`;
 }
@@ -342,7 +342,7 @@ function generateContractTemplate(quote: any): string {
   <p style="text-align:center;color:#666;">Огноо: ${today}</p>
 
   <h3 style="color:#7B6FFF;">1. Талууд</h3>
-  <p><strong>Гүйцэтгэгч:</strong> Нүүл Дижитал ХХК (Nuul Digital LLC)<br/>Хаяг: Улаанбаатар хот<br/>И-мэйл: support@nuul.mn</p>
+  <p><strong>Гүйцэтгэгч:</strong> Нүүл Дижитал ХХК (Nuul Digital LLC)<br/>Хаяг: Улаанбаатар хот<br/>И-мэйл: support@nuul.digital</p>
   <p><strong>Захиалагч:</strong> ${quote.name}${quote.company ? ` (${quote.company})` : ""}<br/>И-мэйл: ${quote.email}<br/>Утас: ${quote.phone}</p>
 
   <h3 style="color:#7B6FFF;">2. Ажлын хамрах хүрээ</h3>
@@ -386,7 +386,7 @@ function generateContractTemplate(quote: any): string {
   </div>
 
   <div style="margin-top:40px;padding-top:20px;border-top:2px solid #7B6FFF;text-align:center;color:#888;font-size:12px;">
-    <p>Nuul Digital LLC | support@nuul.mn | nuul.mn</p>
+    <p>Nuul Digital LLC | support@nuul.digital | nuul.digital</p>
   </div>
 </div>`;
 }

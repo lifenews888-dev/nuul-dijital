@@ -3,7 +3,7 @@ import Papa from "papaparse";
 import { prisma } from "@/lib/prisma";
 
 const FROM_ADDRESS =
-  process.env.RESEND_FROM_EMAIL || "Nuul.mn <onboarding@resend.dev>";
+  process.env.RESEND_FROM_EMAIL || "Nuul.digital <onboarding@resend.dev>";
 
 const BATCH_SIZE = 50;
 
@@ -22,7 +22,7 @@ function decodeUnsubToken(token: string): string {
 
 function buildUnsubLink(subscriberId: string): string {
   const token = generateUnsubToken(subscriberId);
-  const baseUrl = process.env.NEXTAUTH_URL || "https://nuul.mn";
+  const baseUrl = process.env.NEXTAUTH_URL || "https://nuul.digital";
   return `${baseUrl}/api/email/unsubscribe?token=${encodeURIComponent(token)}`;
 }
 

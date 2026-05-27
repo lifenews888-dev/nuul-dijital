@@ -1,5 +1,5 @@
 /**
- * SocialPay Payment Integration for nuul.mn
+ * SocialPay Payment Integration for nuul.digital
  *
  * Env vars:
  *   SOCIALPAY_KEY     — merchant terminal key

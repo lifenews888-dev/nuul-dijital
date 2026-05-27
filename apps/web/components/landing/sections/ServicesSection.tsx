@@ -56,8 +56,9 @@ const services = [
   {
     name: "AI Чатбот",
     featureKey: "feature_chatbot",
-    desc: "Монгол хэлтэй AI. Facebook, вэбсайт, Viber-д зэрэг ажиллаж харилцагчидтай харилцана",
-    tag: "94% автомат",
+    externalUrl: "https://yria.mn",
+    desc: "Монгол хэлтэй AI чатбот yria.mn. Facebook, вэбсайт, Viber-д зэрэг ажиллана",
+    tag: "yria.mn",
     iconBg: "#9F98FF18",
     iconBorder: "#9F98FF25",
     tagBg: "#9F98FF12",
@@ -72,8 +73,9 @@ const services = [
   {
     name: "Домэйн & Хост",
     featureKey: "feature_domain",
-    desc: ".mn .com .org хаягаа хайж олоод минутын дотор идэвхжүүл",
-    tag: ".mn ₮165,000/жил",
+    comingSoon: true,
+    desc: ".mn .com .org хаяг бүртгэх үйлчилгээ тун удахгүй нээгдэнэ",
+    tag: "Тун удахгүй",
     iconBg: "#7B6FFF18",
     iconBorder: "#7B6FFF25",
     tagBg: "#7B6FFF12",

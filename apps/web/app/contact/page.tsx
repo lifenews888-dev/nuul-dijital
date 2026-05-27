@@ -25,8 +25,8 @@ const contactInfo = [
       </svg>
     ),
     label: "Имэйл",
-    value: "info@nuul.mn",
-    href: "mailto:info@nuul.mn",
+    value: "info@nuul.digital",
+    href: "mailto:info@nuul.digital",
   },
   {
     icon: (
@@ -59,11 +59,11 @@ const faqItems = [
   },
   {
     q: "Техникийн дэмжлэг хэрхэн авах вэ?",
-    a: "Dashboard-оос тикет үүсгэх, чат бичих, эсвэл info@nuul.mn руу имэйл илгээнэ үү. AI дэмжлэг 24/7 ажилладаг.",
+    a: "Dashboard-оос тикет үүсгэх, чат бичих, эсвэл info@nuul.digital руу имэйл илгээнэ үү. AI дэмжлэг 24/7 ажилладаг.",
   },
   {
     q: "Домэйн шилжүүлэх боломжтой юу?",
-    a: "Тийм. Өөр бүртгэгчээс Nuul.mn руу домэйнээ шилжүүлэх бүрэн боломжтой. Шилжүүлэлт 1-5 ажлын өдөр үргэлжилнэ.",
+    a: "Тийм. Өөр бүртгэгчээс Nuul.digital руу домэйнээ шилжүүлэх бүрэн боломжтой. Шилжүүлэлт 1-5 ажлын өдөр үргэлжилнэ.",
   },
   {
     q: "Туршилтын хугацаа байгаа юу?",
@@ -286,7 +286,7 @@ export default function ContactPage() {
               <p className="mb-3 text-xs font-medium text-txt-3">Сошиал</p>
               <div className="flex gap-3">
                 <a
-                  href="https://facebook.com/nuul.mn"
+                  href="https://facebook.com/nuul.digital"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/[0.06] bg-bg-3 text-txt-2 transition-all hover:border-v/20 hover:text-v"
@@ -296,7 +296,7 @@ export default function ContactPage() {
                   </svg>
                 </a>
                 <a
-                  href="https://instagram.com/nuul.mn"
+                  href="https://instagram.com/nuul.digital"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/[0.06] bg-bg-3 text-txt-2 transition-all hover:border-v/20 hover:text-v"
