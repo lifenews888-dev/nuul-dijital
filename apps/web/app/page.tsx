@@ -10,6 +10,8 @@ import { TestimonialsSection } from "@/components/landing/sections/TestimonialsS
 import { WhyNuulSection } from "@/components/landing/sections/WhyNuulSection";
 import { StepsSection } from "@/components/landing/sections/StepsSection";
 import { CTASection } from "@/components/landing/sections/CTASection";
+import { PortfolioSection } from "@/components/landing/sections/PortfolioSection";
+import { TechStandardSection } from "@/components/landing/sections/TechStandardSection";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { prisma } from "@/lib/prisma";
 
@@ -82,6 +84,8 @@ export default async function HomePage() {
         </section>
       </ScrollReveal>
 
+      <PortfolioSection />
+      <TechStandardSection />
       <PricingSection />
       <TestimonialsSection />
       <WhyNuulSection />
