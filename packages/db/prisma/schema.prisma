@@ -591,6 +591,25 @@ model Testimonial {
   @@map("testimonials")
 }
 
+// ===================== PORTFOLIO =====================
+
+model Portfolio {
+  id          String   @id @default(cuid())
+  title       String
+  category    String
+  description String   @db.Text
+  coverImage  String?  // Vercel Blob URL — screenshot/thumbnail
+  link        String?  // external (https://...) or internal (/path)
+  status      String   @default("LIVE") // "LIVE" | "SOON" | "DRAFT"
+  gradient    String   @default("from-[#7B6FFF]/30 via-[#7B6FFF]/10 to-transparent") // fallback tailwind classes when coverImage is empty
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("portfolios")
+}
+
 // ===================== MARKETING PLANS =====================
 
 model MarketingPlan {

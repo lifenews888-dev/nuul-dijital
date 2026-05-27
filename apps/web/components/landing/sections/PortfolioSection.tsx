@@ -1,79 +1,100 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { prisma } from "@/lib/prisma";
 
 type PortfolioItem = {
+  id: string;
   title: string;
   category: string;
   description: string;
-  link?: string;
-  status?: "live" | "soon";
+  coverImage: string | null;
+  link: string | null;
+  status: string;
   gradient: string;
 };
 
-const items: PortfolioItem[] = [
+const FALLBACK: PortfolioItem[] = [
   {
+    id: "fallback-1",
     title: "Yria.mn",
     category: "AI Чатбот платформ",
     description: "Монгол хэлтэй чатбот барих платформ. Facebook, Web, Viber-д суурилуулах.",
+    coverImage: null,
     link: "https://yria.mn",
-    status: "live",
+    status: "LIVE",
     gradient: "from-[#7B6FFF]/30 via-[#7B6FFF]/10 to-transparent",
   },
   {
+    id: "fallback-2",
     title: "Nuul.digital",
     category: "Агентлагийн платформ",
     description: "Маркетинг агентлагийн вэб платформ — таны үзэж буй сайт өөрөө.",
+    coverImage: null,
     link: "/",
-    status: "live",
+    status: "LIVE",
     gradient: "from-[#00E5B8]/30 via-[#00E5B8]/10 to-transparent",
   },
   {
-    title: "BizPrint Pro",
-    category: "SaaS",
-    description: "Хэвлэлийн үйлчилгээний бизнесийн менежмент платформ.",
-    status: "soon",
-    gradient: "from-[#FFB02E]/25 via-[#FFB02E]/08 to-transparent",
-  },
-  {
-    title: "Кофе шопын вэбсайт",
-    category: "E-commerce",
-    description: "Захиалга авах, QPay төлбөртэй жижиг бизнесийн вэбсайт.",
-    status: "soon",
-    gradient: "from-[#FF6B9D]/25 via-[#FF6B9D]/08 to-transparent",
-  },
-  {
-    title: "Боловсролын платформ",
-    category: "EdTech",
-    description: "Хичээл, тестээ удирдах, төлбөр цуглуулах онлайн академи.",
-    status: "soon",
-    gradient: "from-[#5BA5FF]/25 via-[#5BA5FF]/08 to-transparent",
-  },
-  {
+    id: "fallback-3",
     title: "Танай бизнес?",
     category: "Дараагийн төсөл",
     description: "Анхны харилцагчдад тусгай үнэ. Бид таны төслийг өсгөхөд бэлэн.",
+    coverImage: null,
     link: "/contact",
-    status: "soon",
+    status: "SOON",
     gradient: "from-white/15 via-white/5 to-transparent",
   },
 ];
 
+async function getItems(): Promise<PortfolioItem[]> {
+  try {
+    const rows = await prisma.portfolio.findMany({
+      where: { isActive: true, status: { in: ["LIVE", "SOON"] } },
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+    });
+    return rows.length > 0 ? rows : FALLBACK;
+  } catch {
+    return FALLBACK;
+  }
+}
+
 function Card({ item }: { item: PortfolioItem }) {
+  const isLive = item.status === "LIVE";
+  const hasImage = Boolean(item.coverImage);
+
   const inner = (
     <article className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-0 transition-all hover:border-white/15 hover:bg-white/[0.04]">
-      {/* Visual area */}
-      <div className={`aspect-[16/10] overflow-hidden bg-gradient-to-br ${item.gradient}`}>
-        <div className="flex h-full w-full items-end justify-between p-5">
-          <span className="font-syne text-2xl font-normal tracking-tight text-white/80">
+      {/* Cover */}
+      <div
+        className={`relative aspect-[16/10] overflow-hidden ${
+          hasImage ? "bg-black" : `bg-gradient-to-br ${item.gradient}`
+        }`}
+      >
+        {hasImage && (
+          <img
+            src={item.coverImage as string}
+            alt={item.title}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        )}
+        {/* Overlay gradient for legibility when image present */}
+        {hasImage && (
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+        )}
+
+        <div className="absolute inset-0 flex items-end justify-between p-5">
+          <span className="font-syne text-2xl font-normal tracking-tight text-white drop-shadow-md">
             {item.title}
           </span>
-          {item.status === "live" ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 px-2.5 py-1 text-[10px] font-semibold text-emerald-400">
+          {isLive ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 px-2.5 py-1 text-[10px] font-semibold text-emerald-400 backdrop-blur">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
               Live
             </span>
           ) : (
-            <span className="rounded-full bg-white/[0.06] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/50">
+            <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/70 backdrop-blur">
               Тун удахгүй
             </span>
           )}
@@ -88,7 +109,7 @@ function Card({ item }: { item: PortfolioItem }) {
         <p className="line-clamp-2 text-[13px] leading-relaxed text-gray-400">
           {item.description}
         </p>
-        {item.status === "live" && item.link && (
+        {isLive && item.link && (
           <div className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-medium text-white/80 transition-colors group-hover:text-white">
             Үзэх
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
@@ -115,7 +136,11 @@ function Card({ item }: { item: PortfolioItem }) {
   return inner;
 }
 
-export function PortfolioSection() {
+export async function PortfolioSection() {
+  const items = await getItems();
+
+  if (items.length === 0) return null;
+
   return (
     <ScrollReveal>
       <section id="work" className="relative z-[2] px-6 py-24 sm:px-12">
@@ -143,7 +168,7 @@ export function PortfolioSection() {
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
-            <Card key={item.title} item={item} />
+            <Card key={item.id} item={item} />
           ))}
         </div>
       </section>

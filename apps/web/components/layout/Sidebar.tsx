@@ -92,6 +92,7 @@ const navGroups: NavGroup[] = [
     roles: ["ADMIN"],
     items: [
       { label: "Үйлчилгээ", href: "/dashboard/admin/services", icon: "Briefcase" },
+      { label: "Бүтээл", href: "/dashboard/admin/portfolio", icon: "PanelsTopLeft" },
       { label: "Сэтгэгдэл", href: "/dashboard/admin/testimonials", icon: "MessageSquareQuote" },
       { label: "Блог", href: "/dashboard/admin/blog", icon: "FileText" },
       { label: "Меню удирдлага", href: "/dashboard/admin/navigation", icon: "LayoutList" },
