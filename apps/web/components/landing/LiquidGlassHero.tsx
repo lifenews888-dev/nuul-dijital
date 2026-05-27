@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Inter } from "next/font/google";
+import { Menu, X } from "lucide-react";
 import { BrandLogo } from "@/components/layout/BrandLogo";
+
+const NAV_LINKS = [
+  { label: "Үйлчилгээ", href: "/services" },
+  { label: "Блог", href: "/blog" },
+  { label: "Бидний тухай", href: "/about" },
+  { label: "Холбоо барих", href: "/contact" },
+];
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -124,6 +132,8 @@ export function LiquidGlassHero({
   subheadline = DEFAULT_SUBHEADLINE,
   tag = DEFAULT_TAG,
 }: Props) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <section
       className={`relative min-h-screen w-full overflow-hidden bg-black text-white ${inter.className}`}
@@ -151,32 +161,61 @@ export function LiquidGlassHero({
       {/* Foreground content */}
       <div className="relative z-10 flex min-h-screen flex-col px-6 pt-6 md:px-12 lg:px-16">
         {/* Navbar */}
-        <FadeIn delay={100} duration={800}>
+        <FadeIn delay={100} duration={800} className="relative">
           <nav className="liquid-glass flex items-center justify-between rounded-xl px-4 py-2">
             <Link href="/" className="text-2xl font-semibold tracking-tight">
               <BrandLogo suffixClassName="text-white/60" />
             </Link>
             <div className="hidden items-center gap-8 text-sm md:flex">
-              <Link href="/services" className="transition-colors hover:text-gray-300">
-                Үйлчилгээ
-              </Link>
-              <Link href="/blog" className="transition-colors hover:text-gray-300">
-                Блог
-              </Link>
-              <Link href="/about" className="transition-colors hover:text-gray-300">
-                Бидний тухай
-              </Link>
-              <Link href="/contact" className="transition-colors hover:text-gray-300">
-                Холбоо барих
-              </Link>
+              {NAV_LINKS.map((l) => (
+                <Link key={l.href} href={l.href} className="transition-colors hover:text-gray-300">
+                  {l.label}
+                </Link>
+              ))}
             </div>
-            <Link
-              href="/contact"
-              className="rounded-lg bg-white px-6 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-100"
-            >
-              Үнийн санал авах
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/contact"
+                className="hidden rounded-lg bg-white px-6 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-100 sm:inline-block"
+              >
+                Үнийн санал авах
+              </Link>
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen((v) => !v)}
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={mobileMenuOpen}
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/20 bg-black/30 text-white transition-colors hover:bg-white hover:text-black md:hidden"
+              >
+                {mobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
+              </button>
+            </div>
           </nav>
+
+          {/* Mobile dropdown */}
+          {mobileMenuOpen && (
+            <div className="liquid-glass absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-white/10 md:hidden">
+              <div className="flex flex-col">
+                {NAV_LINKS.map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-5 py-3 text-[15px] text-white/90 transition-colors hover:bg-white/10"
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+                <Link
+                  href="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="m-3 rounded-lg bg-white px-5 py-3 text-center text-[14px] font-semibold text-black transition-colors hover:bg-gray-100 sm:hidden"
+                >
+                  Үнийн санал авах
+                </Link>
+              </div>
+            </div>
+          )}
         </FadeIn>
 
         {/* Hero content (anchored to bottom) */}

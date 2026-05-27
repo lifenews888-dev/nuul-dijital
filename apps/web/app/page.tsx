@@ -4,6 +4,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { Marquee } from "@/components/marquee";
 import { FAQ } from "@/components/landing/FAQ";
 import { LiquidGlassHero } from "@/components/landing/LiquidGlassHero";
+import { FloatingNav } from "@/components/layout/FloatingNav";
 import { ServicesSection } from "@/components/landing/sections/ServicesSection";
 import { PricingSection } from "@/components/landing/sections/PricingSection";
 import { TestimonialsSection } from "@/components/landing/sections/TestimonialsSection";
@@ -39,6 +40,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <FloatingNav />
       <LiquidGlassHero
         videoUrl={hero.videoUrl}
         headline={hero.headline}
