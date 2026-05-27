@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { BrandLogo } from "./BrandLogo";
 
 interface FooterData {
   phone: string;
@@ -64,9 +65,7 @@ export function PublicFooter() {
                   <circle cx="9" cy="9" r="1.6" fill="#fff" />
                 </svg>
               </div>
-              <span className="font-syne text-[17px] font-semibold">
-                nuul<span className="text-v-soft">.digital</span>
-              </span>
+              <BrandLogo className="font-syne text-[17px] font-semibold" />
             </Link>
             <p className="mb-5 text-[13px] leading-relaxed text-txt-3">{data.tagline}</p>
             <div className="flex gap-2.5">

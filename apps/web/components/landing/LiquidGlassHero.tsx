@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Inter } from "next/font/google";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -153,7 +154,7 @@ export function LiquidGlassHero({
         <FadeIn delay={100} duration={800}>
           <nav className="liquid-glass flex items-center justify-between rounded-xl px-4 py-2">
             <Link href="/" className="text-2xl font-semibold tracking-tight">
-              nuul.digital
+              <BrandLogo suffixClassName="text-white/60" />
             </Link>
             <div className="hidden items-center gap-8 text-sm md:flex">
               <Link href="/services" className="transition-colors hover:text-gray-300">

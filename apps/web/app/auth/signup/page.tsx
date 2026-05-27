@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import Link from "next/link";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 
 export default function SignUpPage() {
   const [name, setName] = useState("");
@@ -73,8 +74,7 @@ export default function SignUpPage() {
         {/* Logo */}
         <div className="mb-10 text-center">
           <Link href="/" className="inline-block">
-            <span className="font-syne text-3xl font-bold text-v">nuul</span>
-            <span className="font-syne text-3xl font-bold text-txt">.digital</span>
+            <BrandLogo className="font-syne text-3xl font-bold text-v" suffixClassName="text-txt" />
           </Link>
           <p className="mt-3 text-txt-2">Шинэ бүртгэл үүсгэх</p>
         </div>

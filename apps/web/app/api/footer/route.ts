@@ -13,6 +13,7 @@ export async function GET() {
     const map = Object.fromEntries(settings.map((s) => [s.key, s.value]));
 
     return NextResponse.json({
+      siteName: map.site_name || "nuul.digital",
       phone: map.contact_phone || "+976 7700-1234",
       email: map.contact_email || "info@nuul.digital",
       address: map.contact_address || "Улаанбаатар",

@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState, Suspense } from "react";
 import Link from "next/link";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 import { useSearchParams } from "next/navigation";
 
 function SignInForm() {
@@ -48,8 +49,7 @@ function SignInForm() {
         {/* Logo */}
         <div className="mb-10 text-center">
           <Link href="/" className="inline-block">
-            <span className="font-syne text-3xl font-bold text-v">nuul</span>
-            <span className="font-syne text-3xl font-bold text-txt">.digital</span>
+            <BrandLogo className="font-syne text-3xl font-bold text-v" suffixClassName="text-txt" />
           </Link>
           <p className="mt-3 text-txt-2">Бүртгэлдээ нэвтрэх</p>
         </div>

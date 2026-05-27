@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { BrandLogo } from "./BrandLogo";
 
 interface NavItem {
   id: string;
@@ -75,9 +76,7 @@ export function PublicNav() {
             <circle cx="9" cy="9" r="1.6" fill="#fff" />
           </svg>
         </div>
-        <span className="font-clash text-lg font-semibold tracking-tight">
-          nuul<span className="text-v-soft">.digital</span>
-        </span>
+        <BrandLogo className="font-clash text-lg font-semibold tracking-tight" />
       </Link>
 
       {/* Desktop nav links */}

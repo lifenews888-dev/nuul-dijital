@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useSidebar } from "./SidebarContext";
+import { BrandLogo } from "./BrandLogo";
 
 const iconMap: Record<string, React.ElementType> = {
   LayoutDashboard, Globe, Server, Cloud, PanelsTopLeft, ShoppingCart,
@@ -170,9 +171,7 @@ export function Sidebar() {
                 <circle cx="9" cy="9" r="1.6" fill="#fff" />
               </svg>
             </div>
-            <span className="font-syne text-[17px] font-bold tracking-tight">
-              nuul<span className="text-v-soft">.digital</span>
-            </span>
+            <BrandLogo className="font-syne text-[17px] font-bold tracking-tight" />
           </div>
           {/* Close button - mobile only */}
           <button
