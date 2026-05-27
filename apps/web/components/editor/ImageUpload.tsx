@@ -21,8 +21,20 @@ export default function ImageUpload({ value, onChange, label }: Props) {
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/upload", { method: "POST", body: fd });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Upload алдаа");
+      const text = await res.text();
+      let data: { url?: string; error?: string } = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        // Server returned HTML/empty (likely 500). Build a friendly message.
+        throw new Error(
+          res.status === 413
+            ? "Файл хэт том байна"
+            : `Серверийн алдаа (${res.status}). Vercel Blob тохиргоог шалгана уу.`
+        );
+      }
+      if (!res.ok) throw new Error(data.error ?? `Upload алдаа (${res.status})`);
+      if (!data.url) throw new Error("Серверээс зургийн URL ирсэнгүй");
       onChange(data.url);
     } catch (err: any) {
       setError(err.message);
