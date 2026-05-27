@@ -147,17 +147,15 @@ export function ServicesSection() {
   return (
     <ScrollReveal>
       <section id="svc" className="relative z-[2] px-6 py-24 sm:px-12">
-        <div className="mb-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-v">
-          <span className="inline-block h-px w-6 bg-v" />
+        <div className="mb-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-gray-400">
+          <span className="inline-block h-px w-6 bg-gray-500" />
           Үйлчилгээ
         </div>
-        <h2 className="mb-3 font-clash text-[clamp(32px,4vw,48px)] font-bold leading-tight tracking-tight">
-          Нэг платформ.
-          <br />
-          Бүх зүйл.
+        <h2 className="mb-3 font-syne text-[clamp(32px,4vw,48px)] font-normal leading-tight tracking-tight text-white" style={{ letterSpacing: "-0.03em" }}>
+          Бизнесээ өсгөх<br />бүх хэрэгсэл.
         </h2>
-        <p className="mb-14 max-w-[500px] text-[15px] leading-relaxed text-txt-2">
-          Өрсөлдөгчдийнх шиг 3 өөр компанид төлж, 3 өөр хаяг санах хэрэггүй.
+        <p className="mb-14 max-w-[500px] text-[15px] leading-relaxed text-gray-400">
+          Маркетинг, вэбсайт, чатбот, контент — нэг агентлагаас бүгдийг.
         </p>
 
         <ServiceGrid services={services} />

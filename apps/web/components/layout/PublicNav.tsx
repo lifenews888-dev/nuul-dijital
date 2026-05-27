@@ -76,7 +76,7 @@ export function PublicNav() {
           </svg>
         </div>
         <span className="font-clash text-lg font-semibold tracking-tight">
-          nuul<span className="text-v-soft">.mn</span>
+          nuul<span className="text-v-soft">.digital</span>
         </span>
       </Link>
 

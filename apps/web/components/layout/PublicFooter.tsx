@@ -65,7 +65,7 @@ export function PublicFooter() {
                 </svg>
               </div>
               <span className="font-syne text-[17px] font-semibold">
-                nuul<span className="text-v-soft">.mn</span>
+                nuul<span className="text-v-soft">.digital</span>
               </span>
             </Link>
             <p className="mb-5 text-[13px] leading-relaxed text-txt-3">{data.tagline}</p>

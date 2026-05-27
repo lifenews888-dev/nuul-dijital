@@ -171,7 +171,7 @@ export function Sidebar() {
               </svg>
             </div>
             <span className="font-syne text-[17px] font-bold tracking-tight">
-              nuul<span className="text-v-soft">.mn</span>
+              nuul<span className="text-v-soft">.digital</span>
             </span>
           </div>
           {/* Close button - mobile only */}

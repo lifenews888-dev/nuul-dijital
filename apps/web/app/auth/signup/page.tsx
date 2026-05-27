@@ -74,7 +74,7 @@ export default function SignUpPage() {
         <div className="mb-10 text-center">
           <Link href="/" className="inline-block">
             <span className="font-syne text-3xl font-bold text-v">nuul</span>
-            <span className="font-syne text-3xl font-bold text-txt">.mn</span>
+            <span className="font-syne text-3xl font-bold text-txt">.digital</span>
           </Link>
           <p className="mt-3 text-txt-2">Шинэ бүртгэл үүсгэх</p>
         </div>
