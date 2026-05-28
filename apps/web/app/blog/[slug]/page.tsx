@@ -7,11 +7,11 @@ import {
   Eye,
   ArrowLeft,
   Tag,
-  Link2,
   BookOpen,
 } from "lucide-react";
 import { PublicNav } from "@/components/layout/PublicNav";
 import { PublicFooter } from "@/components/layout/PublicFooter";
+import { ShareButton } from "./ShareButton";
 
 interface Props {
   params: { slug: string };
@@ -212,17 +212,7 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Share */}
         <div className="mt-6 flex items-center gap-3 border-t border-white/[0.06] pt-6">
           <span className="text-[13px] text-white/40">Хуваалцах:</span>
-          <button
-            onClick={() => {
-              if (typeof navigator !== "undefined") {
-                navigator.clipboard.writeText(postUrl);
-              }
-            }}
-            className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] px-3 py-1.5 text-[12px] text-white/50 transition-all hover:bg-white/[0.04] hover:text-white/70"
-          >
-            <Link2 size={13} />
-            Линк хуулах
-          </button>
+          <ShareButton url={postUrl} />
         </div>
       </article>
 
