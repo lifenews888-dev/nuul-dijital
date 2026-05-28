@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ScrollToTop } from "@/components/layout/ScrollToTop";
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://nuul.digital";
 const TITLE = "Nuul.digital — Монголын дижитал маркетинг агентлаг";
@@ -47,7 +48,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="font-dm antialiased">{children}</body>
+      <body className="font-dm antialiased">
+        {children}
+        <ScrollToTop />
+      </body>
     </html>
   );
 }
