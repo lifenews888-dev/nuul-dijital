@@ -610,6 +610,19 @@ model Portfolio {
   @@map("portfolios")
 }
 
+// ===================== HERO MEDIA (homepage slider) =====================
+
+model HeroMedia {
+  id        String   @id @default(cuid())
+  type      String   @default("video") // "video" | "image"
+  url       String   // Vercel Blob URL
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("hero_media")
+}
+
 // ===================== MARKETING PLANS =====================
 
 model MarketingPlan {

@@ -19,6 +19,7 @@ import { hostingRouter } from "./hosting";
 import { marketingRouter } from "./marketing";
 import { testimonialRouter } from "./testimonial";
 import { portfolioRouter } from "./portfolio";
+import { heroMediaRouter } from "./heroMedia";
 
 export const appRouter = router({
   domain: domainRouter,
@@ -41,6 +42,7 @@ export const appRouter = router({
   marketing: marketingRouter,
   testimonial: testimonialRouter,
   portfolio: portfolioRouter,
+  heroMedia: heroMediaRouter,
 });
 
 export type AppRouter = typeof appRouter;

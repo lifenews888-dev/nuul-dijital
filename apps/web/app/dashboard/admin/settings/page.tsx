@@ -15,6 +15,7 @@ import {
   LayoutList,
   ArrowRight,
 } from "lucide-react";
+import { HeroMediaManager } from "./HeroMediaManager";
 
 /* ── Default settings (used when DB is empty) ── */
 const DEFAULTS: Record<string, Record<string, string>> = {
@@ -264,22 +265,26 @@ export default function AdminSettingsPage() {
               </p>
 
               <div className="space-y-4">
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-txt-2">
-                    Hero видео URL
-                  </label>
-                  <input
-                    type="url"
-                    value={settings.hero_video_url ?? ""}
-                    onChange={(e) => updateLocal("hero_video_url", e.target.value)}
-                    placeholder="https://...mp4 (хоосон бол gradient харагдана)"
-                    className="w-full rounded-lg border border-white/[0.06] bg-bg-3 px-4 py-2.5 text-sm text-txt outline-none transition-colors focus:border-v/30"
-                  />
-                  <p className="mt-1 text-[11px] text-txt-3">
-                    Pexels, Pixabay, эсвэл өөрсдийн CDN дээр хадгалагдсан .mp4 видеоны URL.
-                    Хоосон үлдээвэл анимацилсан gradient харагдана.
-                  </p>
-                </div>
+                <HeroMediaManager />
+
+                <details className="rounded-lg border border-white/[0.06] bg-bg-3/40">
+                  <summary className="cursor-pointer px-4 py-2.5 text-[12px] font-medium text-txt-3">
+                    Видео URL-ээр оруулах (нэмэлт сонголт)
+                  </summary>
+                  <div className="px-4 pb-4">
+                    <input
+                      type="url"
+                      value={settings.hero_video_url ?? ""}
+                      onChange={(e) => updateLocal("hero_video_url", e.target.value)}
+                      placeholder="https://...mp4"
+                      className="w-full rounded-lg border border-white/[0.06] bg-bg-3 px-4 py-2.5 text-sm text-txt outline-none transition-colors focus:border-v/30"
+                    />
+                    <p className="mt-1 text-[11px] text-txt-3">
+                      Гадны CDN дээрх .mp4 URL. Дээрх медиа slider хоосон үед л
+                      энэ URL ашиглагдана.
+                    </p>
+                  </div>
+                </details>
 
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-txt-2">

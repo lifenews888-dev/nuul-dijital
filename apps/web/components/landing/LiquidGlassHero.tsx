@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Inter } from "next/font/google";
 import { Menu, X } from "lucide-react";
 import { BrandLogo } from "@/components/layout/BrandLogo";
+import { HeroSlider, type HeroMediaItem } from "@/components/landing/HeroSlider";
 
 const NAV_LINKS = [
   { label: "Үйлчилгээ", href: "/services" },
@@ -21,6 +22,7 @@ const inter = Inter({
 
 interface Props {
   videoUrl?: string;
+  media?: HeroMediaItem[];
   headline?: string;
   subheadline?: string;
   tag?: string;
@@ -128,28 +130,28 @@ function AnimatedHeading({
 
 export function LiquidGlassHero({
   videoUrl,
+  media = [],
   headline = DEFAULT_HEADLINE,
   subheadline = DEFAULT_SUBHEADLINE,
   tag = DEFAULT_TAG,
 }: Props) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Prefer the managed media list; fall back to legacy single videoUrl.
+  const slides: HeroMediaItem[] =
+    media.length > 0
+      ? media
+      : videoUrl
+        ? [{ id: "legacy", type: "video", url: videoUrl }]
+        : [];
+
   return (
     <section
       className={`relative min-h-screen w-full overflow-hidden bg-black text-white ${inter.className}`}
     >
-      {/* Background video or fallback gradient */}
-      {videoUrl ? (
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 h-full w-full object-cover"
-          aria-hidden="true"
-        >
-          <source src={videoUrl} type="video/mp4" />
-        </video>
+      {/* Background slider or fallback gradient */}
+      {slides.length > 0 ? (
+        <HeroSlider items={slides} />
       ) : (
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0a0518] to-black" />

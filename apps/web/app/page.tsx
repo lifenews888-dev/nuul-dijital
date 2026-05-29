@@ -35,14 +35,27 @@ async function getHeroSettings() {
   }
 }
 
+async function getHeroMedia() {
+  try {
+    return await prisma.heroMedia.findMany({
+      where: { isActive: true },
+      orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+      select: { id: true, type: true, url: true },
+    });
+  } catch {
+    return [];
+  }
+}
+
 export default async function HomePage() {
-  const hero = await getHeroSettings();
+  const [hero, heroMedia] = await Promise.all([getHeroSettings(), getHeroMedia()]);
 
   return (
     <>
       <FloatingNav />
       <LiquidGlassHero
         videoUrl={hero.videoUrl}
+        media={heroMedia}
         headline={hero.headline}
         subheadline={hero.subheadline}
         tag={hero.tag}
