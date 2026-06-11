@@ -19,5 +19,20 @@
     "label": "Language",
     "mn": "Монгол",
     "en": "English"
+  },
+  "home": {
+    "hero": {
+      "badge": "Mongolia's digital transformation partner",
+      "title1": "We build",
+      "title2": "Mongolia's digital",
+      "title3": "future",
+      "subtitle": "Web development, AI chatbots, automation and digital solutions that take your business to the next level — world-class quality, built for the Mongolian market.",
+      "startProject": "Start your project",
+      "viewWork": "View our work"
+    }
+  },
+  "ctaSection": {
+    "title": "Ready to start your project?",
+    "subtitle": "Get a free consultation. We'll turn your idea into a real, results-driven digital product."
   }
 }

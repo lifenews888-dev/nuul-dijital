@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Play } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { TextReveal } from "@/components/motion/text-reveal";
 import { GradientMesh } from "@/components/shared/gradient-mesh";
@@ -11,6 +12,7 @@ import { Magnetic } from "@/components/motion/magnetic";
 import { stats } from "@/data/company";
 
 export function Hero() {
+  const t = useTranslations("home.hero");
   return (
     <section className="relative flex min-h-[100svh] items-center overflow-hidden pt-28 noise">
       <GradientMesh />
@@ -25,20 +27,16 @@ export function Hero() {
           >
             <span className="section-label">
               <Sparkles className="size-3.5 text-accent" />
-              Монголын дижитал шилжилтийн түнш
+              {t("badge")}
             </span>
           </motion.div>
 
           <h1 className="mt-8 text-display-2xl font-extrabold leading-[0.95] tracking-tight">
-            <TextReveal text="Бид Монголын" className="block text-foreground" />
+            <TextReveal text={t("title1")} className="block text-foreground" />
             <span className="block">
-              <TextReveal
-                text="дижитал ирээдүйг"
-                className="text-gradient-accent"
-                delay={0.2}
-              />
+              <TextReveal text={t("title2")} className="text-gradient-accent" delay={0.2} />
             </span>
-            <TextReveal text="бүтээдэг" className="block text-foreground" delay={0.4} />
+            <TextReveal text={t("title3")} className="block text-foreground" delay={0.4} />
           </h1>
 
           <motion.p
@@ -47,8 +45,7 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.7 }}
             className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl"
           >
-            Вэб хөгжүүлэлт, AI чатбот, автоматжуулалт болон дижитал шийдлээр таны бизнесийг
-            дараагийн түвшинд хүргэнэ. Дэлхийн жишигт нийцсэн чанар, Монголын зах зээлд.
+            {t("subtitle")}
           </motion.p>
 
           <motion.div
@@ -60,13 +57,13 @@ export function Hero() {
             <Magnetic>
               <Button asChild variant="gradient" size="lg">
                 <Link href="/quote">
-                  Төслөө эхлүүлэх <ArrowRight className="size-5" />
+                  {t("startProject")} <ArrowRight className="size-5" />
                 </Link>
               </Button>
             </Magnetic>
             <Button asChild variant="outline" size="lg">
               <Link href="/portfolio">
-                <Play className="size-4" /> Бүтээлүүдийг үзэх
+                <Play className="size-4" /> {t("viewWork")}
               </Link>
             </Button>
           </motion.div>

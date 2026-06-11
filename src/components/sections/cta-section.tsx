@@ -1,9 +1,11 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/motion/reveal";
 
-export function CTASection() {
+export async function CTASection() {
+  const t = await getTranslations();
   return (
     <section className="py-12 lg:py-20">
       <div className="container-wide">
@@ -14,16 +16,15 @@ export function CTASection() {
             <div className="absolute -bottom-20 -right-20 size-64 rounded-full bg-accent-cyan/40 blur-3xl" />
             <div className="relative">
               <h2 className="mx-auto max-w-3xl text-balance text-display-lg font-bold tracking-tight text-white">
-                Төслөө эхлүүлэхэд бэлэн үү?
+                {t("ctaSection.title")}
               </h2>
               <p className="mx-auto mt-5 max-w-xl text-lg text-white/80">
-                Үнэ төлбөргүй зөвлөгөө аваарай. Бид таны санааг бодит, үр дүнтэй дижитал
-                бүтээгдэхүүн болгон хувиргахад туслана.
+                {t("ctaSection.subtitle")}
               </p>
               <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Button asChild variant="light" size="lg">
                   <Link href="/quote">
-                    Үнийн санал авах <ArrowRight className="size-5" />
+                    {t("cta.getQuote")} <ArrowRight className="size-5" />
                   </Link>
                 </Button>
                 <Button
@@ -31,7 +32,7 @@ export function CTASection() {
                   size="lg"
                   className="bg-white/10 text-white backdrop-blur hover:bg-white/20"
                 >
-                  <Link href="/contact">Холбоо барих</Link>
+                  <Link href="/contact">{t("nav.contact")}</Link>
                 </Button>
               </div>
             </div>
