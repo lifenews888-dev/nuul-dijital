@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/shared/page-header";
 import { PortfolioGrid } from "@/components/portfolio/portfolio-grid";
 import { CTASection } from "@/components/sections/cta-section";
+import { getProjects } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
@@ -9,7 +10,8 @@ export const metadata = buildMetadata({
   path: "/portfolio",
 });
 
-export default function PortfolioPage() {
+export default async function PortfolioPage() {
+  const projects = await getProjects();
   return (
     <>
       <PageHeader
@@ -22,7 +24,7 @@ export default function PortfolioPage() {
         description="Салбар бүрт хэмжигдэхүйц үр дүн авчирсан төслүүдтэй танилцаарай."
       />
       <section className="container-wide pb-24">
-        <PortfolioGrid />
+        <PortfolioGrid projects={projects} />
       </section>
       <CTASection />
     </>

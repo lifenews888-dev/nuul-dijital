@@ -5,19 +5,24 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Search, X } from "lucide-react";
-import { posts, blogCategories } from "@/data/posts";
+import type { Post } from "@/data/posts";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { formatDate, cn } from "@/lib/utils";
 
-export function BlogList() {
+export function BlogList({ posts }: { posts: Post[] }) {
   const [cat, setCat] = useState("Бүгд");
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState<string | null>(null);
 
+  const categories = useMemo(
+    () => ["Бүгд", ...Array.from(new Set(posts.map((p) => p.category)))],
+    [posts]
+  );
+
   const allTags = useMemo(
     () => Array.from(new Set(posts.flatMap((p) => p.tags))).slice(0, 12),
-    []
+    [posts]
   );
 
   const filtered = useMemo(() => {
@@ -33,14 +38,14 @@ export function BlogList() {
         p.tags.some((t) => t.toLowerCase().includes(q));
       return matchesCat && matchesTag && matchesQuery;
     });
-  }, [cat, query, tag]);
+  }, [cat, query, tag, posts]);
 
   return (
     <div>
       {/* Search + categories */}
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-2">
-          {blogCategories.map((c) => (
+          {categories.map((c) => (
             <button
               key={c}
               onClick={() => setCat(c)}

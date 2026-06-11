@@ -88,6 +88,7 @@ export async function savePost(formData: FormData) {
     entityId: saved.id,
     summary: `${id ? "Засварласан" : "Үүсгэсэн"} нийтлэл: ${data.title}`,
   });
+  revalidateTag(CONTENT_TAG);
   revalidatePath("/admin/posts");
   redirect("/admin/posts");
 }
@@ -97,6 +98,7 @@ export async function deletePost(formData: FormData) {
   const id = str(formData, "id");
   await db.post.delete({ where: { id } });
   await logActivity({ action: "DELETE", entity: "Post", entityId: id, summary: "Нийтлэл устгасан" });
+  revalidateTag(CONTENT_TAG);
   revalidatePath("/admin/posts");
 }
 
@@ -133,6 +135,7 @@ export async function saveProject(formData: FormData) {
     entityId: saved.id,
     summary: `${id ? "Засварласан" : "Үүсгэсэн"} төсөл: ${data.name}`,
   });
+  revalidateTag(CONTENT_TAG);
   revalidatePath("/admin/projects");
   redirect("/admin/projects");
 }
@@ -142,6 +145,7 @@ export async function deleteProject(formData: FormData) {
   const id = str(formData, "id");
   await db.project.delete({ where: { id } });
   await logActivity({ action: "DELETE", entity: "Project", entityId: id, summary: "Төсөл устгасан" });
+  revalidateTag(CONTENT_TAG);
   revalidatePath("/admin/projects");
 }
 
@@ -180,6 +184,7 @@ export async function saveCaseStudy(formData: FormData) {
     entityId: saved.id,
     summary: `${id ? "Засварласан" : "Үүсгэсэн"} кейс: ${data.title}`,
   });
+  revalidateTag(CONTENT_TAG);
   revalidatePath("/admin/case-studies");
   redirect("/admin/case-studies");
 }
@@ -189,6 +194,7 @@ export async function deleteCaseStudy(formData: FormData) {
   const id = str(formData, "id");
   await db.caseStudy.delete({ where: { id } });
   await logActivity({ action: "DELETE", entity: "CaseStudy", entityId: id, summary: "Кейс устгасан" });
+  revalidateTag(CONTENT_TAG);
   revalidatePath("/admin/case-studies");
 }
 
@@ -322,6 +328,7 @@ export async function saveJob(formData: FormData) {
     entityId: saved.id,
     summary: `Ажлын байр: ${data.title}`,
   });
+  revalidateTag(CONTENT_TAG);
   revalidatePath("/admin/careers");
   redirect("/admin/careers");
 }
@@ -331,6 +338,7 @@ export async function deleteJob(formData: FormData) {
   const id = str(formData, "id");
   await db.job.delete({ where: { id } });
   await logActivity({ action: "DELETE", entity: "Job", entityId: id, summary: "Ажлын байр устгасан" });
+  revalidateTag(CONTENT_TAG);
   revalidatePath("/admin/careers");
 }
 

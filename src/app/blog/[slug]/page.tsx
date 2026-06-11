@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Clock } from "lucide-react";
-import { posts, getPost } from "@/data/posts";
+import { getPosts } from "@/lib/content";
 import { GradientMesh } from "@/components/shared/gradient-mesh";
 import { CTASection } from "@/components/sections/cta-section";
 import { Button } from "@/components/ui/button";
@@ -12,13 +12,14 @@ import { buildMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { formatDate, readingTime } from "@/lib/utils";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const posts = await getPosts();
   return posts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const p = getPost(slug);
+  const p = (await getPosts()).find((x) => x.slug === slug);
   if (!p) return buildMetadata({ title: "Олдсонгүй" });
   return buildMetadata({
     title: p.title,
@@ -37,7 +38,8 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const p = getPost(slug);
+  const posts = await getPosts();
+  const p = posts.find((x) => x.slug === slug);
   if (!p) notFound();
 
   const related = posts.filter((x) => x.slug !== slug).slice(0, 3);

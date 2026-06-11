@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Briefcase, Check, Mail } from "lucide-react";
-import { jobs, getJob } from "@/data/jobs";
+import { getJobs } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,13 +9,14 @@ import { Reveal } from "@/components/motion/reveal";
 import { buildMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const jobs = await getJobs();
   return jobs.map((j) => ({ slug: j.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const job = getJob(slug);
+  const job = (await getJobs()).find((j) => j.slug === slug);
   if (!job) return buildMetadata({ title: "Олдсонгүй" });
   return buildMetadata({ title: job.title, description: job.summary, path: `/careers/${slug}` });
 }
@@ -26,7 +27,7 @@ export default async function JobDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const job = getJob(slug);
+  const job = (await getJobs()).find((j) => j.slug === slug);
   if (!job) notFound();
 
   return (

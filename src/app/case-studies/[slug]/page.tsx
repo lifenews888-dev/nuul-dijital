@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Check, Quote } from "lucide-react";
-import { caseStudies, getCaseStudy } from "@/data/case-studies";
+import { getCaseStudies } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Button } from "@/components/ui/button";
@@ -10,13 +10,14 @@ import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/motion/reveal";
 import { buildMetadata } from "@/lib/seo";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const caseStudies = await getCaseStudies();
   return caseStudies.map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const c = getCaseStudy(slug);
+  const c = (await getCaseStudies()).find((x) => x.slug === slug);
   if (!c) return buildMetadata({ title: "Олдсонгүй" });
   return buildMetadata({
     title: c.title,
@@ -32,7 +33,7 @@ export default async function CaseStudyDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const c = getCaseStudy(slug);
+  const c = (await getCaseStudies()).find((x) => x.slug === slug);
   if (!c) notFound();
 
   return (

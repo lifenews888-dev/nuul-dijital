@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { caseStudies } from "@/data/case-studies";
+import { getCaseStudies } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,8 @@ export const metadata = buildMetadata({
   path: "/case-studies",
 });
 
-export default function CaseStudiesPage() {
+export default async function CaseStudiesPage() {
+  const caseStudies = await getCaseStudies();
   return (
     <>
       <PageHeader

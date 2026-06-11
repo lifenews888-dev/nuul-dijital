@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ExternalLink, ArrowRight } from "lucide-react";
-import { projects, getProject } from "@/data/projects";
+import { getProjects } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Button } from "@/components/ui/button";
@@ -10,13 +10,14 @@ import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/motion/reveal";
 import { buildMetadata } from "@/lib/seo";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const projects = await getProjects();
   return projects.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const p = getProject(slug);
+  const p = (await getProjects()).find((x) => x.slug === slug);
   if (!p) return buildMetadata({ title: "Олдсонгүй" });
   return buildMetadata({
     title: p.name,
@@ -32,7 +33,8 @@ export default async function ProjectDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const p = getProject(slug);
+  const projects = await getProjects();
+  const p = projects.find((x) => x.slug === slug);
   if (!p) notFound();
 
   const next = projects[(projects.findIndex((x) => x.slug === slug) + 1) % projects.length];

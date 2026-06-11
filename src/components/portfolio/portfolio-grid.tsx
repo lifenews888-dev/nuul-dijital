@@ -5,14 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { projects } from "@/data/projects";
+import type { Project } from "@/data/projects";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-export function PortfolioGrid() {
+export function PortfolioGrid({ projects }: { projects: Project[] }) {
   const industries = useMemo(
     () => ["Бүгд", ...Array.from(new Set(projects.map((p) => p.industry)))],
-    []
+    [projects]
   );
   const [filter, setFilter] = useState("Бүгд");
   const filtered =

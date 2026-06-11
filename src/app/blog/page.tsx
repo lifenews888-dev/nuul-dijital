@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/shared/page-header";
 import { BlogList } from "@/components/blog/blog-list";
+import { getPosts } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
@@ -8,7 +9,8 @@ export const metadata = buildMetadata({
   path: "/blog",
 });
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const posts = await getPosts();
   return (
     <>
       <PageHeader
@@ -21,7 +23,7 @@ export default function BlogPage() {
         description="Дижитал ертөнцийн хамгийн сүүлийн чиг хандлага, практик зөвлөгөөг бид хуваалцаж байна."
       />
       <section className="container-wide pb-24">
-        <BlogList />
+        <BlogList posts={posts} />
       </section>
     </>
   );

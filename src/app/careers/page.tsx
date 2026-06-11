@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, MapPin, Briefcase, Check } from "lucide-react";
-import { jobs, perks } from "@/data/jobs";
+import { perks } from "@/data/jobs";
+import { getJobs } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +14,8 @@ export const metadata = buildMetadata({
   path: "/careers",
 });
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  const jobs = await getJobs();
   return (
     <>
       <PageHeader

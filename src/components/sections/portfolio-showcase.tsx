@@ -4,13 +4,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { featuredProjects } from "@/data/projects";
+import type { Project } from "@/data/projects";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { Tilt } from "@/components/motion/tilt";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-export function PortfolioShowcase() {
+export function PortfolioShowcase({ projects }: { projects: Project[] }) {
   return (
     <section className="py-24 lg:py-32">
       <div className="container-wide">
@@ -31,7 +31,7 @@ export function PortfolioShowcase() {
         </div>
 
         <div className="mt-14 grid gap-6 lg:grid-cols-2">
-          {featuredProjects.map((p, i) => (
+          {projects.map((p, i) => (
             <motion.div
               key={p.slug}
               initial={{ opacity: 0, y: 30 }}

@@ -2,8 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, AlertTriangle } from "lucide-react";
 import { industries, getIndustry } from "@/data/industries";
-import { getProject } from "@/data/projects";
-import { getCaseStudy } from "@/data/case-studies";
+import { getProjects, getCaseStudies } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Button } from "@/components/ui/button";
@@ -31,8 +30,13 @@ export default async function IndustryDetailPage({
   const ind = getIndustry(slug);
   if (!ind) notFound();
 
-  const projects = ind.projectSlugs.map(getProject).filter(Boolean);
-  const cases = ind.caseStudySlugs.map(getCaseStudy).filter(Boolean);
+  const [allProjects, allCaseStudies] = await Promise.all([getProjects(), getCaseStudies()]);
+  const projects = ind.projectSlugs
+    .map((s) => allProjects.find((p) => p.slug === s))
+    .filter(Boolean);
+  const cases = ind.caseStudySlugs
+    .map((s) => allCaseStudies.find((c) => c.slug === s))
+    .filter(Boolean);
 
   return (
     <>
