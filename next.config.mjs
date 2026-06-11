@@ -10,11 +10,10 @@ const nextConfig = {
   outputFileTracingRoot: process.cwd(),
   images: {
     formats: ["image/avif", "image/webp"],
-    remotePatterns: [
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "i.pravatar.cc" },
-      { protocol: "https", hostname: "**.public.blob.vercel-storage.com" },
-    ],
+    // Admins paste image URLs from many sources in the CMS (team avatars,
+    // testimonial photos, project/post covers), so allow any HTTPS host.
+    // The image optimizer is only reached for URLs an authenticated admin set.
+    remotePatterns: [{ protocol: "https", hostname: "**" }],
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
