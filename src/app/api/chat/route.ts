@@ -50,7 +50,7 @@ function fallbackReply(text: string): string {
 async function callAnthropic(messages: { role: string; content: string }[]): Promise<string | null> {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) return null;
-  const model = process.env.ANTHROPIC_MODEL ?? "claude-3-5-haiku-latest";
+  const model = process.env.ANTHROPIC_MODEL ?? "claude-haiku-4-5";
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
