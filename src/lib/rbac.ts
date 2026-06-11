@@ -14,6 +14,7 @@ export type Resource =
   | "team"
   | "faqs"
   | "jobs"
+  | "site" // homepage stats / values / process steps
   | "media"
   | "leads" // leads + contacts + meetings
   | "activity"
@@ -30,6 +31,7 @@ const PERMISSIONS: Record<Role, string[]> = {
     "team:*",
     "faqs:*",
     "jobs:*",
+    "site:*",
     "media:*",
     "leads:*",
     "activity:read",
@@ -44,6 +46,7 @@ const PERMISSIONS: Record<Role, string[]> = {
     "team:read",
     "faqs:*",
     "jobs:*",
+    "site:*",
     "media:create",
     "media:read",
     "media:update",
@@ -104,6 +107,7 @@ export function visibleSections(role: Role | string | undefined) {
     team: can(role, "team", "read"),
     faqs: can(role, "faqs", "read"),
     jobs: can(role, "jobs", "read"),
+    site: can(role, "site", "read"),
     media: can(role, "media", "read"),
     leads: can(role, "leads", "read"),
     activity: can(role, "activity", "read"),

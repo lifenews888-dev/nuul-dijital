@@ -9,23 +9,35 @@ import { TestimonialsSection } from "@/components/sections/testimonials-section"
 import { ProcessSection } from "@/components/sections/process-section";
 import { CTASection } from "@/components/sections/cta-section";
 import { ContactSection } from "@/components/sections/contact-section";
-import { getTestimonials, getProjects } from "@/lib/content";
+import {
+  getTestimonials,
+  getProjects,
+  getStats,
+  getValues,
+  getProcessSteps,
+} from "@/lib/content";
 
 export default async function HomePage() {
-  const [testimonials, allProjects] = await Promise.all([getTestimonials(), getProjects()]);
+  const [testimonials, allProjects, stats, values, steps] = await Promise.all([
+    getTestimonials(),
+    getProjects(),
+    getStats(),
+    getValues(),
+    getProcessSteps(),
+  ]);
   const featured = allProjects.filter((p) => p.featured);
   const showcaseProjects = featured.length ? featured : allProjects.slice(0, 3);
   return (
     <>
-      <Hero />
+      <Hero stats={stats} />
       <TrustedBy />
       <ServicesSection />
-      <WhyNuul />
+      <WhyNuul stats={stats} values={values} />
       <PortfolioShowcase projects={showcaseProjects} />
       <AISolutions />
       <InstantEstimate />
       <TestimonialsSection items={testimonials} />
-      <ProcessSection />
+      <ProcessSection steps={steps} />
       <CTASection />
       <ContactSection />
     </>

@@ -4,8 +4,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Counter } from "@/components/motion/counter";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
-import { stats, values } from "@/data/company";
-import { getTeam } from "@/lib/content";
+import { getTeam, getStats, getValues } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 
 const Accent = (c: React.ReactNode) => <span className="text-gradient-accent">{c}</span>;
@@ -18,7 +17,12 @@ export const metadata = buildMetadata({
 });
 
 export default async function AboutPage() {
-  const [team, t] = await Promise.all([getTeam(), getTranslations("pages.about")]);
+  const [team, stats, values, t] = await Promise.all([
+    getTeam(),
+    getStats(),
+    getValues(),
+    getTranslations("pages.about"),
+  ]);
   return (
     <>
       <PageHeader

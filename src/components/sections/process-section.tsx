@@ -2,10 +2,11 @@
 
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
-import { processSteps } from "@/data/company";
+import type { ProcessStep } from "@/data/company";
+import { getIcon } from "@/lib/icons";
 import { SectionHeading } from "@/components/shared/section-heading";
 
-export function ProcessSection() {
+export function ProcessSection({ steps }: { steps: ProcessStep[] }) {
   const t = useTranslations("home.process");
   return (
     <section className="relative py-24 lg:py-32">
@@ -23,7 +24,9 @@ export function ProcessSection() {
           {/* connecting line */}
           <div className="absolute left-0 right-0 top-7 hidden h-px bg-gradient-to-r from-transparent via-white/15 to-transparent lg:block" />
           <div className="grid gap-8 lg:grid-cols-5">
-            {processSteps.map((s, i) => (
+            {steps.map((s, i) => {
+              const Icon = getIcon(s.icon);
+              return (
               <motion.div
                 key={s.step}
                 initial={{ opacity: 0, y: 30 }}
@@ -33,7 +36,7 @@ export function ProcessSection() {
                 className="relative flex flex-col items-center text-center lg:items-start lg:text-left"
               >
                 <div className="relative z-10 flex size-14 items-center justify-center rounded-2xl border border-white/10 bg-card text-accent shadow-lg">
-                  <s.icon className="size-6" />
+                  <Icon className="size-6" />
                 </div>
                 <div className="mt-5 text-xs font-bold uppercase tracking-widest text-accent">
                   {s.step}
@@ -43,7 +46,8 @@ export function ProcessSection() {
                   {s.description}
                 </p>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { posts } from "../src/data/posts";
 import { jobs } from "../src/data/jobs";
 import { testimonials } from "../src/data/testimonials";
 import { faqs } from "../src/data/faqs";
-import { team } from "../src/data/company";
+import { team, stats, values, processSteps } from "../src/data/company";
 
 const db = new PrismaClient();
 
@@ -131,6 +131,26 @@ async function main() {
     for (const [i, m] of team.entries()) {
       await db.teamMember.create({
         data: { name: m.name, role: m.role, avatar: m.avatar, order: i, active: true },
+      });
+    }
+  }
+
+  // Homepage stats / values / process — seed only when empty so the static
+  // homepage sections become editable in the CMS.
+  if ((await db.stat.count()) === 0) {
+    for (const [i, s] of stats.entries()) {
+      await db.stat.create({ data: { value: s.value, suffix: s.suffix, label: s.label, order: i } });
+    }
+  }
+  if ((await db.value.count()) === 0) {
+    for (const [i, v] of values.entries()) {
+      await db.value.create({ data: { title: v.title, description: v.description, order: i } });
+    }
+  }
+  if ((await db.processStep.count()) === 0) {
+    for (const [i, p] of processSteps.entries()) {
+      await db.processStep.create({
+        data: { step: p.step, title: p.title, description: p.description, icon: p.icon, order: i },
       });
     }
   }

@@ -4,9 +4,9 @@ import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 import { Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Counter } from "@/components/motion/counter";
-import { stats, values } from "@/data/company";
+import type { Stat, Value } from "@/data/company";
 
-export function WhyNuul() {
+export function WhyNuul({ stats, values }: { stats: Stat[]; values: Value[] }) {
   const t = useTranslations("home.whyNuul");
   return (
     <section className="relative overflow-hidden py-24 lg:py-32">

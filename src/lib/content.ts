@@ -1,6 +1,14 @@
 import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
-import { team as staticTeam } from "@/data/company";
+import {
+  team as staticTeam,
+  stats as staticStats,
+  values as staticValues,
+  processSteps as staticProcessSteps,
+  type Stat,
+  type Value,
+  type ProcessStep,
+} from "@/data/company";
 import { testimonials as staticTestimonials } from "@/data/testimonials";
 import { posts as staticPosts, type Post } from "@/data/posts";
 import { projects as staticProjects, type Project } from "@/data/projects";
@@ -211,5 +219,50 @@ export const getFaqs = unstable_cache(
     }
   },
   ["public-faqs"],
+  { tags: [CONTENT_TAG], revalidate: 300 }
+);
+
+export const getStats = unstable_cache(
+  async (): Promise<Stat[]> => {
+    if (!process.env.DATABASE_URL) return staticStats;
+    try {
+      const rows = await db.stat.findMany({ where: { active: true }, orderBy: { order: "asc" } });
+      if (!rows.length) return staticStats;
+      return rows.map((r) => ({ value: r.value, suffix: r.suffix, label: r.label }));
+    } catch {
+      return staticStats;
+    }
+  },
+  ["public-stats"],
+  { tags: [CONTENT_TAG], revalidate: 300 }
+);
+
+export const getValues = unstable_cache(
+  async (): Promise<Value[]> => {
+    if (!process.env.DATABASE_URL) return staticValues;
+    try {
+      const rows = await db.value.findMany({ where: { active: true }, orderBy: { order: "asc" } });
+      if (!rows.length) return staticValues;
+      return rows.map((r) => ({ title: r.title, description: r.description }));
+    } catch {
+      return staticValues;
+    }
+  },
+  ["public-values"],
+  { tags: [CONTENT_TAG], revalidate: 300 }
+);
+
+export const getProcessSteps = unstable_cache(
+  async (): Promise<ProcessStep[]> => {
+    if (!process.env.DATABASE_URL) return staticProcessSteps;
+    try {
+      const rows = await db.processStep.findMany({ where: { active: true }, orderBy: { order: "asc" } });
+      if (!rows.length) return staticProcessSteps;
+      return rows.map((r) => ({ icon: r.icon, step: r.step, title: r.title, description: r.description }));
+    } catch {
+      return staticProcessSteps;
+    }
+  },
+  ["public-process"],
   { tags: [CONTENT_TAG], revalidate: 300 }
 );

@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { ProcessSection } from "@/components/sections/process-section";
 import { Reveal } from "@/components/motion/reveal";
+import { getProcessSteps } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +18,7 @@ export const metadata = buildMetadata({
 });
 
 export default async function ServicesPage() {
-  const t = await getTranslations();
+  const [t, steps] = await Promise.all([getTranslations(), getProcessSteps()]);
   return (
     <>
       <PageHeader
@@ -67,7 +68,7 @@ export default async function ServicesPage() {
         </div>
       </section>
 
-      <ProcessSection />
+      <ProcessSection steps={steps} />
       <CTASection />
     </>
   );

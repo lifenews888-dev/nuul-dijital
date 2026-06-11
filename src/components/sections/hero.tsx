@@ -9,9 +9,9 @@ import { TextReveal } from "@/components/motion/text-reveal";
 import { GradientMesh } from "@/components/shared/gradient-mesh";
 import { Aurora } from "@/components/motion/aurora";
 import { Magnetic } from "@/components/motion/magnetic";
-import { stats } from "@/data/company";
+import type { Stat } from "@/data/company";
 
-export function Hero() {
+export function Hero({ stats }: { stats: Stat[] }) {
   const t = useTranslations("home.hero");
   return (
     <section className="relative flex min-h-[100svh] items-center overflow-hidden pt-28 noise">

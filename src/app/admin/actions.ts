@@ -306,6 +306,86 @@ export async function deleteFaq(formData: FormData) {
   revalidatePath("/admin/faqs");
 }
 
+// ---------------- Homepage: Stats / Values / Process ----------------
+
+export async function saveStat(formData: FormData) {
+  await requirePermission("site", "update");
+  const id = optStr(formData, "id");
+  const data = {
+    value: num(formData, "value", 0),
+    suffix: str(formData, "suffix"),
+    label: str(formData, "label"),
+    order: num(formData, "order", 0),
+    active: bool(formData, "active"),
+  };
+  const saved = id ? await db.stat.update({ where: { id }, data }) : await db.stat.create({ data });
+  await logActivity({ action: id ? "UPDATE" : "CREATE", entity: "Stat", entityId: saved.id, summary: `Статистик: ${data.label}` });
+  revalidateTag(CONTENT_TAG);
+  revalidatePath("/admin/stats");
+  redirect("/admin/stats");
+}
+
+export async function deleteStat(formData: FormData) {
+  await requirePermission("site", "delete");
+  const id = str(formData, "id");
+  await db.stat.delete({ where: { id } });
+  await logActivity({ action: "DELETE", entity: "Stat", entityId: id, summary: "Статистик устгасан" });
+  revalidateTag(CONTENT_TAG);
+  revalidatePath("/admin/stats");
+}
+
+export async function saveValue(formData: FormData) {
+  await requirePermission("site", "update");
+  const id = optStr(formData, "id");
+  const data = {
+    title: str(formData, "title"),
+    description: str(formData, "description"),
+    order: num(formData, "order", 0),
+    active: bool(formData, "active"),
+  };
+  const saved = id ? await db.value.update({ where: { id }, data }) : await db.value.create({ data });
+  await logActivity({ action: id ? "UPDATE" : "CREATE", entity: "Value", entityId: saved.id, summary: `Үнэт зүйл: ${data.title}` });
+  revalidateTag(CONTENT_TAG);
+  revalidatePath("/admin/values");
+  redirect("/admin/values");
+}
+
+export async function deleteValue(formData: FormData) {
+  await requirePermission("site", "delete");
+  const id = str(formData, "id");
+  await db.value.delete({ where: { id } });
+  await logActivity({ action: "DELETE", entity: "Value", entityId: id, summary: "Үнэт зүйл устгасан" });
+  revalidateTag(CONTENT_TAG);
+  revalidatePath("/admin/values");
+}
+
+export async function saveProcessStep(formData: FormData) {
+  await requirePermission("site", "update");
+  const id = optStr(formData, "id");
+  const data = {
+    step: str(formData, "step"),
+    title: str(formData, "title"),
+    description: str(formData, "description"),
+    icon: str(formData, "icon") || "Sparkles",
+    order: num(formData, "order", 0),
+    active: bool(formData, "active"),
+  };
+  const saved = id ? await db.processStep.update({ where: { id }, data }) : await db.processStep.create({ data });
+  await logActivity({ action: id ? "UPDATE" : "CREATE", entity: "ProcessStep", entityId: saved.id, summary: `Алхам: ${data.title}` });
+  revalidateTag(CONTENT_TAG);
+  revalidatePath("/admin/process");
+  redirect("/admin/process");
+}
+
+export async function deleteProcessStep(formData: FormData) {
+  await requirePermission("site", "delete");
+  const id = str(formData, "id");
+  await db.processStep.delete({ where: { id } });
+  await logActivity({ action: "DELETE", entity: "ProcessStep", entityId: id, summary: "Алхам устгасан" });
+  revalidateTag(CONTENT_TAG);
+  revalidatePath("/admin/process");
+}
+
 // ---------------- Jobs (Careers) ----------------
 
 export async function saveJob(formData: FormData) {
