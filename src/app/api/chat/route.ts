@@ -13,6 +13,8 @@ const schema = z.object({
     .max(20),
 });
 
+type Msg = { role: string; content: string };
+
 const EMAIL_RE = /[\w.+-]+@[\w-]+\.[\w.-]+/;
 const PHONE_RE = /(?:\+?976[\s-]?)?\d{8}/;
 
@@ -47,24 +49,59 @@ function fallbackReply(text: string): string {
   return "Сонирхсон асуултаа дэлгэрэнгүй бичээрэй — үйлчилгээ, үнэ, хугацааны талаар хэлж өгье. Эсвэл /quote дээр бриф бөглөвөл бид 24 цагт тодорхой санал илгээнэ.";
 }
 
-async function callAnthropic(messages: { role: string; content: string }[]): Promise<string | null> {
+/** Parse a fetch SSE body into a stream of text deltas via the provided extractor. */
+async function* sseDeltas(
+  res: Response,
+  extract: (json: unknown) => string | null
+): AsyncGenerator<string> {
+  const reader = res.body!.getReader();
+  const decoder = new TextDecoder();
+  let buf = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const lines = buf.split("\n");
+    buf = lines.pop() ?? "";
+    for (const line of lines) {
+      const t = line.trim();
+      if (!t.startsWith("data:")) continue;
+      const data = t.slice(5).trim();
+      if (!data || data === "[DONE]") continue;
+      try {
+        const text = extract(JSON.parse(data));
+        if (text) yield text;
+      } catch {
+        // ignore keep-alive / non-JSON lines
+      }
+    }
+  }
+}
+
+/** Anthropic Messages API, streamed. Returns null when no key / non-OK response. */
+async function streamAnthropic(messages: Msg[]): Promise<AsyncGenerator<string> | null> {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) return null;
   const model = process.env.ANTHROPIC_MODEL ?? "claude-haiku-4-5";
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model, max_tokens: 400, system: SYSTEM, messages }),
+    body: JSON.stringify({ model, max_tokens: 400, system: SYSTEM, messages, stream: true }),
   });
-  if (!res.ok) {
-    console.error("[chat] anthropic", res.status, await res.text());
+  if (!res.ok || !res.body) {
+    console.error("[chat] anthropic", res.status, await res.text().catch(() => ""));
     return null;
   }
-  const j = await res.json();
-  return j?.content?.[0]?.text ?? null;
+  return sseDeltas(res, (j) => {
+    const e = j as { type?: string; delta?: { type?: string; text?: string } };
+    return e?.type === "content_block_delta" && e.delta?.type === "text_delta"
+      ? e.delta.text ?? null
+      : null;
+  });
 }
 
-async function callOpenAI(messages: { role: string; content: string }[]): Promise<string | null> {
+/** OpenAI Chat Completions, streamed. Returns null when no key / non-OK response. */
+async function streamOpenAI(messages: Msg[]): Promise<AsyncGenerator<string> | null> {
   const key = process.env.OPENAI_API_KEY;
   if (!key) return null;
   const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
@@ -74,75 +111,111 @@ async function callOpenAI(messages: { role: string; content: string }[]): Promis
     body: JSON.stringify({
       model,
       max_tokens: 400,
+      stream: true,
       messages: [{ role: "system", content: SYSTEM }, ...messages],
     }),
   });
-  if (!res.ok) {
-    console.error("[chat] openai", res.status, await res.text());
+  if (!res.ok || !res.body) {
+    console.error("[chat] openai", res.status, await res.text().catch(() => ""));
     return null;
   }
-  const j = await res.json();
-  return j?.choices?.[0]?.message?.content ?? null;
+  return sseDeltas(res, (j) => {
+    const e = j as { choices?: { delta?: { content?: string } }[] };
+    return e?.choices?.[0]?.delta?.content ?? null;
+  });
+}
+
+/** Stream the knowledge-based reply word-by-word for a natural typing feel. */
+async function* fallbackStream(text: string): AsyncGenerator<string> {
+  const reply = fallbackReply(text);
+  for (const chunk of reply.match(/\S+\s*/g) ?? [reply]) {
+    yield chunk;
+    await new Promise((r) => setTimeout(r, 12));
+  }
+}
+
+/** Best-effort persistence of one exchange so admins can review chats & capture leads. */
+async function persistExchange(sessionId: string, userText: string, reply: string, ua: string | undefined) {
+  const email = userText.match(EMAIL_RE)?.[0];
+  const phone = userText.match(PHONE_RE)?.[0];
+  await persist((db) =>
+    db.chatSession.upsert({
+      where: { id: sessionId },
+      create: {
+        id: sessionId,
+        userAgent: ua,
+        messageCount: 2,
+        email,
+        phone,
+        messages: {
+          create: [
+            { role: "user", content: userText },
+            { role: "assistant", content: reply },
+          ],
+        },
+      },
+      update: {
+        messageCount: { increment: 2 },
+        ...(email ? { email } : {}),
+        ...(phone ? { phone } : {}),
+        messages: {
+          create: [
+            { role: "user", content: userText },
+            { role: "assistant", content: reply },
+          ],
+        },
+      },
+    })
+  );
 }
 
 export async function POST(req: Request) {
   const { response } = guardMutation(req, { key: "chat", limit: 30, windowMs: 60_000 });
   if (response) return response;
 
-  try {
-    const parsed = schema.safeParse(await req.json());
-    if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+  const parsed = schema.safeParse(await req.json().catch(() => null));
+  if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
 
-    // Anthropic requires the first message to be from the user.
-    const messages = parsed.data.messages.slice(-10);
-    while (messages.length && messages[0].role !== "user") messages.shift();
-    if (!messages.length) return NextResponse.json({ reply: fallbackReply("") });
+  // Anthropic requires the first message to be from the user.
+  const messages = parsed.data.messages.slice(-10);
+  while (messages.length && messages[0].role !== "user") messages.shift();
+  const last = messages.length ? messages[messages.length - 1].content : "";
 
-    const last = messages[messages.length - 1].content;
-    const reply =
-      (await callAnthropic(messages).catch(() => null)) ??
-      (await callOpenAI(messages).catch(() => null)) ??
-      fallbackReply(last);
+  const source =
+    (await streamAnthropic(messages).catch(() => null)) ??
+    (await streamOpenAI(messages).catch(() => null)) ??
+    fallbackStream(last);
 
-    // Persist the exchange (best-effort) so admins can review conversations & capture leads.
-    const sessionId = parsed.data.sessionId;
-    if (sessionId) {
-      const email = last.match(EMAIL_RE)?.[0];
-      const phone = last.match(PHONE_RE)?.[0];
-      await persist((db) =>
-        db.chatSession.upsert({
-          where: { id: sessionId },
-          create: {
-            id: sessionId,
-            userAgent: req.headers.get("user-agent")?.slice(0, 255),
-            messageCount: 2,
-            email,
-            phone,
-            messages: {
-              create: [
-                { role: "user", content: last },
-                { role: "assistant", content: reply },
-              ],
-            },
-          },
-          update: {
-            messageCount: { increment: 2 },
-            ...(email ? { email } : {}),
-            ...(phone ? { phone } : {}),
-            messages: {
-              create: [
-                { role: "user", content: last },
-                { role: "assistant", content: reply },
-              ],
-            },
-          },
-        })
-      );
-    }
+  const sessionId = parsed.data.sessionId;
+  const ua = req.headers.get("user-agent")?.slice(0, 255) ?? undefined;
+  const encoder = new TextEncoder();
+  let full = "";
 
-    return NextResponse.json({ reply });
-  } catch (err) {
-    console.error("[chat]", err);
-    return NextResponse.json({ reply: "Уучлаарай, түр алдаа гарлаа. Дахин оролдоно уу эсвэл hello@nuul.digital руу холбогдоорой." });
-  }
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      try {
+        for await (const delta of source) {
+          full += delta;
+          controller.enqueue(encoder.encode(delta));
+        }
+      } catch (err) {
+        console.error("[chat] stream", err);
+      }
+      // If the model produced nothing (e.g. it errored before any token), degrade.
+      if (!full) {
+        full = fallbackReply(last);
+        controller.enqueue(encoder.encode(full));
+      }
+      controller.close();
+      if (sessionId && full) await persistExchange(sessionId, last, full, ua);
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "no-store",
+      "x-accel-buffering": "no",
+    },
+  });
 }

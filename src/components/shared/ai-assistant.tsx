@@ -89,8 +89,37 @@ export function AiAssistant() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: next, sessionId: sessionRef.current || undefined }),
       });
-      const j = await res.json();
-      setMessages((m) => [...m, { role: "assistant", content: j.reply ?? "Уучлаарай, дахин оролдоно уу." }]);
+
+      // Rate-limit / validation errors come back as JSON, not a stream.
+      if (!res.ok || !res.body) {
+        const j = await res.json().catch(() => null);
+        setMessages((m) => [
+          ...m,
+          {
+            role: "assistant",
+            content:
+              j?.error ?? "Уучлаарай, түр алдаа гарлаа. Дахин оролдоно уу эсвэл hello@nuul.digital руу холбогдоорой.",
+          },
+        ]);
+        return;
+      }
+
+      // Stream the reply token-by-token into a single assistant bubble.
+      setMessages((m) => [...m, { role: "assistant", content: "" }]);
+      setLoading(false);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        setMessages((m) => {
+          const copy = [...m];
+          copy[copy.length - 1] = { role: "assistant", content: acc };
+          return copy;
+        });
+      }
     } catch {
       setMessages((m) => [
         ...m,
