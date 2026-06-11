@@ -1,10 +1,17 @@
-import { Link } from "@/i18n/navigation";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { footerNav, siteConfig } from "@/lib/site";
 import { NewsletterForm } from "@/components/forms/newsletter-form";
 import { Logo } from "@/components/shared/logo";
 
-export function Footer({ logoUrl }: { logoUrl?: string | null }) {
+export async function Footer({ logoUrl }: { logoUrl?: string | null }) {
+  const t = await getTranslations("footer");
+  const colTitle: Record<string, string> = {
+    "Компани": t("colCompany"),
+    "Үйлчилгээ": t("colServices"),
+    "Нөөц": t("colResources"),
+  };
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-ink">
       <div className="absolute -top-40 left-1/2 h-80 w-[800px] -translate-x-1/2 rounded-full bg-accent/10 blur-[120px]" />
@@ -15,8 +22,7 @@ export function Footer({ logoUrl }: { logoUrl?: string | null }) {
               <Logo size={logoUrl ? 60 : 40} src={logoUrl} />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-              {siteConfig.tagline}. Монголын байгууллагуудын дижитал шилжилтийг
-              түргэсгэдэг орчин үеийн агентлаг.
+              {t("tagline")}
             </p>
             <div className="flex flex-col gap-3 text-sm text-muted-foreground">
               <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-3 hover:text-foreground">
@@ -33,7 +39,7 @@ export function Footer({ logoUrl }: { logoUrl?: string | null }) {
 
           {footerNav.map((col) => (
             <div key={col.title} className="flex flex-col gap-4">
-              <h4 className="text-sm font-semibold text-foreground">{col.title}</h4>
+              <h4 className="text-sm font-semibold text-foreground">{colTitle[col.title] ?? col.title}</h4>
               <ul className="flex flex-col gap-3">
                 {col.links.map((link) => (
                   <li key={link.href}>
@@ -52,17 +58,15 @@ export function Footer({ logoUrl }: { logoUrl?: string | null }) {
 
         <div className="mt-14 grid gap-8 rounded-3xl border border-white/10 bg-white/[0.02] p-8 lg:grid-cols-2 lg:items-center">
           <div>
-            <h4 className="text-xl font-semibold">Дижитал инсайтуудыг хүлээн авах</h4>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Технологи, дизайн, бизнесийн өсөлтийн талаарх шилдэг контентыг сард нэг удаа.
-            </p>
+            <h4 className="text-xl font-semibold">{t("newsletterTitle")}</h4>
+            <p className="mt-2 text-sm text-muted-foreground">{t("newsletterSubtitle")}</p>
           </div>
           <NewsletterForm />
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-between gap-6 border-t border-white/10 pt-8 sm:flex-row">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} {siteConfig.name}. Бүх эрх хуулиар хамгаалагдсан.
+            © {new Date().getFullYear()} {siteConfig.name}. {t("rights")}
           </p>
           <div className="flex items-center gap-5">
             {Object.entries(siteConfig.social).map(([key, href]) => (

@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export function NewsletterForm() {
+  const t = useTranslations("forms");
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
 
@@ -28,7 +30,7 @@ export function NewsletterForm() {
   if (state === "done") {
     return (
       <div className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/10 px-5 py-4 text-sm text-foreground">
-        <Check className="size-5 text-accent" /> Баярлалаа! Та амжилттай бүртгүүллээ.
+        <Check className="size-5 text-accent" /> {t("newsletter.done")}
       </div>
     );
   }
@@ -38,7 +40,7 @@ export function NewsletterForm() {
       <Input
         type="email"
         required
-        placeholder="таны@имэйл.mn"
+        placeholder={t("emailPlaceholder")}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className="flex-1"
@@ -48,7 +50,7 @@ export function NewsletterForm() {
           <Loader2 className="size-4 animate-spin" />
         ) : (
           <>
-            Бүртгүүлэх <ArrowRight className="size-4" />
+            {t("newsletter.submit")} <ArrowRight className="size-4" />
           </>
         )}
       </Button>

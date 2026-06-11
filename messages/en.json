@@ -195,5 +195,48 @@
     "errorRetry": "Sorry, please try again.",
     "errorNetwork": "Network error. Please contact hello@nuul.digital.",
     "errorGeneric": "Sorry, a temporary error occurred. Please try again or contact hello@nuul.digital."
+  },
+  "forms": {
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "you@email.com",
+    "phone": "Phone",
+    "company": "Company",
+    "companyPlaceholder": "Company name",
+    "error": "Something went wrong. Please try again.",
+    "contact": {
+      "message": "Message",
+      "messagePlaceholder": "Tell us about your project...",
+      "submit": "Send message",
+      "doneTitle": "Message received!",
+      "doneText": "We've received your message and will be in touch within 24 hours.",
+      "again": "Send another"
+    },
+    "meeting": {
+      "when": "Preferred date / time",
+      "whenPlaceholder": "e.g. 6/2, 2:00 PM",
+      "topic": "Topic",
+      "topicPlaceholder": "e.g. Website redesign",
+      "note": "Note",
+      "notePlaceholder": "What would you like to discuss?",
+      "submit": "Book a meeting",
+      "doneTitle": "Meeting request received!",
+      "doneText": "We'll review your preferred time and send a confirmation email.",
+      "again": "Book another"
+    },
+    "newsletter": {
+      "submit": "Subscribe",
+      "done": "Thanks! You're subscribed."
+    }
+  },
+  "footer": {
+    "tagline": "We build Mongolia's digital future. A modern agency accelerating the digital transformation of Mongolian organizations.",
+    "newsletterTitle": "Get digital insights",
+    "newsletterSubtitle": "The best content on technology, design and business growth — once a month.",
+    "rights": "All rights reserved.",
+    "colCompany": "Company",
+    "colServices": "Services",
+    "colResources": "Resources"
   }
 }
