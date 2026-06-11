@@ -6,6 +6,7 @@ import { posts as staticPosts, type Post } from "@/data/posts";
 import { projects as staticProjects, type Project } from "@/data/projects";
 import { caseStudies as staticCaseStudies, type CaseStudy } from "@/data/case-studies";
 import { jobs as staticJobs, type Job } from "@/data/jobs";
+import { faqs as staticFaqs, type Faq } from "@/data/faqs";
 
 type Results = { label: string; value: string }[];
 
@@ -188,5 +189,27 @@ export const getJobs = unstable_cache(
     }
   },
   ["public-jobs"],
+  { tags: [CONTENT_TAG], revalidate: 300 }
+);
+
+export const getFaqs = unstable_cache(
+  async (): Promise<Faq[]> => {
+    if (!process.env.DATABASE_URL) return staticFaqs;
+    try {
+      const rows = await db.faq.findMany({
+        where: { published: true },
+        orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+      });
+      if (!rows.length) return staticFaqs;
+      return rows.map((r) => ({
+        question: r.question,
+        answer: r.answer,
+        category: r.category,
+      }));
+    } catch {
+      return staticFaqs;
+    }
+  },
+  ["public-faqs"],
   { tags: [CONTENT_TAG], revalidate: 300 }
 );

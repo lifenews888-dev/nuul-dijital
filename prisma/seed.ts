@@ -4,6 +4,7 @@ import { caseStudies } from "../src/data/case-studies";
 import { posts } from "../src/data/posts";
 import { jobs } from "../src/data/jobs";
 import { testimonials } from "../src/data/testimonials";
+import { faqs } from "../src/data/faqs";
 
 const db = new PrismaClient();
 
@@ -106,6 +107,17 @@ async function main() {
         company: t.company,
         rating: t.rating,
         avatar: t.avatar,
+        order: i,
+      },
+    });
+  }
+
+  for (const [i, f] of faqs.entries()) {
+    await db.faq.create({
+      data: {
+        question: f.question,
+        answer: f.answer,
+        category: f.category,
         order: i,
       },
     });

@@ -292,6 +292,7 @@ export async function saveFaq(formData: FormData) {
     entityId: saved.id,
     summary: `FAQ: ${data.question}`,
   });
+  revalidateTag(CONTENT_TAG);
   revalidatePath("/admin/faqs");
   redirect("/admin/faqs");
 }
@@ -301,6 +302,7 @@ export async function deleteFaq(formData: FormData) {
   const id = str(formData, "id");
   await db.faq.delete({ where: { id } });
   await logActivity({ action: "DELETE", entity: "Faq", entityId: id, summary: "FAQ устгасан" });
+  revalidateTag(CONTENT_TAG);
   revalidatePath("/admin/faqs");
 }
 
