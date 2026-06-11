@@ -51,9 +51,22 @@ export function rateLimit(key: string, limit = 5, windowMs = 60_000): RateLimitR
   };
 }
 
-/** Best-effort client IP from proxy headers. */
+/**
+ * Best-effort client IP from proxy headers.
+ *
+ * Prefer `x-real-ip` — on Vercel and most managed platforms it is set by the
+ * edge proxy to the true connecting IP and overwrites any client-supplied value.
+ * Fall back to the LAST `x-forwarded-for` hop (the entry appended by the nearest
+ * trusted proxy), not the first, which is fully client-controlled and trivially
+ * spoofed to defeat per-IP rate limiting.
+ */
 export function getClientIp(req: Request): string {
+  const realIp = req.headers.get("x-real-ip");
+  if (realIp) return realIp.trim();
   const xff = req.headers.get("x-forwarded-for");
-  if (xff) return xff.split(",")[0]!.trim();
-  return req.headers.get("x-real-ip") ?? "127.0.0.1";
+  if (xff) {
+    const parts = xff.split(",").map((s) => s.trim()).filter(Boolean);
+    if (parts.length) return parts[parts.length - 1]!;
+  }
+  return "127.0.0.1";
 }

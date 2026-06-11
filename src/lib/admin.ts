@@ -26,7 +26,8 @@ export async function requireRole(
   roles: string[] = ["SUPER_ADMIN", "ADMIN", "EDITOR"]
 ): Promise<SessionUser> {
   const user = await requireUser();
-  if (user.role && !roles.includes(user.role)) {
+  // Fail closed: a user with no role (or one not in the allow-list) is forbidden.
+  if (!user.role || !roles.includes(user.role)) {
     throw new Error("Forbidden: insufficient role");
   }
   return user;

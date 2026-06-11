@@ -383,8 +383,15 @@ export async function restoreRevision(formData: FormData) {
   const entity = rev.entity as RevisionEntity;
   const model = MODEL_BY_ENTITY[entity];
   if (!model) return;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (model() as any).update({ where: { id: rev.entityId }, data: rev.data });
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (model() as any).update({ where: { id: rev.entityId }, data: rev.data });
+  } catch (err) {
+    // Schema drift since the snapshot, or a unique-constraint collision (e.g. slug)
+    // would otherwise crash the action — degrade gracefully instead.
+    console.error("[restoreRevision]", err);
+    return;
+  }
   await snapshotRevision(entity, rev.entityId, rev.data as Record<string, unknown>);
   await logActivity({
     action: "RESTORE",
@@ -392,6 +399,7 @@ export async function restoreRevision(formData: FormData) {
     entityId: rev.entityId,
     summary: `${entity} #${rev.version} хувилбар сэргээсэн`,
   });
+  revalidateTag(CONTENT_TAG);
   revalidatePath(`/admin/${entity.toLowerCase()}`);
 }
 
@@ -479,7 +487,7 @@ export async function saveQuote(formData: FormData) {
 /** Emails the approved final quote to the customer. */
 export async function sendQuoteEmail(formData: FormData) {
   await requirePermission("leads", "update");
-  const { sendEmail } = await import("@/lib/mail");
+  const { sendEmail, escapeHtml } = await import("@/lib/mail");
   const { siteConfig } = await import("@/lib/site");
   const { formatMnt } = await import("@/lib/estimate");
   const id = str(formData, "id");
@@ -499,11 +507,11 @@ export async function sendQuoteEmail(formData: FormData) {
       <div style="font-family:sans-serif;max-width:560px">
         <h2 style="color:#2563EB;margin:0 0 4px">${siteConfig.name}</h2>
         <p style="color:#666;margin:0 0 16px">${siteConfig.address} · ${siteConfig.phone}</p>
-        <p>Сайн байна уу, ${b.name}.</p>
+        <p>Сайн байна уу, ${escapeHtml(b.name)}.</p>
         <p>Таны илгээсэн төслийн брифийг үндэслэн дараах үнийн саналыг хүргүүлж байна:</p>
         <p style="font-size:24px;font-weight:800;color:#0A0A0A">${amount}</p>
-        ${b.quoteNote ? `<p style="white-space:pre-line">${b.quoteNote}</p>` : ""}
-        ${b.meetingAt ? `<p><strong>Санал болгож буй уулзалтын цаг:</strong> ${b.meetingAt}</p>` : ""}
+        ${b.quoteNote ? `<p style="white-space:pre-line">${escapeHtml(b.quoteNote)}</p>` : ""}
+        ${b.meetingAt ? `<p><strong>Санал болгож буй уулзалтын цаг:</strong> ${escapeHtml(b.meetingAt)}</p>` : ""}
         <p>Дэлгэрэнгүй ярилцахыг хүсвэл энэ имэйлд хариулна уу, эсвэл ${siteConfig.phone} дугаараар холбогдоорой.</p>
         <p style="color:#666">Хүндэтгэсэн,<br/>${siteConfig.name}</p>
       </div>`,

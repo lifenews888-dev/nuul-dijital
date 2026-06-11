@@ -27,8 +27,21 @@ export async function sendEmail({ subject, html, replyTo, to }: SendArgs) {
   return { sent: true };
 }
 
+/**
+ * Escape user-controlled text before interpolating it into email HTML.
+ * Form submissions (name, message, notes, …) are untrusted — without this they
+ * would render as live markup in the recipient's inbox (HTML/script injection).
+ */
+export function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!
+  );
+}
+
 export function row(label: string, value?: string | string[]) {
   if (!value || (Array.isArray(value) && value.length === 0)) return "";
   const v = Array.isArray(value) ? value.join(", ") : value;
-  return `<tr><td style="padding:6px 12px;color:#666;font-weight:600">${label}</td><td style="padding:6px 12px">${v}</td></tr>`;
+  return `<tr><td style="padding:6px 12px;color:#666;font-weight:600">${escapeHtml(
+    label
+  )}</td><td style="padding:6px 12px">${escapeHtml(v)}</td></tr>`;
 }
