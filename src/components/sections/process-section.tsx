@@ -1,22 +1,22 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { processSteps } from "@/data/company";
 import { SectionHeading } from "@/components/shared/section-heading";
 
 export function ProcessSection() {
+  const t = useTranslations("home.process");
   return (
     <section className="relative py-24 lg:py-32">
       <div className="container-wide">
         <SectionHeading
           align="center"
-          label="Ажиллах арга"
-          title={
-            <>
-              Санаанаас <span className="text-gradient-accent">үр дүн</span> хүртэл
-            </>
-          }
-          description="Тодорхой, ил тод, баталгаажсан 5 алхамт үйл явц нь таны төслийн амжилтыг хангана."
+          label={t("label")}
+          title={t.rich("title", {
+            accent: (c) => <span className="text-gradient-accent">{c}</span>,
+          })}
+          description={t("description")}
         />
 
         <div className="relative mt-16">

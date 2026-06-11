@@ -29,6 +29,33 @@
       "subtitle": "Web development, AI chatbots, automation and digital solutions that take your business to the next level — world-class quality, built for the Mongolian market.",
       "startProject": "Start your project",
       "viewWork": "View our work"
+    },
+    "services": {
+      "label": "Services",
+      "title": "End-to-end <accent>digital solutions</accent>",
+      "description": "From idea to launch — every digital capability your business needs, in one place."
+    },
+    "whyNuul": {
+      "label": "Why Nuul Digital",
+      "title": "Not just an agency,<br></br><accent>your growth partner</accent>",
+      "description": "We don't hand off a project and walk away. We dig deep into your business goals and build long-term partnerships that deliver measurable results."
+    },
+    "process": {
+      "label": "How we work",
+      "title": "From idea to <accent>results</accent>",
+      "description": "A clear, transparent, proven 5-step process that sets your project up for success."
+    },
+    "contact": {
+      "label": "Contact",
+      "title": "Let's talk. <accent>Share your idea.</accent>",
+      "description": "Have a question about your project? Get in touch — we reply within 24 hours.",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "responseTime": "Response time",
+      "responseValue": "Within 24 hours",
+      "tabMessage": "Message",
+      "tabMeeting": "Book a meeting"
     }
   },
   "ctaSection": {

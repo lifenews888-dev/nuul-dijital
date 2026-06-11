@@ -1,11 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
-import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
+import { Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Counter } from "@/components/motion/counter";
 import { stats, values } from "@/data/company";
 
 export function WhyNuul() {
+  const t = useTranslations("home.whyNuul");
   return (
     <section className="relative overflow-hidden py-24 lg:py-32">
       <div className="absolute right-0 top-1/4 h-96 w-96 rounded-full bg-accent/5 blur-[120px]" />
@@ -15,16 +17,16 @@ export function WhyNuul() {
           <div className="lg:sticky lg:top-32 lg:self-start">
             <span className="section-label">
               <span className="size-1.5 rounded-full bg-accent" />
-              Яагаад Nuul Digital
+              {t("label")}
             </span>
             <h2 className="mt-6 text-display-lg font-bold tracking-tight">
-              Зүгээр л агентлаг биш,
-              <br />
-              <span className="text-gradient-accent">өсөлтийн түнш</span>
+              {t.rich("title", {
+                br: () => <br />,
+                accent: (c) => <span className="text-gradient-accent">{c}</span>,
+              })}
             </h2>
             <p className="mt-6 max-w-md text-lg leading-relaxed text-muted-foreground">
-              Бид төсөл хүлээлгэн өгөөд орхидоггүй. Таны бизнесийн зорилгод гүн нэвтэрч,
-              хэмжигдэхүйц үр дүн авчрах урт хугацааны түншлэлийг чухалчилдаг.
+              {t("description")}
             </p>
 
             <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/5">

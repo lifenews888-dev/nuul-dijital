@@ -1,31 +1,30 @@
 import { Mail, Phone, MapPin, Clock, MessageSquare, CalendarCheck } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { ContactForm } from "@/components/forms/contact-form";
 import { MeetingForm } from "@/components/forms/meeting-form";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { siteConfig } from "@/lib/site";
 
-const details = [
-  { icon: Mail, label: "Имэйл", value: siteConfig.email, href: `mailto:${siteConfig.email}` },
-  { icon: Phone, label: "Утас", value: siteConfig.phone, href: `tel:${siteConfig.phone}` },
-  { icon: MapPin, label: "Хаяг", value: siteConfig.address },
-  { icon: Clock, label: "Хариу өгөх хугацаа", value: "24 цагийн дотор" },
-];
-
-export function ContactSection() {
+export async function ContactSection() {
+  const t = await getTranslations("home.contact");
+  const details = [
+    { icon: Mail, label: t("email"), value: siteConfig.email, href: `mailto:${siteConfig.email}` },
+    { icon: Phone, label: t("phone"), value: siteConfig.phone, href: `tel:${siteConfig.phone}` },
+    { icon: MapPin, label: t("address"), value: siteConfig.address },
+    { icon: Clock, label: t("responseTime"), value: t("responseValue") },
+  ];
   return (
     <section id="contact" className="py-24 lg:py-32">
       <div className="container-wide">
         <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <div>
             <SectionHeading
-              label="Холбоо барих"
-              title={
-                <>
-                  Ярилцъя. <span className="text-gradient-accent">Санаагаа хуваалцаарай.</span>
-                </>
-              }
-              description="Төслийн талаар асуулт байна уу? Бидэнтэй холбогдоорой — 24 цагийн дотор хариу өгнө."
+              label={t("label")}
+              title={t.rich("title", {
+                accent: (c) => <span className="text-gradient-accent">{c}</span>,
+              })}
+              description={t("description")}
             />
             <div className="mt-10 grid gap-4 sm:grid-cols-2">
               {details.map((d) => (
@@ -52,10 +51,10 @@ export function ContactSection() {
             <Tabs defaultValue="message">
               <TabsList>
                 <TabsTrigger value="message">
-                  <MessageSquare className="size-4" /> Зурвас
+                  <MessageSquare className="size-4" /> {t("tabMessage")}
                 </TabsTrigger>
                 <TabsTrigger value="meeting">
-                  <CalendarCheck className="size-4" /> Уулзалт захиалах
+                  <CalendarCheck className="size-4" /> {t("tabMeeting")}
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="message">

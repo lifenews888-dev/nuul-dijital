@@ -1,25 +1,25 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "@/i18n/navigation";
 import { services } from "@/data/services";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { cn } from "@/lib/utils";
 
 export function ServicesSection() {
+  const t = useTranslations("home.services");
   return (
     <section id="services" className="relative py-24 lg:py-32">
       <div className="container-wide">
         <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
           <SectionHeading
-            label="Үйлчилгээ"
-            title={
-              <>
-                Бүрэн цогц <span className="text-gradient-accent">дижитал шийдэл</span>
-              </>
-            }
-            description="Санаанаас эхлээд нэвтрүүлэлт хүртэл — таны бизнест хэрэгтэй бүх дижитал чадварыг нэг дороос."
+            label={t("label")}
+            title={t.rich("title", {
+              accent: (c) => <span className="text-gradient-accent">{c}</span>,
+            })}
+            description={t("description")}
           />
         </div>
 
