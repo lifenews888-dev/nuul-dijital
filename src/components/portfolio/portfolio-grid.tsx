@@ -1,22 +1,26 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import type { Project } from "@/data/projects";
+import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
+const ALL = "Бүгд"; // sentinel filter value
+
 export function PortfolioGrid({ projects }: { projects: Project[] }) {
+  const t = useTranslations("pages.portfolio");
   const industries = useMemo(
-    () => ["Бүгд", ...Array.from(new Set(projects.map((p) => p.industry)))],
+    () => [ALL, ...Array.from(new Set(projects.map((p) => p.industry)))],
     [projects]
   );
-  const [filter, setFilter] = useState("Бүгд");
+  const [filter, setFilter] = useState(ALL);
   const filtered =
-    filter === "Бүгд" ? projects : projects.filter((p) => p.industry === filter);
+    filter === ALL ? projects : projects.filter((p) => p.industry === filter);
 
   return (
     <div>
@@ -32,7 +36,7 @@ export function PortfolioGrid({ projects }: { projects: Project[] }) {
                 : "border-white/10 bg-white/[0.02] text-muted-foreground hover:border-white/20 hover:text-foreground"
             )}
           >
-            {ind}
+            {ind === ALL ? t("all") : ind}
           </button>
         ))}
       </div>

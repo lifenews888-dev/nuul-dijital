@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shared/page-header";
 import { BlogList } from "@/components/blog/blog-list";
 import { getPosts } from "@/lib/content";
@@ -10,17 +11,13 @@ export const metadata = buildMetadata({
 });
 
 export default async function BlogPage() {
-  const posts = await getPosts();
+  const [posts, t] = await Promise.all([getPosts(), getTranslations("pages.blog")]);
   return (
     <>
       <PageHeader
-        label="Блог"
-        title={
-          <>
-            Инсайт ба <span className="text-gradient-accent">гарын авлага</span>
-          </>
-        }
-        description="Дижитал ертөнцийн хамгийн сүүлийн чиг хандлага, практик зөвлөгөөг бид хуваалцаж байна."
+        label={t("label")}
+        title={t.rich("title", { accent: (c) => <span className="text-gradient-accent">{c}</span> })}
+        description={t("description")}
       />
       <section className="container-wide pb-24">
         <BlogList posts={posts} />

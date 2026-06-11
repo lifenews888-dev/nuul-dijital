@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { ArrowRight, MapPin, Briefcase, Check } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { perks } from "@/data/jobs";
 import { getJobs } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
@@ -15,23 +16,21 @@ export const metadata = buildMetadata({
 });
 
 export default async function CareersPage() {
-  const jobs = await getJobs();
+  const [jobs, t] = await Promise.all([getJobs(), getTranslations()]);
   return (
     <>
       <PageHeader
-        label="Ажлын байр"
-        title={
-          <>
-            Ирээдүйг бидэнтэй хамт <span className="text-gradient-accent">бүтээ</span>
-          </>
-        }
-        description="Бид авьяаслаг, тууштай, шинийг эрэлхийлэгч хүмүүсийг багтаа урьж байна."
+        label={t("pages.careers.label")}
+        title={t.rich("pages.careers.title", {
+          accent: (c) => <span className="text-gradient-accent">{c}</span>,
+        })}
+        description={t("pages.careers.description")}
       />
 
       {/* Perks */}
       <section className="container-wide py-12">
         <Reveal>
-          <h2 className="text-2xl font-bold">Яагаад Nuul Digital гэж?</h2>
+          <h2 className="text-2xl font-bold">{t("pages.careers.whyTitle")}</h2>
         </Reveal>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {perks.map((perk, i) => (
@@ -49,7 +48,7 @@ export default async function CareersPage() {
 
       {/* Open roles */}
       <section className="container-wide py-12 pb-24">
-        <h2 className="text-2xl font-bold">Нээлттэй ажлын байр</h2>
+        <h2 className="text-2xl font-bold">{t("pages.careers.openRoles")}</h2>
         <div className="mt-6 flex flex-col gap-4">
           {jobs.map((job) => (
             <Reveal key={job.slug}>
@@ -73,7 +72,7 @@ export default async function CareersPage() {
                   </div>
                 </div>
                 <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
-                  Дэлгэрэнгүй{" "}
+                  {t("common.learnMore")}{" "}
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </Link>

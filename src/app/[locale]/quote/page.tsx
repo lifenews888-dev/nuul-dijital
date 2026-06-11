@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shared/page-header";
 import { QuoteWizard } from "@/components/forms/quote-wizard";
 import { buildMetadata } from "@/lib/seo";
@@ -9,17 +10,14 @@ export const metadata = buildMetadata({
   path: "/quote",
 });
 
-export default function QuotePage() {
+export default async function QuotePage() {
+  const t = await getTranslations("pages.quote");
   return (
     <>
       <PageHeader
-        label="Үнийн санал / Төслийн бриф"
-        title={
-          <>
-            Төслөө <span className="text-gradient-accent">амьд болгоё</span>
-          </>
-        }
-        description="Хэдхэн алхамд төслийнхөө дэлгэрэнгүй мэдээллийг бөглөөрэй — үйлчилгээ, домэйн, хуудас, функц, төсөв. Бид судлаад загвар сайт бэлтгэж, 24 цагийн дотор тодорхой саналаар холбогдоно."
+        label={t("label")}
+        title={t.rich("title", { accent: (c) => <span className="text-gradient-accent">{c}</span> })}
+        description={t("description")}
       />
       <section className="container-wide pb-24">
         <div className="mx-auto max-w-4xl">

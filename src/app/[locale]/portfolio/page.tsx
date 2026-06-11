@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shared/page-header";
 import { PortfolioGrid } from "@/components/portfolio/portfolio-grid";
 import { CTASection } from "@/components/sections/cta-section";
@@ -11,17 +12,13 @@ export const metadata = buildMetadata({
 });
 
 export default async function PortfolioPage() {
-  const projects = await getProjects();
+  const [projects, t] = await Promise.all([getProjects(), getTranslations("pages.portfolio")]);
   return (
     <>
       <PageHeader
-        label="Портфолио"
-        title={
-          <>
-            Бидний <span className="text-gradient-accent">бүтээлүүд</span>
-          </>
-        }
-        description="Салбар бүрт хэмжигдэхүйц үр дүн авчирсан төслүүдтэй танилцаарай."
+        label={t("label")}
+        title={t.rich("title", { accent: (c) => <span className="text-gradient-accent">{c}</span> })}
+        description={t("description")}
       />
       <section className="container-wide pb-24">
         <PortfolioGrid projects={projects} />

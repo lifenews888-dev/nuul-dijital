@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { getFaqs } from "@/lib/content";
 import { JsonLd } from "@/components/shared/json-ld";
 import { SectionHeading } from "@/components/shared/section-heading";
@@ -9,7 +10,7 @@ import { FaqAccordion } from "./faq-accordion";
  * answers can surface as rich results in search.
  */
 export async function FaqSection() {
-  const faqs = await getFaqs();
+  const [faqs, t] = await Promise.all([getFaqs(), getTranslations("faq")]);
   if (!faqs.length) return null;
 
   return (
@@ -28,13 +29,9 @@ export async function FaqSection() {
       <div className="container-wide">
         <SectionHeading
           align="center"
-          label="Түгээмэл асуултууд"
-          title={
-            <>
-              Асуулт байна уу? <span className="text-gradient-accent">Хариулъя</span>
-            </>
-          }
-          description="Хамгийн их асуудаг асуултуудад товч хариуллаа. Хариугаа олохгүй бол бидэнтэй холбогдоорой."
+          label={t("label")}
+          title={t.rich("title", { accent: (c) => <span className="text-gradient-accent">{c}</span> })}
+          description={t("description")}
         />
         <div className="mx-auto mt-12 max-w-3xl">
           <FaqAccordion faqs={faqs} />

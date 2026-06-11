@@ -1,22 +1,26 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Search, X } from "lucide-react";
 import type { Post } from "@/data/posts";
+import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { formatDate, cn } from "@/lib/utils";
 
+const ALL = "Бүгд"; // sentinel category (matches estimator-free filter logic)
+
 export function BlogList({ posts }: { posts: Post[] }) {
-  const [cat, setCat] = useState("Бүгд");
+  const t = useTranslations("pages.blog");
+  const [cat, setCat] = useState(ALL);
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState<string | null>(null);
 
   const categories = useMemo(
-    () => ["Бүгд", ...Array.from(new Set(posts.map((p) => p.category)))],
+    () => [ALL, ...Array.from(new Set(posts.map((p) => p.category)))],
     [posts]
   );
 
@@ -28,7 +32,7 @@ export function BlogList({ posts }: { posts: Post[] }) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return posts.filter((p) => {
-      const matchesCat = cat === "Бүгд" || p.category === cat;
+      const matchesCat = cat === ALL || p.category === cat;
       const matchesTag = !tag || p.tags.includes(tag);
       const matchesQuery =
         !q ||
@@ -56,7 +60,7 @@ export function BlogList({ posts }: { posts: Post[] }) {
                   : "border-white/10 bg-white/[0.02] text-muted-foreground hover:border-white/20 hover:text-foreground"
               )}
             >
-              {c}
+              {c === ALL ? t("all") : c}
             </button>
           ))}
         </div>
@@ -65,9 +69,9 @@ export function BlogList({ posts }: { posts: Post[] }) {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Нийтлэл хайх..."
+            placeholder={t("searchPlaceholder")}
             className="pl-10"
-            aria-label="Нийтлэл хайх"
+            aria-label={t("searchPlaceholder")}
           />
         </div>
       </div>
@@ -93,15 +97,13 @@ export function BlogList({ posts }: { posts: Post[] }) {
             onClick={() => setTag(null)}
             className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
-            <X className="size-3" /> Цэвэрлэх
+            <X className="size-3" /> {t("clear")}
           </button>
         )}
       </div>
 
       {filtered.length === 0 ? (
-        <p className="mt-16 text-center text-muted-foreground">
-          “{query}” хайлтад тохирох нийтлэл олдсонгүй.
-        </p>
+        <p className="mt-16 text-center text-muted-foreground">{t("noResults", { query })}</p>
       ) : (
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((p, i) => (

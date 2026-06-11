@@ -1,20 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Send, X, Sparkles, Loader2 } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 type Msg = { role: "user" | "assistant"; content: string };
-
-const WELCOME: Msg = {
-  role: "assistant",
-  content: "Сайн байна уу! 👋 Би Nuul Digital-ийн AI туслах. Үйлчилгээ, үнэ, эсвэл төслийн талаар асуугаарай.",
-};
-const QUICK = ["Үйлчилгээ юу байдаг вэ?", "Вэбсайт хэдэн төгрөг вэ?", "Холбоо барих"];
 
 /** Renders message text, turning known links/contacts into clickable elements. */
 function RichText({ text }: { text: string }) {
@@ -48,6 +43,9 @@ function RichText({ text }: { text: string }) {
 
 export function AiAssistant() {
   const pathname = usePathname();
+  const t = useTranslations("assistant");
+  const WELCOME: Msg = { role: "assistant", content: t("welcome") };
+  const QUICK = [t("quick1"), t("quick2"), t("quick3")];
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([WELCOME]);
   const [input, setInput] = useState("");
@@ -97,8 +95,7 @@ export function AiAssistant() {
           ...m,
           {
             role: "assistant",
-            content:
-              j?.error ?? "Уучлаарай, түр алдаа гарлаа. Дахин оролдоно уу эсвэл hello@nuul.digital руу холбогдоорой.",
+            content: j?.error ?? t("errorGeneric"),
           },
         ]);
         return;
@@ -123,7 +120,7 @@ export function AiAssistant() {
     } catch {
       setMessages((m) => [
         ...m,
-        { role: "assistant", content: "Сүлжээний алдаа гарлаа. hello@nuul.digital руу холбогдоорой." },
+        { role: "assistant", content: t("errorNetwork") },
       ]);
     } finally {
       setLoading(false);
@@ -140,7 +137,7 @@ export function AiAssistant() {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             onClick={() => setOpen(true)}
-            aria-label="AI туслахтай чатлах"
+            aria-label={t("open")}
             className="fixed bottom-6 right-6 z-50 flex size-14 items-center justify-center rounded-full bg-accent-gradient text-white shadow-2xl shadow-accent/40"
           >
             <Bot className="size-6" />
@@ -169,13 +166,13 @@ export function AiAssistant() {
                   <Bot className="size-5 text-white" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold">Nuul AI туслах</div>
+                  <div className="text-sm font-bold">{t("title")}</div>
                   <div className="flex items-center gap-1.5 text-xs text-accent-cyan">
-                    <span className="size-1.5 animate-pulse rounded-full bg-accent-cyan" /> Онлайн
+                    <span className="size-1.5 animate-pulse rounded-full bg-accent-cyan" /> {t("online")}
                   </div>
                 </div>
               </div>
-              <button onClick={() => setOpen(false)} aria-label="Хаах" className="rounded-lg p-1.5 text-muted-foreground hover:bg-white/5 hover:text-foreground">
+              <button onClick={() => setOpen(false)} aria-label={t("close")} className="rounded-lg p-1.5 text-muted-foreground hover:bg-white/5 hover:text-foreground">
                 <X className="size-5" />
               </button>
             </div>
@@ -233,20 +230,20 @@ export function AiAssistant() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Асуултаа бичнэ үү..."
+                placeholder={t("placeholder")}
                 className="flex-1 rounded-xl border border-input bg-white/[0.03] px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-accent/50 focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
                 className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-white transition-colors hover:bg-accent/90 disabled:opacity-50"
-                aria-label="Илгээх"
+                aria-label={t("send")}
               >
                 {loading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
               </button>
             </form>
             <div className="flex items-center justify-center gap-1 pb-2 text-[10px] text-muted-foreground">
-              <Sparkles className="size-3" /> Nuul Digital AI
+              <Sparkles className="size-3" /> {t("footer")}
             </div>
           </motion.div>
         )}
