@@ -5,6 +5,7 @@ import { posts } from "../src/data/posts";
 import { jobs } from "../src/data/jobs";
 import { testimonials } from "../src/data/testimonials";
 import { faqs } from "../src/data/faqs";
+import { team } from "../src/data/company";
 
 const db = new PrismaClient();
 
@@ -121,6 +122,17 @@ async function main() {
         order: i,
       },
     });
+  }
+
+  // Team members — seed only when empty so the public /about team becomes
+  // editable in the CMS (without it the page falls back to static data that
+  // admins cannot change).
+  if ((await db.teamMember.count()) === 0) {
+    for (const [i, m] of team.entries()) {
+      await db.teamMember.create({
+        data: { name: m.name, role: m.role, avatar: m.avatar, order: i, active: true },
+      });
+    }
   }
 
   console.log("✅ Seed complete.");
