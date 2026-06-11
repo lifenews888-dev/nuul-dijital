@@ -1,0 +1,483 @@
+// Nuul Digital — Enterprise CMS schema (PostgreSQL)
+// Run: npx prisma generate && npx prisma db push && npm run db:seed
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+//  Auth & RBAC
+// ============================================================
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  AUTHOR
+  USER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String? // optional: DB-backed credentials
+  role          Role      @default(USER)
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts   Account[]
+  sessions   Session[]
+  posts      Post[]
+  pages      Page[]
+  projects   Project[]
+  caseStudies CaseStudy[]
+  media      MediaAsset[]
+  revisions  ContentRevision[]
+  activity   ActivityLog[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ============================================================
+//  Content workflow shared enum
+// ============================================================
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+}
+
+// ============================================================
+//  Content models (with status workflow + embedded SEO)
+//  SEO columns: seoTitle, seoDescription, seoKeywords[], ogImage, canonicalUrl
+// ============================================================
+
+model Page {
+  id        String        @id @default(cuid())
+  slug      String        @unique
+  title     String
+  content   String        @db.Text
+  status    ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  scheduledAt DateTime?
+  // SEO
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String[]
+  ogImage        String?
+  canonicalUrl   String?
+  authorId  String?
+  author    User?         @relation(fields: [authorId], references: [id])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model Post {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  excerpt     String        @db.Text
+  content     String        @db.Text
+  category    String
+  cover       String
+  tags        String[]
+  featured    Boolean       @default(false)
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  scheduledAt DateTime?
+  // SEO
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String[]
+  ogImage        String?
+  canonicalUrl   String?
+  authorId    String?
+  author      User?         @relation(fields: [authorId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+model Project {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  name         String
+  industry     String
+  description  String        @db.Text
+  technologies String[]
+  results      Json
+  image        String
+  gallery      String[]
+  link         String?
+  year         String
+  services     String[]
+  featured     Boolean       @default(false)
+  status       ContentStatus @default(DRAFT)
+  publishedAt  DateTime?
+  scheduledAt  DateTime?
+  // SEO
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String[]
+  ogImage        String?
+  canonicalUrl   String?
+  authorId     String?
+  author       User?         @relation(fields: [authorId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model CaseStudy {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  client      String
+  industry    String
+  excerpt     String        @db.Text
+  cover       String
+  duration    String
+  services    String[]
+  challenge   String        @db.Text
+  approach    String[]
+  solution    String        @db.Text
+  results     Json
+  testimonial Json?
+  featured    Boolean       @default(false)
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  scheduledAt DateTime?
+  // SEO
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String[]
+  ogImage        String?
+  canonicalUrl   String?
+  authorId    String?
+  author      User?         @relation(fields: [authorId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  quote     String   @db.Text
+  author    String
+  role      String
+  company   String
+  rating    Int      @default(5)
+  avatar    String
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  bio       String?  @db.Text
+  avatar    String
+  socials   Json? // { linkedin, twitter, github, ... }
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Faq {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String   @db.Text
+  category  String   @default("Ерөнхий")
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Job {
+  id               String        @id @default(cuid())
+  slug             String        @unique
+  title            String
+  department       String
+  location         String
+  type             String
+  level            String
+  summary          String        @db.Text
+  responsibilities String[]
+  requirements     String[]
+  status           ContentStatus @default(PUBLISHED)
+  active           Boolean       @default(true)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  applications     JobApplication[]
+}
+
+model JobApplication {
+  id        String   @id @default(cuid())
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  name      String
+  email     String
+  phone     String?
+  resumeUrl String?
+  message   String?  @db.Text
+  createdAt DateTime @default(now())
+}
+
+// ============================================================
+//  Media Library
+// ============================================================
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+}
+
+model MediaAsset {
+  id           String    @id @default(cuid())
+  url          String
+  type         MediaType @default(IMAGE)
+  filename     String
+  mimeType     String?
+  size         Int? // bytes
+  width        Int?
+  height       Int?
+  alt          String?
+  uploadedById String?
+  uploadedBy   User?     @relation(fields: [uploadedById], references: [id])
+  createdAt    DateTime  @default(now())
+
+  @@index([type])
+}
+
+// ============================================================
+//  Version History / Content Revisions
+// ============================================================
+
+model ContentRevision {
+  id          String   @id @default(cuid())
+  entity      String // "Post" | "Project" | "CaseStudy" | "Page"
+  entityId    String
+  version     Int
+  data        Json // full snapshot of the record at save time
+  authorId    String?
+  author      User?    @relation(fields: [authorId], references: [id])
+  authorEmail String?
+  createdAt   DateTime @default(now())
+
+  @@unique([entity, entityId, version])
+  @@index([entity, entityId])
+}
+
+// ============================================================
+//  Activity Logs (audit trail)
+// ============================================================
+
+enum ActivityAction {
+  CREATE
+  UPDATE
+  DELETE
+  PUBLISH
+  ARCHIVE
+  RESTORE
+  LOGIN
+}
+
+model ActivityLog {
+  id        String         @id @default(cuid())
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id])
+  userEmail String?
+  action    ActivityAction
+  entity    String // "Post", "Lead", "Media", ...
+  entityId  String?
+  summary   String
+  metadata  Json?
+  createdAt DateTime       @default(now())
+
+  @@index([entity, createdAt])
+  @@index([createdAt])
+}
+
+// ============================================================
+//  Leads / CRM
+// ============================================================
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  WON
+  LOST
+}
+
+model Lead {
+  id        String     @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  services  String[]
+  budget    String?
+  timeline  String?
+  details   String?    @db.Text
+  status    LeadStatus @default(NEW)
+  createdAt DateTime   @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+enum MeetingStatus {
+  REQUESTED
+  SCHEDULED
+  DONE
+  CANCELLED
+}
+
+model Meeting {
+  id          String        @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  company     String?
+  preferredAt String
+  topic       String?
+  message     String?       @db.Text
+  status      MeetingStatus @default(REQUESTED)
+  createdAt   DateTime      @default(now())
+}
+
+// Editable site settings (key/value) — e.g. logoUrl
+model SiteSetting {
+  key       String   @id
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
+// Detailed project intake brief (website / app / system request)
+model ProjectBrief {
+  id           String     @id @default(cuid())
+  // Basics
+  name         String // contact / project name
+  phone        String
+  email        String
+  company      String?
+  location     String?
+  social       String?
+  services     String[] // selected service pillars
+  projectTypes String[] // Website, E-commerce, Mobile app, System, AI chatbot
+  // Technical
+  domainStatus String? // HAVE | BUY | SUGGEST
+  domainName   String?
+  hosting      Boolean?
+  hasLogo      Boolean?
+  // Business & content
+  about        String     @db.Text
+  goal         String     @db.Text
+  audience     String?
+  colors       String?
+  pages        String[] // requested pages/sections (presets + custom)
+  features     String[] // requested features (presets + custom)
+  needsAuth    Boolean?
+  references   String[] // reference site links
+  timeline     String?
+  budget       String?
+  notes        String?    @db.Text
+  status       LeadStatus @default(NEW)
+  // Quote / estimate workflow
+  estimateMin  Int? // auto-computed approximate range (₮)
+  estimateMax  Int?
+  finalQuote   Int? // admin-approved final amount (₮)
+  quoteNote    String?    @db.Text
+  meetingAt    String? // scheduled meeting date/time
+  quoteSentAt  DateTime? // when the final quote was emailed to the client
+  createdAt    DateTime   @default(now())
+}
+
+// AI assistant chat history (per visitor session)
+model ChatSession {
+  id           String        @id // client-generated id
+  email        String? // captured if the visitor shares one
+  phone        String?
+  userAgent    String?
+  messageCount Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  messages     ChatMessage[]
+
+  @@index([updatedAt])
+}
+
+model ChatMessage {
+  id        String      @id @default(cuid())
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  role      String // "user" | "assistant"
+  content   String      @db.Text
+  createdAt DateTime    @default(now())
+
+  @@index([sessionId])
+}

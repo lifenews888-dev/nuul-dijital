@@ -1,0 +1,14 @@
+<svg width="160" height="40" viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="nuul-grad" x1="4" y1="36" x2="36" y2="4" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB" />
+      <stop offset="1" stop-color="#06B6D4" />
+    </linearGradient>
+  </defs>
+  <!-- Migration Mark -->
+  <rect x="0.5" y="0.5" width="39" height="39" rx="10.5" fill="url(#nuul-grad)" />
+  <path d="M12 29V12L28 29V12" stroke="white" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="28" cy="12" r="2.6" fill="white" />
+  <!-- Wordmark -->
+  <text x="52" y="27" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700" letter-spacing="-0.5" fill="#0A0A0A">nuul<tspan fill="#2563EB">.</tspan></text>
+</svg>
