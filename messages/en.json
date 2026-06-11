@@ -96,5 +96,37 @@
   "ctaSection": {
     "title": "Ready to start your project?",
     "subtitle": "Get a free consultation. We'll turn your idea into a real, results-driven digital product."
+  },
+  "common": {
+    "learnMore": "Learn more",
+    "viewAll": "View all"
+  },
+  "pages": {
+    "about": {
+      "label": "About",
+      "title": "The <accent>builders</accent> of Mongolia's digital future",
+      "description": "We combine technology, design and strategy to bring Mongolian businesses up to world standards.",
+      "missionTitle": "Our <accent>mission</accent>",
+      "missionP1": "Since our founding in 2018, we've successfully delivered 120+ projects and become the digital partner of leading organizations across many industries in Mongolia.",
+      "missionP2": "We don't just build websites and apps. We solve real business problems with smart technology and create measurable growth.",
+      "valuesTitle": "Our values",
+      "teamTitle": "Our <accent>team</accent>",
+      "teamDesc": "A skilled team of designers, engineers and strategists stands behind your project."
+    },
+    "services": {
+      "label": "Services",
+      "title": "Every <accent>digital capability</accent> your business needs",
+      "description": "From strategy to delivery — one team, one standard."
+    },
+    "industries": {
+      "label": "Industries",
+      "title": "Tailored solutions for <accent>every industry</accent>",
+      "description": "We deeply understand the unique challenges of each industry and build digital solutions tailored to them."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you're looking for doesn't exist or has moved. Head back home.",
+      "home": "Home"
+    }
   }
 }

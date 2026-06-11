@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Counter } from "@/components/motion/counter";
@@ -6,6 +7,8 @@ import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { stats, values } from "@/data/company";
 import { getTeam } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
+
+const Accent = (c: React.ReactNode) => <span className="text-gradient-accent">{c}</span>;
 
 export const metadata = buildMetadata({
   title: "Бидний тухай",
@@ -15,17 +18,13 @@ export const metadata = buildMetadata({
 });
 
 export default async function AboutPage() {
-  const team = await getTeam();
+  const [team, t] = await Promise.all([getTeam(), getTranslations("pages.about")]);
   return (
     <>
       <PageHeader
-        label="Бидний тухай"
-        title={
-          <>
-            Монголын дижитал ирээдүйг <span className="text-gradient-accent">бүтээгчид</span>
-          </>
-        }
-        description="Бид технологи, дизайн, стратегийн чадварыг нэгтгэн, Монголын бизнесүүдийг дэлхийн жишигт хүргэх зорилготой."
+        label={t("label")}
+        title={t.rich("title", { accent: Accent })}
+        description={t("description")}
       />
 
       {/* Mission */}
@@ -33,19 +32,13 @@ export default async function AboutPage() {
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
           <Reveal>
             <h2 className="text-display-lg font-bold tracking-tight">
-              Бидний <span className="text-gradient-accent">эрхэм зорилго</span>
+              {t.rich("missionTitle", { accent: Accent })}
             </h2>
           </Reveal>
           <Reveal delay={0.1}>
             <div className="flex flex-col gap-4 text-lg leading-relaxed text-muted-foreground">
-              <p>
-                2018 онд үүсгэн байгуулагдсан цагаасаа хойш бид 120 гаруй төслийг амжилттай
-                хэрэгжүүлж, Монголын олон салбарын тэргүүлэх байгууллагуудын дижитал түнш болсон.
-              </p>
-              <p>
-                Бид зүгээр л вэбсайт, апп хийдэггүй. Бид бизнесийн бодит асуудлыг технологийн
-                ухаалаг шийдлээр шийдэж, хэмжигдэхүйц өсөлтийг бий болгодог.
-              </p>
+              <p>{t("missionP1")}</p>
+              <p>{t("missionP2")}</p>
             </div>
           </Reveal>
         </div>
@@ -66,7 +59,7 @@ export default async function AboutPage() {
       {/* Values */}
       <section className="container-wide py-16">
         <Reveal>
-          <h2 className="text-display-lg font-bold tracking-tight">Бидний үнэт зүйлс</h2>
+          <h2 className="text-display-lg font-bold tracking-tight">{t("valuesTitle")}</h2>
         </Reveal>
         <Stagger className="mt-10 grid gap-5 md:grid-cols-2">
           {values.map((v) => (
@@ -84,11 +77,9 @@ export default async function AboutPage() {
       <section className="container-wide py-16">
         <Reveal>
           <h2 className="text-display-lg font-bold tracking-tight">
-            Манай <span className="text-gradient-accent">баг</span>
+            {t.rich("teamTitle", { accent: Accent })}
           </h2>
-          <p className="mt-4 max-w-xl text-lg text-muted-foreground">
-            Дизайнер, инженер, стратегичдийн чадварлаг баг таны төслийн ард зогсоно.
-          </p>
+          <p className="mt-4 max-w-xl text-lg text-muted-foreground">{t("teamDesc")}</p>
         </Reveal>
         <Stagger className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6">
           {team.map((m) => (

@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { industries } from "@/data/industries";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
@@ -13,17 +14,16 @@ export const metadata = buildMetadata({
   path: "/industries",
 });
 
-export default function IndustriesPage() {
+export default async function IndustriesPage() {
+  const t = await getTranslations();
   return (
     <>
       <PageHeader
-        label="Салбарууд"
-        title={
-          <>
-            Салбар бүрт <span className="text-gradient-accent">тохирсон шийдэл</span>
-          </>
-        }
-        description="Бид салбар тус бүрийн өвөрмөц сорилтыг гүн ойлгож, түүнд тохирсон дижитал шийдлийг бүтээдэг."
+        label={t("pages.industries.label")}
+        title={t.rich("pages.industries.title", {
+          accent: (c) => <span className="text-gradient-accent">{c}</span>,
+        })}
+        description={t("pages.industries.description")}
       />
 
       <section className="container-wide pb-24">
@@ -42,7 +42,7 @@ export default function IndustriesPage() {
                   {ind.short}
                 </p>
                 <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
-                  Дэлгэрэнгүй{" "}
+                  {t("common.learnMore")}{" "}
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </Link>
