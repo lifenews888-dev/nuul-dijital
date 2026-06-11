@@ -99,29 +99,35 @@ async function main() {
     });
   }
 
-  for (const [i, t] of testimonials.entries()) {
-    await db.testimonial.create({
-      data: {
-        quote: t.quote,
-        author: t.author,
-        role: t.role,
-        company: t.company,
-        rating: t.rating,
-        avatar: t.avatar,
-        order: i,
-      },
-    });
+  // Testimonials & FAQs have no natural unique key, so guard on emptiness to
+  // keep the whole seed idempotent (safe to re-run, e.g. against production).
+  if ((await db.testimonial.count()) === 0) {
+    for (const [i, t] of testimonials.entries()) {
+      await db.testimonial.create({
+        data: {
+          quote: t.quote,
+          author: t.author,
+          role: t.role,
+          company: t.company,
+          rating: t.rating,
+          avatar: t.avatar,
+          order: i,
+        },
+      });
+    }
   }
 
-  for (const [i, f] of faqs.entries()) {
-    await db.faq.create({
-      data: {
-        question: f.question,
-        answer: f.answer,
-        category: f.category,
-        order: i,
-      },
-    });
+  if ((await db.faq.count()) === 0) {
+    for (const [i, f] of faqs.entries()) {
+      await db.faq.create({
+        data: {
+          question: f.question,
+          answer: f.answer,
+          category: f.category,
+          order: i,
+        },
+      });
+    }
   }
 
   // Team members — seed only when empty so the public /about team becomes
