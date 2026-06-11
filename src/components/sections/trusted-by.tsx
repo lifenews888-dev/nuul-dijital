@@ -1,12 +1,14 @@
+import { getTranslations } from "next-intl/server";
 import { Marquee } from "@/components/motion/marquee";
 import { techStack } from "@/data/company";
 
-export function TrustedBy() {
+export async function TrustedBy() {
+  const t = await getTranslations("home.trustedBy");
   return (
     <section className="border-y border-white/5 py-14">
       <div className="container-wide">
         <p className="mb-10 text-center text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
-          Дэлхийн тэргүүлэгч технологиор бүтээдэг
+          {t("label")}
         </p>
       </div>
       <Marquee speed={32}>

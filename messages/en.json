@@ -56,6 +56,41 @@
       "responseValue": "Within 24 hours",
       "tabMessage": "Message",
       "tabMeeting": "Book a meeting"
+    },
+    "trustedBy": {
+      "label": "Built with world-leading technology"
+    },
+    "testimonials": {
+      "label": "Testimonials",
+      "title": "Why clients <accent>choose us</accent>",
+      "prev": "Previous",
+      "next": "Next"
+    },
+    "ai": {
+      "badge": "AI & Automation",
+      "title": "Bring <accent>AI</accent> into your business",
+      "subtitle": "We build smart AI solutions that automate repetitive work and serve your customers 24/7. Save time, cut costs, and grow.",
+      "cap1": "Mongolian-speaking LLM",
+      "cap2": "24/7 smart chatbot",
+      "cap3": "Process automation",
+      "cap4": "Real-time integration",
+      "explore": "Explore AI solutions",
+      "assistant": "Nuul AI Assistant",
+      "online": "Online",
+      "demoUser1": "Can you check my order status?",
+      "demoBot": "Your order #4821 is out for delivery. It will arrive tomorrow at 2:00 PM 🚚",
+      "demoUser2": "Thank you!"
+    },
+    "estimate": {
+      "label": "⚡ Instant AI estimate",
+      "title": "Know your price <accent>in seconds</accent>",
+      "description": "Pick your services and features and our system calculates an estimate instantly. No waiting.",
+      "servicesLabel": "Services",
+      "featuresLabel": "Add-on features",
+      "instant": "Calculated instantly",
+      "estimateLabel": "Estimated range",
+      "detailedQuote": "Get a detailed quote",
+      "disclaimer": "* Final pricing depends on project scope. Fill out a detailed brief for an exact quote."
     }
   },
   "ctaSection": {

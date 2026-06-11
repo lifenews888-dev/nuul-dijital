@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { motion, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import { Sparkles, Zap, ArrowRight, Check } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { services } from "@/data/services";
 import { estimateBrief, formatMnt } from "@/lib/estimate";
 import { SectionHeading } from "@/components/shared/section-heading";
@@ -29,6 +30,7 @@ function AnimatedMnt({ value }: { value: number }) {
 }
 
 export function InstantEstimate() {
+  const t = useTranslations("home.estimate");
   const [selServices, setSelServices] = useState<string[]>(["Вэб хөгжүүлэлт"]);
   const [selFeatures, setSelFeatures] = useState<string[]>([]);
 
@@ -46,13 +48,11 @@ export function InstantEstimate() {
       <div className="container-wide">
         <SectionHeading
           align="center"
-          label="⚡ Шуурхай AI үнэлгээ"
-          title={
-            <>
-              Үнээ <span className="text-gradient-accent">секундэд</span> мэдээрэй
-            </>
-          }
-          description="Үйлчилгээ, функцээ сонгоход манай систем урьдчилсан үнэлгээг тэр даруй тооцоолно. Хүлээх шаардлагагүй."
+          label={t("label")}
+          title={t.rich("title", {
+            accent: (c) => <span className="text-gradient-accent">{c}</span>,
+          })}
+          description={t("description")}
         />
 
         <div className="mx-auto mt-14 max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-card">
@@ -60,7 +60,7 @@ export function InstantEstimate() {
             {/* Picker */}
             <div className="border-b border-white/10 p-7 lg:border-b-0 lg:border-r">
               <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Үйлчилгээ
+                {t("servicesLabel")}
               </h3>
               <div className="mt-4 flex flex-wrap gap-2">
                 {services.map((s) => {
@@ -85,7 +85,7 @@ export function InstantEstimate() {
               </div>
 
               <h3 className="mt-7 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Нэмэлт функц
+                {t("featuresLabel")}
               </h3>
               <div className="mt-4 flex flex-wrap gap-2">
                 {FEATURES.map((f) => {
@@ -112,9 +112,9 @@ export function InstantEstimate() {
             {/* Result */}
             <div className="relative flex flex-col justify-center bg-gradient-to-br from-accent/[0.06] to-accent-cyan/[0.06] p-7">
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
-                <Zap className="size-3.5" /> Шууд тооцоолсон
+                <Zap className="size-3.5" /> {t("instant")}
               </div>
-              <div className="mt-4 text-sm text-muted-foreground">Урьдчилсан үнэлгээ</div>
+              <div className="mt-4 text-sm text-muted-foreground">{t("estimateLabel")}</div>
               <div className="mt-1 text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">
                 <span className="bg-gradient-to-r from-accent to-accent-cyan bg-clip-text text-transparent">
                   <AnimatedMnt value={est.min} />
@@ -145,11 +145,11 @@ export function InstantEstimate() {
 
               <Button asChild variant="gradient" size="lg" className="mt-7 w-fit">
                 <Link href="/quote">
-                  <Sparkles className="size-4" /> Дэлгэрэнгүй санал авах <ArrowRight className="size-4" />
+                  <Sparkles className="size-4" /> {t("detailedQuote")} <ArrowRight className="size-4" />
                 </Link>
               </Button>
               <p className="mt-3 text-xs text-muted-foreground">
-                * Эцсийн үнэ нь төслийн нарийвчлалаас хамаарна. Дэлгэрэнгүй бриф бөглөхөд тодорхой санал илгээнэ.
+                {t("disclaimer")}
               </p>
             </div>
           </div>

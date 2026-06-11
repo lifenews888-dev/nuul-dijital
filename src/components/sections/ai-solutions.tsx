@@ -1,25 +1,25 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Bot, Workflow, Zap, Brain, MessageSquare, ArrowRight } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/motion/reveal";
 
-const capabilities = [
-  { icon: Brain, text: "Монгол хэл ойлгодог LLM" },
-  { icon: MessageSquare, text: "24/7 ухаалаг чатбот" },
-  { icon: Workflow, text: "Процессын автоматжуулалт" },
-  { icon: Zap, text: "Бодит цагийн интеграц" },
-];
-
-const chatDemo = [
-  { role: "user", text: "Захиалгын төлөв шалгаж өгөөч?" },
-  { role: "bot", text: "Таны #4821 захиалга хүргэлтэд гарсан байна. Маргааш 14:00 цагт хүрнэ 🚚" },
-  { role: "user", text: "Баярлалаа!" },
-];
-
 export function AISolutions() {
+  const t = useTranslations("home.ai");
+  const capabilities = [
+    { icon: Brain, text: t("cap1") },
+    { icon: MessageSquare, text: t("cap2") },
+    { icon: Workflow, text: t("cap3") },
+    { icon: Zap, text: t("cap4") },
+  ];
+  const chatDemo = [
+    { role: "user", text: t("demoUser1") },
+    { role: "bot", text: t("demoBot") },
+    { role: "user", text: t("demoUser2") },
+  ];
   return (
     <section className="relative overflow-hidden py-24 lg:py-32">
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-accent/[0.04] to-transparent" />
@@ -30,18 +30,19 @@ export function AISolutions() {
           <div>
             <span className="section-label border-accent-cyan/30 bg-accent-cyan/10 text-accent-cyan">
               <Bot className="size-3.5" />
-              AI & Автоматжуулалт
+              {t("badge")}
             </span>
             <h2 className="mt-6 text-display-lg font-bold tracking-tight">
-              Хиймэл оюун ухааныг{" "}
-              <span className="bg-gradient-to-r from-accent to-accent-cyan bg-clip-text text-transparent">
-                бизнестээ
-              </span>{" "}
-              нэвтрүүл
+              {t.rich("title", {
+                accent: (c) => (
+                  <span className="bg-gradient-to-r from-accent to-accent-cyan bg-clip-text text-transparent">
+                    {c}
+                  </span>
+                ),
+              })}
             </h2>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground">
-              Давтагдах ажлыг автоматжуулж, харилцагчдад 24/7 шуурхай үйлчилгээ үзүүлэх ухаалаг
-              AI шийдлүүдийг бид бүтээнэ. Цаг хэмнэ, зардлаа бууруул, өс.
+              {t("subtitle")}
             </p>
 
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
@@ -57,7 +58,7 @@ export function AISolutions() {
 
             <Button asChild variant="gradient" size="lg" className="mt-8">
               <Link href="/services/ai-chatbots">
-                AI шийдэл судлах <ArrowRight className="size-5" />
+                {t("explore")} <ArrowRight className="size-5" />
               </Link>
             </Button>
           </div>
@@ -76,10 +77,10 @@ export function AISolutions() {
                   <Bot className="size-5 text-white" />
                 </div>
                 <div>
-                  <div className="text-sm font-semibold">Nuul AI Туслах</div>
+                  <div className="text-sm font-semibold">{t("assistant")}</div>
                   <div className="flex items-center gap-1.5 text-xs text-accent-cyan">
                     <span className="size-1.5 animate-pulse rounded-full bg-accent-cyan" />
-                    Онлайн
+                    {t("online")}
                   </div>
                 </div>
               </div>

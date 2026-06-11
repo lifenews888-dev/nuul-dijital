@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { testimonials as staticTestimonials } from "@/data/testimonials";
@@ -10,6 +11,7 @@ import { SectionHeading } from "@/components/shared/section-heading";
 type Item = { quote: string; author: string; role: string; company: string; rating: number; avatar: string };
 
 export function TestimonialsSection({ items }: { items?: Item[] }) {
+  const tx = useTranslations("home.testimonials");
   const testimonials = items?.length ? items : staticTestimonials;
   const [index, setIndex] = useState(0);
   const t = testimonials[index % testimonials.length];
@@ -21,12 +23,10 @@ export function TestimonialsSection({ items }: { items?: Item[] }) {
       <div className="container-wide">
         <SectionHeading
           align="center"
-          label="Сэтгэгдэл"
-          title={
-            <>
-              Үйлчлүүлэгчид <span className="text-gradient-accent">биднийг сонгосон шалтгаан</span>
-            </>
-          }
+          label={tx("label")}
+          title={tx.rich("title", {
+            accent: (c) => <span className="text-gradient-accent">{c}</span>,
+          })}
         />
 
         <div className="relative mx-auto mt-14 max-w-4xl">
@@ -69,7 +69,7 @@ export function TestimonialsSection({ items }: { items?: Item[] }) {
           <div className="mt-8 flex items-center justify-center gap-4">
             <button
               onClick={() => go(-1)}
-              aria-label="Өмнөх"
+              aria-label={tx("prev")}
               className="flex size-11 items-center justify-center rounded-full border border-white/10 transition-colors hover:bg-white/10"
             >
               <ChevronLeft className="size-5" />
@@ -88,7 +88,7 @@ export function TestimonialsSection({ items }: { items?: Item[] }) {
             </div>
             <button
               onClick={() => go(1)}
-              aria-label="Дараах"
+              aria-label={tx("next")}
               className="flex size-11 items-center justify-center rounded-full border border-white/10 transition-colors hover:bg-white/10"
             >
               <ChevronRight className="size-5" />
