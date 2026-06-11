@@ -1,19 +1,37 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname as useRawPathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight } from "lucide-react";
+import { Link, usePathname } from "@/i18n/navigation";
 import { navLinks } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/logo";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { cn } from "@/lib/utils";
+
+/** Maps a nav href to its translation key in messages `nav`. */
+const NAV_KEY: Record<string, string> = {
+  "/": "home",
+  "/about": "about",
+  "/services": "services",
+  "/industries": "industries",
+  "/portfolio": "portfolio",
+  "/case-studies": "caseStudies",
+  "/blog": "blog",
+  "/careers": "careers",
+  "/contact": "contact",
+};
 
 export function Navbar({ logoUrl }: { logoUrl?: string | null }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const rawPathname = useRawPathname();
+  const t = useTranslations("nav");
+  const tc = useTranslations("cta");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -27,7 +45,7 @@ export function Navbar({ logoUrl }: { logoUrl?: string | null }) {
   }, [pathname]);
 
   // The /admin area renders its own chrome.
-  if (pathname?.startsWith("/admin")) return null;
+  if (rawPathname?.startsWith("/admin")) return null;
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4">
@@ -65,20 +83,21 @@ export function Navbar({ logoUrl }: { logoUrl?: string | null }) {
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
-                {link.label}
+                {t(NAV_KEY[link.href])}
               </Link>
             );
           })}
         </div>
 
         <div className="flex items-center gap-2">
+          <LanguageSwitcher className="hidden items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:flex" />
           <Button asChild variant="gradient" size="sm" className="hidden sm:inline-flex">
             <Link href="/quote">
-              Үнийн санал <ArrowUpRight className="size-4" />
+              {tc("quote")} <ArrowUpRight className="size-4" />
             </Link>
           </Button>
           <button
-            aria-label="Цэс"
+            aria-label={tc("menu")}
             onClick={() => setOpen((v) => !v)}
             className="flex size-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 lg:hidden"
           >
@@ -107,12 +126,15 @@ export function Navbar({ logoUrl }: { logoUrl?: string | null }) {
                       : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
                   )}
                 >
-                  {link.label}
+                  {t(NAV_KEY[link.href])}
                 </Link>
               ))}
-              <Button asChild variant="gradient" className="mt-2 w-full">
-                <Link href="/quote">Үнийн санал авах</Link>
-              </Button>
+              <div className="mt-2 flex items-center gap-2">
+                <LanguageSwitcher />
+                <Button asChild variant="gradient" className="flex-1">
+                  <Link href="/quote">{tc("getQuote")}</Link>
+                </Button>
+              </div>
             </div>
           </motion.div>
         )}

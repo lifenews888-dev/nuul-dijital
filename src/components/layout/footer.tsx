@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { footerNav, siteConfig } from "@/lib/site";
 import { NewsletterForm } from "@/components/forms/newsletter-form";
 import { Logo } from "@/components/shared/logo";

@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { inter } from "@/lib/fonts";
 import { buildMetadata, organizationJsonLd } from "@/lib/seo";
 import { JsonLd } from "@/components/shared/json-ld";
@@ -24,22 +26,24 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const logoUrl = await getLogoUrl();
+  const [logoUrl, locale] = await Promise.all([getLogoUrl(), getLocale()]);
   return (
-    <html lang="mn" className={`${inter.variable} dark`} suppressHydrationWarning>
+    <html lang={locale} className={`${inter.variable} dark`} suppressHydrationWarning>
       <body className="min-h-screen bg-background antialiased">
-        <JsonLd data={organizationJsonLd()} />
-        <MotionProvider>
-          <Navbar logoUrl={logoUrl} />
-          <main className="relative">
-            <PageTransition>{children}</PageTransition>
-          </main>
-          <HideOnAdmin>
-            <Footer logoUrl={logoUrl} />
-          </HideOnAdmin>
-        </MotionProvider>
-        <AiAssistant />
-        <Analytics />
+        <NextIntlClientProvider>
+          <JsonLd data={organizationJsonLd()} />
+          <MotionProvider>
+            <Navbar logoUrl={logoUrl} />
+            <main className="relative">
+              <PageTransition>{children}</PageTransition>
+            </main>
+            <HideOnAdmin>
+              <Footer logoUrl={logoUrl} />
+            </HideOnAdmin>
+          </MotionProvider>
+          <AiAssistant />
+          <Analytics />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

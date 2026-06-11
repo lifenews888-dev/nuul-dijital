@@ -1,0 +1,23 @@
+{
+  "nav": {
+    "home": "Нүүр",
+    "about": "Бидний тухай",
+    "services": "Үйлчилгээ",
+    "industries": "Салбарууд",
+    "portfolio": "Портфолио",
+    "caseStudies": "Кейс судалгаа",
+    "blog": "Блог",
+    "careers": "Ажлын байр",
+    "contact": "Холбоо барих"
+  },
+  "cta": {
+    "quote": "Үнийн санал",
+    "getQuote": "Үнийн санал авах",
+    "menu": "Цэс"
+  },
+  "language": {
+    "label": "Хэл",
+    "mn": "Монгол",
+    "en": "English"
+  }
+}

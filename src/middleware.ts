@@ -1,12 +1,15 @@
+import createMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
+import { routing } from "@/i18n/routing";
 
 /**
- * Edge middleware: guards the /admin area.
- *
- * We only check for the presence of an Auth.js session cookie here (fast, edge-safe)
- * and redirect unauthenticated visitors to the login page. Authoritative verification
- * (valid session + ADMIN/EDITOR role) happens in the admin layout via `auth()`.
+ * Composed middleware:
+ *  - /admin/*  → fast cookie presence check (authoritative auth runs in the
+ *    admin layout). The admin area is intentionally NOT localized.
+ *  - everything else → next-intl locale routing (mn default, /en for English).
  */
+const intlMiddleware = createMiddleware(routing);
+
 const SESSION_COOKIES = [
   "authjs.session-token",
   "__Secure-authjs.session-token",
@@ -14,13 +17,11 @@ const SESSION_COOKIES = [
   "__Secure-next-auth.session-token",
 ];
 
-export function middleware(req: NextRequest) {
+export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Allow the login page itself through.
-  if (pathname.startsWith("/admin/login")) return NextResponse.next();
-
   if (pathname.startsWith("/admin")) {
+    if (pathname.startsWith("/admin/login")) return NextResponse.next();
     const hasSession = SESSION_COOKIES.some((name) => req.cookies.has(name));
     if (!hasSession) {
       const url = req.nextUrl.clone();
@@ -28,11 +29,14 @@ export function middleware(req: NextRequest) {
       url.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(url);
     }
+    return NextResponse.next();
   }
 
-  return NextResponse.next();
+  return intlMiddleware(req);
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  // Run on app routes; skip API, Next internals, and files with an extension
+  // (sitemap.xml, robots.txt, manifest.webmanifest, static assets).
+  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 };

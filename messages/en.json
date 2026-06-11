@@ -1,0 +1,23 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "industries": "Industries",
+    "portfolio": "Portfolio",
+    "caseStudies": "Case Studies",
+    "blog": "Blog",
+    "careers": "Careers",
+    "contact": "Contact"
+  },
+  "cta": {
+    "quote": "Get a quote",
+    "getQuote": "Get a quote",
+    "menu": "Menu"
+  },
+  "language": {
+    "label": "Language",
+    "mn": "Монгол",
+    "en": "English"
+  }
+}
