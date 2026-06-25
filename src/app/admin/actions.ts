@@ -164,9 +164,14 @@ export async function importFromVercel() {
     `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url`;
   const year = String(new Date().getFullYear());
 
+  // Don't import the agency's own site or dev worktrees.
+  const skip = (name: string, link: string) =>
+    /nuul-digital|nuul-mn|worktree/i.test(name) || /nuul\.digital/i.test(link);
+
   let created = 0;
   for (const p of projects) {
     if (!p.link || !p.name) continue;
+    if (skip(p.name, p.link)) continue;
     const slug = slugify(p.name);
     if (!slug) continue;
     const existing = await db.project.findUnique({ where: { slug } });
