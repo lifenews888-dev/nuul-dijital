@@ -149,6 +149,53 @@ export async function deleteProject(formData: FormData) {
   revalidatePath("/admin/projects");
 }
 
+/**
+ * Imports projects from the connected Vercel account as DRAFT portfolio items
+ * (name + live link + auto screenshot). Existing slugs are skipped, so it's
+ * safe to re-run as new projects are deployed. Admins then enrich and publish.
+ */
+export async function importFromVercel() {
+  await requirePermission("content", "create");
+  const { listVercelProjects } = await import("@/lib/vercel");
+  const projects = await listVercelProjects();
+  const slugify = (s: string) =>
+    s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const shot = (url: string) =>
+    `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url`;
+  const year = String(new Date().getFullYear());
+
+  let created = 0;
+  for (const p of projects) {
+    if (!p.link || !p.name) continue;
+    const slug = slugify(p.name);
+    if (!slug) continue;
+    const existing = await db.project.findUnique({ where: { slug } });
+    if (existing) continue;
+    await db.project.create({
+      data: {
+        slug,
+        name: p.name,
+        industry: "—",
+        description: "Vercel-ээс импортолсон төсөл. Тайлбар, салбар, үр дүнг нэмнэ үү.",
+        technologies: [],
+        results: [],
+        image: shot(p.link),
+        gallery: [],
+        link: p.link,
+        year,
+        services: [],
+        featured: false,
+        status: "DRAFT",
+      },
+    });
+    created++;
+  }
+
+  await logActivity({ action: "CREATE", entity: "Project", summary: `Vercel-ээс ${created} төсөл импортолсон` });
+  revalidateTag(CONTENT_TAG);
+  revalidatePath("/admin/projects");
+}
+
 // ---------------- Case Studies ----------------
 
 export async function saveCaseStudy(formData: FormData) {
