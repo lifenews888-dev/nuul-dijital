@@ -104,9 +104,16 @@ export async function importVercelProjectsAsDrafts(): Promise<number> {
 
   for (const p of projects) {
     if (!p.link || !p.name || isExcluded(p.name, p.link)) continue;
-    const slug = slugify(p.name);
+    // Dedup by the live link (stable identity) — a project may have been
+    // imported earlier under a different display name / slug.
+    if (await db.project.findFirst({ where: { link: p.link } })) continue;
+
+    let slug = slugify(p.name);
     if (!slug) continue;
-    if (await db.project.findUnique({ where: { slug } })) continue;
+    // Avoid colliding with an unrelated existing slug.
+    if (await db.project.findUnique({ where: { slug } })) {
+      slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+    }
 
     const meta = await fetchSiteMeta(p.link);
     const name = meta.title && !GENERIC.test(meta.title) && meta.title.length <= 70 ? meta.title : p.name;
