@@ -22,3 +22,27 @@ export const getLogoUrl = unstable_cache(
   ["site-logo-url"],
   { tags: [SETTINGS_TAG], revalidate: 3600 }
 );
+
+/**
+ * Vercel integration credentials, configurable in /admin/settings. Falls back
+ * to the VERCEL_API_TOKEN / VERCEL_TEAM_ID env vars. Read directly (uncached)
+ * so the token never lands in the Next data cache.
+ */
+export async function getVercelConfig(): Promise<{ token: string | null; teamId: string | null }> {
+  let token = process.env.VERCEL_API_TOKEN || null;
+  let teamId = process.env.VERCEL_TEAM_ID || null;
+  if (process.env.DATABASE_URL) {
+    try {
+      const rows = await db.siteSetting.findMany({
+        where: { key: { in: ["vercelApiToken", "vercelTeamId"] } },
+      });
+      for (const r of rows) {
+        if (r.key === "vercelApiToken" && r.value) token = r.value;
+        if (r.key === "vercelTeamId" && r.value) teamId = r.value;
+      }
+    } catch {
+      // keep env fallback
+    }
+  }
+  return { token, teamId };
+}

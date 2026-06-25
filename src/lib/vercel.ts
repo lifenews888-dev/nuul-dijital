@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { getVercelConfig } from "@/lib/settings";
 
 const API = "https://api.vercel.com";
 
@@ -11,9 +12,8 @@ export type VercelProject = { name: string; link: string };
  * Returns [] when no token is set so callers can degrade gracefully.
  */
 export async function listVercelProjects(): Promise<VercelProject[]> {
-  const token = process.env.VERCEL_API_TOKEN;
+  const { token, teamId } = await getVercelConfig();
   if (!token) return [];
-  const teamId = process.env.VERCEL_TEAM_ID;
   const out: VercelProject[] = [];
   let until: string | undefined;
 

@@ -656,6 +656,39 @@ export async function resetLogo() {
   revalidatePath("/admin/settings");
 }
 
+/** Save the Vercel integration credentials (token + team id) used by the import. */
+export async function saveVercelConfig(formData: FormData) {
+  await requirePermission("settings", "update");
+  const token = str(formData, "vercelApiToken");
+  const teamId = str(formData, "vercelTeamId");
+  // Only overwrite the token when a new one is typed (the field is blank by
+  // default so the secret is never rendered back into the page).
+  if (token) {
+    await db.siteSetting.upsert({
+      where: { key: "vercelApiToken" },
+      update: { value: token },
+      create: { key: "vercelApiToken", value: token },
+    });
+  }
+  await db.siteSetting.upsert({
+    where: { key: "vercelTeamId" },
+    update: { value: teamId },
+    create: { key: "vercelTeamId", value: teamId },
+  });
+  revalidateTag(SETTINGS_TAG);
+  await logActivity({ action: "UPDATE", entity: "SiteSetting", summary: "Vercel холболт шинэчилсэн" });
+  revalidatePath("/admin/settings");
+}
+
+/** Remove the stored Vercel token (falls back to the env var if any). */
+export async function clearVercelToken() {
+  await requirePermission("settings", "update");
+  await db.siteSetting.deleteMany({ where: { key: "vercelApiToken" } });
+  revalidateTag(SETTINGS_TAG);
+  await logActivity({ action: "UPDATE", entity: "SiteSetting", summary: "Vercel токен устгасан" });
+  revalidatePath("/admin/settings");
+}
+
 // ---------------- AI chat sessions ----------------
 
 export async function deleteChat(formData: FormData) {
