@@ -102,8 +102,13 @@ prisma/                      # schema.prisma + seed.ts
 
 ## 🌍 Deployment
 
-Optimized for **Vercel**. Push the repo, set the environment variables, and deploy.
-`output` tracing is scoped to this project in `next.config.mjs`.
+Optimized for **Vercel**. The repo (`github.com/bizprintpro-alt/nuul-digital`)
+is connected to the Vercel project, so **pushing to `main` auto-deploys to
+production** (https://nuul.digital). `output` tracing is scoped to this project
+in `next.config.mjs`.
+
+After a schema change, run `prisma db push` (or `migrate deploy`) and
+`npm run db:seed` (idempotent) against the production database.
 
 ---
 
