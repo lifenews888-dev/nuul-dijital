@@ -12,6 +12,11 @@ import { Logo } from "@/components/shared/logo";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { cn } from "@/lib/utils";
 
+// Mongolian-only for now: the English UI is complete but marketing content is
+// not yet translated, so the language switcher is hidden. The i18n foundation
+// (routing, /en, translations) stays intact — flip this to true to re-enable.
+const SHOW_LANGUAGE_SWITCHER = false;
+
 /** Maps a nav href to its translation key in messages `nav`. */
 const NAV_KEY: Record<string, string> = {
   "/": "home",
@@ -90,7 +95,9 @@ export function Navbar({ logoUrl }: { logoUrl?: string | null }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <LanguageSwitcher className="hidden items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:flex" />
+          {SHOW_LANGUAGE_SWITCHER && (
+            <LanguageSwitcher className="hidden items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:flex" />
+          )}
           <Button asChild variant="gradient" size="sm" className="hidden sm:inline-flex">
             <Link href="/quote">
               {tc("quote")} <ArrowUpRight className="size-4" />
@@ -130,7 +137,7 @@ export function Navbar({ logoUrl }: { logoUrl?: string | null }) {
                 </Link>
               ))}
               <div className="mt-2 flex items-center gap-2">
-                <LanguageSwitcher />
+                {SHOW_LANGUAGE_SWITCHER && <LanguageSwitcher />}
                 <Button asChild variant="gradient" className="flex-1">
                   <Link href="/quote">{tc("getQuote")}</Link>
                 </Button>
