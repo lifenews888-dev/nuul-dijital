@@ -49,6 +49,9 @@ model User {
   provisionedServices ServiceOrder[] @relation("ServiceProvisionedBy")
   ownedOrganizations  Organization[] @relation("OrgOwner")
   orgMemberships      OrgMember[]
+  supportTickets      SupportTicket[]        @relation("TicketCustomer")
+  assignedTickets     SupportTicket[]        @relation("TicketAssignee")
+  supportMessages     SupportTicketMessage[] @relation("TicketMessageAuthor")
 }
 
 enum OrgType {
@@ -79,6 +82,7 @@ model Organization {
   serviceOrders ServiceOrder[]
   subscriptions Subscription[]
   invoices      Invoice[]
+  supportTickets SupportTicket[]
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -927,4 +931,85 @@ model ProcessStep {
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// ============================================================
+//  Customer support tickets
+// ============================================================
+
+enum SupportTicketStatus {
+  NEW
+  ASSIGNED
+  INVESTIGATING
+  WAITING_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+enum SupportTicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum SupportTicketCategory {
+  DOMAIN
+  HOSTING
+  EMAIL
+  DNS
+  SSL
+  VPS
+  BILLING
+  WEBSITE
+  OTHER
+}
+
+enum SupportMessageAuthor {
+  CUSTOMER
+  STAFF
+  SYSTEM
+}
+
+model SupportTicket {
+  id              String                @id @default(cuid())
+  number          String                @unique
+  orgId           String
+  organization    Organization          @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User                  @relation("TicketCustomer", fields: [userId], references: [id])
+  subject         String
+  category        SupportTicketCategory @default(OTHER)
+  priority        SupportTicketPriority @default(NORMAL)
+  status          SupportTicketStatus   @default(NEW)
+  slaPlanKey      String?
+  slaDueAt        DateTime?
+  firstResponseAt DateTime?
+  resolvedAt      DateTime?
+  closedAt        DateTime?
+  assignedToId    String?
+  assignedTo      User?                 @relation("TicketAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  domainOrderId   String?
+  serviceOrderId  String?
+  messages        SupportTicketMessage[]
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  @@index([orgId, status])
+  @@index([status, createdAt])
+  @@index([assignedToId])
+}
+
+model SupportTicketMessage {
+  id           String               @id @default(cuid())
+  ticketId     String
+  ticket       SupportTicket        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorUserId String?
+  authorUser   User?                @relation("TicketMessageAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
+  authorKind   SupportMessageAuthor @default(CUSTOMER)
+  body         String               @db.Text
+  isInternal   Boolean              @default(false)
+  createdAt    DateTime             @default(now())
+
+  @@index([ticketId, createdAt])
 }
