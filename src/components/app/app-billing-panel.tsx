@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { CreditCard, FileText, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { QPayPaymentModal } from "@/components/payments/qpay-payment-modal";
 import type { PublicInvoiceSummary, PublicSubscriptionSummary } from "@/lib/billing/types";
 import { formatDomainPrice } from "@/lib/domains/format";
 import { PLAN_KEY_LABELS, SERVICE_TYPE_LABELS } from "@/lib/services/order-status";
@@ -12,6 +13,28 @@ type BillingResponse = {
   subscriptions?: PublicSubscriptionSummary[];
   invoices?: PublicInvoiceSummary[];
   error?: string;
+};
+
+type PayModalState = {
+  qpayInvoiceId: string;
+  qrImage: string;
+  shortUrl?: string | null;
+  deeplinks?: Array<{ name: string; description: string; logo: string; link: string }>;
+  amount: number;
+  reference: string;
+  billingInvoiceNumber: string;
+};
+
+type PayResponse = {
+  invoiceId?: string;
+  qrImage?: string;
+  shortUrl?: string | null;
+  deeplinks?: PayModalState["deeplinks"];
+  amount?: number;
+  billingInvoiceNumber?: string;
+  reference?: string;
+  error?: string;
+  message?: string;
 };
 
 const SUBSCRIPTION_STATUS_KEYS: Record<string, string> = {
@@ -44,6 +67,9 @@ export function AppBillingPanel() {
   const [invoices, setInvoices] = useState<PublicInvoiceSummary[]>([]);
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
+  const [payingId, setPayingId] = useState<string | null>(null);
+  const [payError, setPayError] = useState<string | null>(null);
+  const [payModal, setPayModal] = useState<PayModalState | null>(null);
 
   const loadBilling = useCallback(async () => {
     setState("loading");
@@ -73,6 +99,39 @@ export function AppBillingPanel() {
     void loadBilling();
   }, [loadBilling]);
 
+  const startPay = useCallback(
+    async (invoice: PublicInvoiceSummary) => {
+      setPayingId(invoice.id);
+      setPayError(null);
+      try {
+        const res = await fetch("/api/app/billing/pay", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ invoiceId: invoice.id }),
+        });
+        const data = (await res.json()) as PayResponse;
+        if (!res.ok || !data.invoiceId || !data.qrImage || data.amount == null) {
+          setPayError(data.message ?? data.error ?? t("payError"));
+          return;
+        }
+        setPayModal({
+          qpayInvoiceId: data.invoiceId,
+          qrImage: data.qrImage,
+          shortUrl: data.shortUrl,
+          deeplinks: data.deeplinks,
+          amount: data.amount,
+          reference: data.reference ?? invoice.number,
+          billingInvoiceNumber: data.billingInvoiceNumber ?? invoice.number,
+        });
+      } catch {
+        setPayError(t("payError"));
+      } finally {
+        setPayingId(null);
+      }
+    },
+    [t]
+  );
+
   if (state === "loading") {
     return (
       <div className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
@@ -101,6 +160,11 @@ export function AppBillingPanel() {
 
   return (
     <div className="space-y-8">
+      {payError && (
+        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-sm text-red-300">
+          {payError}
+        </div>
+      )}
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <RefreshCw className="size-5 text-accent" />
@@ -191,17 +255,54 @@ export function AppBillingPanel() {
                       {t(statusKey)}
                     </span>
                   </div>
-                  <p className="mt-3 text-sm text-muted-foreground">
-                    {invoice.paidAt
-                      ? `${t("paidOn")} ${formatDate(invoice.paidAt, locale)}`
-                      : `${t("dueOn")} ${formatDate(invoice.dueAt, locale)}`}
-                  </p>
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-sm text-muted-foreground">
+                      {invoice.paidAt
+                        ? `${t("paidOn")} ${formatDate(invoice.paidAt, locale)}`
+                        : `${t("dueOn")} ${formatDate(invoice.dueAt, locale)}`}
+                    </p>
+                    {invoice.payable && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        disabled={payingId === invoice.id}
+                        onClick={() => void startPay(invoice)}
+                      >
+                        {payingId === invoice.id ? (
+                          <>
+                            <Loader2 className="size-4 animate-spin" />
+                            {t("paying")}
+                          </>
+                        ) : (
+                          t("payNow")
+                        )}
+                      </Button>
+                    )}
+                  </div>
                 </li>
               );
             })}
           </ul>
         )}
       </section>
+
+      {payModal && (
+        <QPayPaymentModal
+          open
+          onClose={() => setPayModal(null)}
+          onSuccess={() => {
+            setPayModal(null);
+            void loadBilling();
+          }}
+          invoiceId={payModal.qpayInvoiceId}
+          qrImage={payModal.qrImage}
+          shortUrl={payModal.shortUrl}
+          deeplinks={payModal.deeplinks}
+          amount={payModal.amount}
+          domain={payModal.reference}
+          orderNumber={payModal.billingInvoiceNumber}
+        />
+      )}
     </div>
   );
 }

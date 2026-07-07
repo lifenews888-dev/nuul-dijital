@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { markRenewalInvoicePaid } from "@/lib/billing/renewal";
 import { markOrderPaid } from "@/lib/domains/mark-paid";
 import { markServiceOrderPaid } from "@/lib/services/mark-paid";
 import { requireDomainsModule } from "@/lib/domains/module-guard";
@@ -34,7 +35,7 @@ export async function GET(req: Request) {
   try {
     const payment = await db.payment.findFirst({
       where: { qpayInvoiceId: invoiceId },
-      include: { domainOrder: true, serviceOrder: true },
+      include: { domainOrder: true, serviceOrder: true, invoice: true },
     });
 
     if (!payment) {
@@ -44,6 +45,7 @@ export async function GET(req: Request) {
     const orderId = payment.domainOrderId ?? payment.serviceOrderId;
     const orderNumber =
       payment.domainOrder?.orderNumber ?? payment.serviceOrder?.orderNumber ?? null;
+    const billingInvoiceNumber = payment.invoice?.number ?? null;
 
     if (payment.status === "COMPLETED") {
       return NextResponse.json({
@@ -51,6 +53,8 @@ export async function GET(req: Request) {
         status: "COMPLETED",
         orderId,
         orderNumber,
+        billingInvoiceNumber,
+        kind: payment.invoice ? "renewal" : orderId ? "order" : null,
       });
     }
 
@@ -62,25 +66,31 @@ export async function GET(req: Request) {
       }
 
       const firstRow = result.rows[0];
+      const markOpts = {
+        transactionId: firstRow?.transaction_id ?? firstRow?.payment_id ?? null,
+        metadata: { qpayCheck: result as object },
+      };
+
       const marked = payment.serviceOrderId
-        ? await markServiceOrderPaid(payment.serviceOrderId, {
-            transactionId: firstRow?.transaction_id ?? firstRow?.payment_id ?? null,
-            metadata: { qpayCheck: result as object },
-          })
+        ? await markServiceOrderPaid(payment.serviceOrderId, markOpts)
         : payment.domainOrderId
-          ? await markOrderPaid(payment.domainOrderId, {
-              transactionId: firstRow?.transaction_id ?? firstRow?.payment_id ?? null,
-              metadata: { qpayCheck: result as object },
-            })
-          : null;
+          ? await markOrderPaid(payment.domainOrderId, markOpts)
+          : payment.invoice
+            ? await markRenewalInvoicePaid(payment.id, markOpts)
+            : null;
 
       return NextResponse.json({
         paid: true,
         status: "COMPLETED",
         amount: result.paid_amount,
         transactionId: firstRow?.transaction_id,
-        orderId: marked?.orderId ?? orderId,
-        orderNumber: marked?.orderNumber ?? orderNumber,
+        orderId: marked && "orderId" in marked ? marked.orderId : orderId,
+        orderNumber: marked && "orderNumber" in marked ? marked.orderNumber : orderNumber,
+        billingInvoiceNumber:
+          marked && "invoiceNumber" in marked
+            ? marked.invoiceNumber
+            : billingInvoiceNumber,
+        kind: payment.invoice ? "renewal" : orderId ? "order" : null,
       });
     }
 

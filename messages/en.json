@@ -639,7 +639,10 @@
       "invoiceOpen": "Open",
       "invoicePaid": "Paid",
       "invoiceVoid": "Void",
-      "invoiceOverdue": "Overdue"
+      "invoiceOverdue": "Overdue",
+      "payNow": "Pay now",
+      "paying": "Preparing...",
+      "payError": "Could not start payment. Please try again."
     },
     "password": {
       "tabMagicLink": "Email link",

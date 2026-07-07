@@ -26,6 +26,10 @@ export function toPublicSubscriptionSummary(
 }
 
 export function toPublicInvoiceSummary(invoice: InvoiceWithLines): PublicInvoiceSummary {
+  const payable =
+    Boolean(invoice.subscriptionId) &&
+    (invoice.status === "OPEN" || invoice.status === "OVERDUE");
+
   return {
     id: invoice.id,
     number: invoice.number,
@@ -39,6 +43,8 @@ export function toPublicInvoiceSummary(invoice: InvoiceWithLines): PublicInvoice
     createdAt: invoice.createdAt.toISOString(),
     serviceOrderId: invoice.serviceOrderId,
     domainOrderId: invoice.domainOrderId,
+    subscriptionId: invoice.subscriptionId,
+    payable,
     lineItems: invoice.lineItems
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((item) => ({

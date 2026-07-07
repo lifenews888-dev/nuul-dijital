@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { markRenewalInvoicePaid } from "@/lib/billing/renewal";
 import { markOrderPaid } from "@/lib/domains/mark-paid";
 import { markServiceOrderPaid } from "@/lib/services/mark-paid";
 import { checkPayment, isQPayConfigured } from "@/lib/payments/qpay";
@@ -22,6 +23,7 @@ export async function POST(req: Request) {
 
     const payment = await db.payment.findFirst({
       where: { qpayInvoiceId: invoiceId },
+      include: { invoice: true },
     });
 
     if (!payment) {
@@ -48,6 +50,8 @@ export async function POST(req: Request) {
         await markServiceOrderPaid(payment.serviceOrderId, markOpts);
       } else if (payment.domainOrderId) {
         await markOrderPaid(payment.domainOrderId, markOpts);
+      } else if (payment.invoice) {
+        await markRenewalInvoicePaid(payment.id, markOpts);
       }
     }
 

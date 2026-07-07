@@ -639,7 +639,10 @@
       "invoiceOpen": "Нээлттэй",
       "invoicePaid": "Төлсөн",
       "invoiceVoid": "Хүчингүй",
-      "invoiceOverdue": "Хугацаа хэтэрсэн"
+      "invoiceOverdue": "Хугацаа хэтэрсэн",
+      "payNow": "Төлөх",
+      "paying": "Бэлтгэж байна...",
+      "payError": "Төлбөр эхлүүлэхэд алдаа гарлаа. Дахин оролдоно уу."
     },
     "password": {
       "tabMagicLink": "Имэйл холбоос",

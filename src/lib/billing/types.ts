@@ -21,6 +21,8 @@ export type PublicInvoiceSummary = {
   lineItems: PublicInvoiceLineItem[];
   serviceOrderId: string | null;
   domainOrderId: string | null;
+  subscriptionId: string | null;
+  payable: boolean;
 };
 
 export type PublicSubscriptionSummary = {
