@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { DomainSearchHero, DomainSearchPanel } from "@/components/domains";
+import { DomainSearchHero, DomainSearchPanel, InfrastructureProducts } from "@/components/domains";
 import { DomainsMaintenance } from "@/components/domains/domains-maintenance";
 import { FaqSection } from "@/components/sections/faq-section";
 import { CTASection } from "@/components/sections/cta-section";
@@ -53,6 +53,9 @@ export default async function DomainsPage({
       <DomainSearchHero />
       <section className="container-wide pb-16">
         <DomainSearchPanel initialQuery={initialQuery} aiSuggestEnabled={aiSuggestEnabled} />
+      </section>
+      <section className="container-wide pb-8">
+        <InfrastructureProducts showDomains={false} />
       </section>
       <FaqSection />
       <CTASection />

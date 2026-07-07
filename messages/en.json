@@ -4,6 +4,8 @@
     "about": "About",
     "services": "Services",
     "domains": "Domains",
+    "hosting": "Hosting",
+    "businessEmail": "Email",
     "industries": "Industries",
     "portfolio": "Portfolio",
     "caseStudies": "Case Studies",
@@ -747,6 +749,29 @@
     "rights": "All rights reserved.",
     "colCompany": "Company",
     "colServices": "Services",
+    "colProducts": "Products",
     "colResources": "Resources"
+  },
+  "infraProducts": {
+    "label": "Digital products",
+    "title": "Beyond domains",
+    "description": "Domains, hosting, business email, and SSL — order from one platform.",
+    "cta": "Learn more →",
+    "domains": {
+      "title": "Domains",
+      "short": "Search and register .mn and global domains instantly."
+    },
+    "hosting": {
+      "title": "Web hosting",
+      "short": "SSD hosting with SSL and daily backups."
+    },
+    "email": {
+      "title": "Business email",
+      "short": "Professional mailboxes on your own domain."
+    },
+    "ssl": {
+      "title": "SSL certificates",
+      "short": "Free SSL on Nuul hosting — secure your site."
+    }
   }
 }

@@ -23,6 +23,8 @@ const NAV_KEY: Record<string, string> = {
   "/about": "about",
   "/services": "services",
   "/domains": "domains",
+  "/hosting": "hosting",
+  "/business-email": "businessEmail",
   "/industries": "industries",
   "/portfolio": "portfolio",
   "/case-studies": "caseStudies",

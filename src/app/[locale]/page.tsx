@@ -1,5 +1,6 @@
 import { Hero } from "@/components/sections/hero";
 import { TrustedBy } from "@/components/sections/trusted-by";
+import { InfrastructureProducts } from "@/components/domains/infrastructure-products";
 import { ServicesSection } from "@/components/sections/services-section";
 import { WhyNuul } from "@/components/sections/why-nuul";
 import { PortfolioShowcase } from "@/components/sections/portfolio-showcase";
@@ -31,6 +32,9 @@ export default async function HomePage() {
     <>
       <Hero stats={stats} />
       <TrustedBy />
+      <section className="container-wide">
+        <InfrastructureProducts />
+      </section>
       <ServicesSection />
       <WhyNuul stats={stats} values={values} />
       <PortfolioShowcase projects={showcaseProjects} />

@@ -10,13 +10,14 @@ export async function Footer({ logoUrl }: { logoUrl?: string | null }) {
   const colTitle: Record<string, string> = {
     "Компани": t("colCompany"),
     "Үйлчилгээ": t("colServices"),
+    "Бүтээгдэхүүн": t("colProducts"),
     "Нөөц": t("colResources"),
   };
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-ink">
       <div className="absolute -top-40 left-1/2 h-80 w-[800px] -translate-x-1/2 rounded-full bg-accent/10 blur-[120px]" />
       <div className="container-wide relative py-16 lg:py-20">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           <div className="flex flex-col gap-6">
             <Link href="/" className="flex items-center gap-2.5">
               <Logo size={logoUrl ? 60 : 40} src={logoUrl} />

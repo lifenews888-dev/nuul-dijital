@@ -6,6 +6,7 @@ export { DomainResultList } from "./domain-result-list";
 export { DomainResultRow } from "./domain-result-row";
 export { DomainSuggestions } from "./domain-suggestions";
 export { GrowthStackStrip } from "./growth-stack-strip";
+export { InfrastructureProducts } from "./infrastructure-products";
 export { DomainsMaintenance } from "./domains-maintenance";
 export { DomainSearchTeaser } from "./domain-search-teaser";
 export { DomainCheckoutSheet } from "./domain-checkout-sheet";

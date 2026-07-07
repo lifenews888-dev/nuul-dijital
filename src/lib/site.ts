@@ -24,6 +24,8 @@ export const navLinks = [
   { label: "Бидний тухай", href: "/about" },
   { label: "Үйлчилгээ", href: "/services" },
   { label: "Домэйн", href: "/domains" },
+  { label: "Хостинг", href: "/hosting" },
+  { label: "Имэйл", href: "/business-email" },
   { label: "Салбарууд", href: "/industries" },
   { label: "Портфолио", href: "/portfolio" },
   { label: "Кейс судалгаа", href: "/case-studies" },
@@ -53,9 +55,18 @@ export const footerNav = [
     ],
   },
   {
-    title: "Нөөц",
+    title: "Бүтээгдэхүүн",
     links: [
       { label: "Домэйн хайх", href: "/domains" },
+      { label: "Вэб хостинг", href: "/hosting" },
+      { label: "Бизнес имэйл", href: "/business-email" },
+      { label: "SSL баталгаажуулалт", href: "/ssl" },
+      { label: "Захиалга харах", href: "/orders/lookup" },
+    ],
+  },
+  {
+    title: "Нөөц",
+    links: [
       { label: "Төслийн бриф / Үнийн санал", href: "/quote" },
       { label: "Портфолио", href: "/portfolio" },
       { label: "Кейс судалгаа", href: "/case-studies" },
