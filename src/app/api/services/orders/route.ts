@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getAppContext } from "@/lib/app";
 import { requireDomainsModule, requireServiceOrdersEnabled } from "@/lib/domains/module-guard";
 import { getBankSettings } from "@/lib/domains/bank-settings";
 import { formatDomainPrice } from "@/lib/domains/format";
@@ -50,11 +51,14 @@ export async function POST(req: Request) {
       inputLocale ?? (req.headers.get("accept-language")?.startsWith("en") ? "en" : "mn");
 
     const domainName = rawDomain?.trim() || undefined;
+    const appCtx = await getAppContext();
 
     const { order, payment } = await createServiceOrder({
       ...orderInput,
       domainName,
       locale,
+      orgId: appCtx?.organization.id,
+      userId: appCtx?.user.id,
     });
 
     const serviceLabel = SERVICE_TYPE_LABELS[order.serviceType];

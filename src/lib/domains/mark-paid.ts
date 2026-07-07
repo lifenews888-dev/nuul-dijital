@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { logActivity } from "@/lib/activity";
+import { createDomainInvoice } from "@/lib/billing/activate";
 import { db } from "@/lib/db";
 import { formatDomainPrice } from "@/lib/domains/format";
 import { buildPaymentReceiptHtml } from "@/lib/domains/receipt";
@@ -91,6 +92,8 @@ export async function markOrderPaid(
         /* journey may have been deleted */
       }
     }
+
+    await createDomainInvoice(tx, order, payment, paidAt);
   });
 
   const priceLabel = formatDomainPrice(payment.amount, "mn");

@@ -75,13 +75,92 @@ model Organization {
   ownerId      String
   owner        User     @relation("OrgOwner", fields: [ownerId], references: [id])
   members      OrgMember[]
-  domainOrders DomainOrder[]
+  domainOrders  DomainOrder[]
   serviceOrders ServiceOrder[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  subscriptions Subscription[]
+  invoices      Invoice[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([billingEmail])
   @@index([ownerId])
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  TRIALING
+  PAUSED
+}
+
+enum InvoiceStatus {
+  OPEN
+  PAID
+  VOID
+  OVERDUE
+}
+
+model Subscription {
+  id                 String             @id @default(cuid())
+  orgId              String
+  organization       Organization       @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  serviceOrderId     String?            @unique
+  serviceOrder       ServiceOrder?      @relation(fields: [serviceOrderId], references: [id], onDelete: SetNull)
+  serviceType        ServiceType
+  planKey            String
+  status             SubscriptionStatus @default(ACTIVE)
+  unitPriceMnt       Int
+  billingMonths      Int                @default(1)
+  currency           String             @default("MNT")
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean            @default(false)
+  cancelledAt        DateTime?
+  metadata           Json?
+  invoices           Invoice[]
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@index([orgId, status])
+  @@index([currentPeriodEnd])
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  orgId          String
+  organization   Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  serviceOrderId String?
+  domainOrderId  String?
+  number         String        @unique
+  status         InvoiceStatus @default(OPEN)
+  subtotalMnt    Int
+  taxMnt         Int           @default(0)
+  totalMnt       Int
+  currency       String        @default("MNT")
+  dueAt          DateTime
+  paidAt         DateTime?
+  paymentId      String?       @unique
+  payment        Payment?      @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  lineItems      InvoiceLineItem[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([orgId, status])
+  @@index([dueAt])
+}
+
+model InvoiceLineItem {
+  id           String  @id @default(cuid())
+  invoiceId    String
+  invoice      Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description  String
+  quantity     Int     @default(1)
+  unitPriceMnt Int
+  amountMnt    Int
+  sortOrder    Int     @default(0)
 }
 
 model OrgMember {
@@ -650,6 +729,7 @@ model Payment {
   paidAt        DateTime?
   expiresAt     DateTime?
   metadata      Json?
+  invoice       Invoice?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -736,9 +816,10 @@ model ServiceOrder {
   adminNotes        String? @db.Text
   provisionDetails  Json?
 
-  payment   Payment?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  payment      Payment?
+  subscription Subscription?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([status, createdAt])
   @@index([customerEmail])

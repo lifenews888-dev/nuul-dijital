@@ -17,6 +17,8 @@ export type CreateServiceOrderInput = {
   paymentMethod: "QPAY" | "BANK_TRANSFER";
   journeyId?: string;
   locale?: string;
+  orgId?: string;
+  userId?: string;
 };
 
 export type CreateServiceOrderResult = {
@@ -97,6 +99,8 @@ export async function createServiceOrder(
             customerPhone: input.customerPhone.trim(),
             company: input.company?.trim() || null,
             journeyId: input.journeyId || null,
+            orgId: input.orgId || null,
+            userId: input.userId || null,
             status: "PENDING_PAYMENT",
           },
         });

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { LayoutDashboard } from "lucide-react";
-import { AppDashboard } from "@/components/app/app-dashboard";
+import { CreditCard } from "lucide-react";
+import { AppBillingPanel } from "@/components/app/app-billing-panel";
 import { AppPageHeader } from "@/components/app/app-page-header";
 import { getAppUser } from "@/lib/app";
 import { getCachedSiteFlag } from "@/lib/settings";
@@ -14,29 +14,20 @@ async function isDomainsModuleEnabled(): Promise<boolean> {
   return readFlag();
 }
 
-export default async function AppDashboardPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ verified?: string }>;
-}) {
-  const [{ verified }, enabled, user] = await Promise.all([
-    searchParams,
-    isDomainsModuleEnabled(),
-    getAppUser(),
-  ]);
+export default async function AppBillingPage() {
+  const [enabled, user] = await Promise.all([isDomainsModuleEnabled(), getAppUser()]);
 
   if (!enabled) return <DomainsMaintenance />;
-
   if (!user) redirect("/app/login");
 
   return (
     <>
       <AppPageHeader
-        icon={LayoutDashboard}
-        titleKey="dashboardTitle"
-        subtitleKey="dashboardSubtitle"
+        icon={CreditCard}
+        titleKey="billingTitle"
+        subtitleKey="billingSubtitle"
       />
-      <AppDashboard verified={verified === "1"} />
+      <AppBillingPanel />
     </>
   );
 }

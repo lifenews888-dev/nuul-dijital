@@ -1,12 +1,14 @@
 "use client";
 
-import { LayoutDashboard, LogOut } from "lucide-react";
+import { CreditCard, LayoutDashboard, LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LogoMark } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 import { GradientMesh } from "@/components/shared/gradient-mesh";
+import { cn } from "@/lib/utils";
 
 type Props = {
   userEmail: string;
@@ -14,8 +16,14 @@ type Props = {
   children: React.ReactNode;
 };
 
+const NAV_ITEMS = [
+  { href: "/app", labelKey: "navDashboard" as const, icon: LayoutDashboard, exact: true },
+  { href: "/app/billing", labelKey: "navBilling" as const, icon: CreditCard, exact: false },
+];
+
 export function AppShell({ userEmail, orgName, children }: Props) {
   const t = useTranslations("app");
+  const pathname = usePathname();
 
   return (
     <div className="relative min-h-screen">
@@ -42,20 +50,29 @@ export function AppShell({ userEmail, orgName, children }: Props) {
             </Button>
           </div>
         </div>
+        <nav className="container-wide flex gap-1 border-t border-white/5 pb-0 pt-1">
+          {NAV_ITEMS.map(({ href, labelKey, icon: Icon, exact }) => {
+            const active = exact ? pathname === href : pathname.startsWith(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={cn(
+                  "flex items-center gap-2 rounded-t-lg px-4 py-2.5 text-sm font-medium transition-colors",
+                  active
+                    ? "border-b-2 border-accent text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className="size-4" />
+                {t(labelKey)}
+              </Link>
+            );
+          })}
+        </nav>
       </header>
 
-      <div className="container-wide relative z-10 py-8">
-        <div className="mb-8 flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-            <LayoutDashboard className="size-5 text-accent" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold">{t("dashboardTitle")}</h1>
-            <p className="text-sm text-muted-foreground">{t("dashboardSubtitle")}</p>
-          </div>
-        </div>
-        {children}
-      </div>
+      <div className="container-wide relative z-10 py-8">{children}</div>
     </div>
   );
 }

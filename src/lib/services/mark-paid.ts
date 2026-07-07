@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { logActivity } from "@/lib/activity";
+import { activateServiceSubscription } from "@/lib/billing/activate";
 import { db } from "@/lib/db";
 import { formatDomainPrice } from "@/lib/domains/format";
 import { escapeHtml, row, sendEmail } from "@/lib/mail";
@@ -82,6 +83,8 @@ export async function markServiceOrderPaid(
       where: { id: order.id },
       data: { status: "PAID" },
     });
+
+    await activateServiceSubscription(tx, order, payment, paidAt);
   });
 
   const serviceLabel = SERVICE_TYPE_LABELS[order.serviceType];
