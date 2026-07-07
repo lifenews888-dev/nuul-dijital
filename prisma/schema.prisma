@@ -47,6 +47,54 @@ model User {
   fulfilledDomains    DomainOrder[]  @relation("DomainFulfilledBy")
   serviceOrders       ServiceOrder[]
   provisionedServices ServiceOrder[] @relation("ServiceProvisionedBy")
+  ownedOrganizations  Organization[] @relation("OrgOwner")
+  orgMemberships      OrgMember[]
+}
+
+enum OrgType {
+  INDIVIDUAL
+  BUSINESS
+  RESELLER
+  PARTNER
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  BILLING
+  TECH
+  VIEWER
+}
+
+model Organization {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  type         OrgType  @default(INDIVIDUAL)
+  billingEmail String
+  ownerId      String
+  owner        User     @relation("OrgOwner", fields: [ownerId], references: [id])
+  members      OrgMember[]
+  domainOrders DomainOrder[]
+  serviceOrders ServiceOrder[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([billingEmail])
+  @@index([ownerId])
+}
+
+model OrgMember {
+  id        String       @id @default(cuid())
+  orgId     String
+  userId    String
+  role      OrgRole      @default(VIEWER)
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime     @default(now())
+
+  @@unique([orgId, userId])
+  @@index([userId])
 }
 
 model Account {
@@ -559,6 +607,8 @@ model DomainOrder {
 
   userId         String?
   user           User?              @relation(fields: [userId], references: [id])
+  orgId          String?
+  organization   Organization?      @relation(fields: [orgId], references: [id], onDelete: SetNull)
   leadId         String?
   lead           Lead?              @relation(fields: [leadId], references: [id], onDelete: SetNull)
   projectBriefId String?
@@ -581,6 +631,7 @@ model DomainOrder {
   @@index([status, createdAt])
   @@index([customerEmail])
   @@index([domainName])
+  @@index([orgId])
 }
 
 model Payment {
@@ -672,6 +723,8 @@ model ServiceOrder {
 
   userId    String?
   user      User?              @relation(fields: [userId], references: [id])
+  orgId     String?
+  organization Organization?     @relation(fields: [orgId], references: [id], onDelete: SetNull)
   leadId    String?
   lead      Lead?              @relation(fields: [leadId], references: [id], onDelete: SetNull)
   journeyId String?
@@ -691,6 +744,7 @@ model ServiceOrder {
   @@index([customerEmail])
   @@index([serviceType])
   @@index([domainName])
+  @@index([orgId])
 }
 
 model ServiceBundle {

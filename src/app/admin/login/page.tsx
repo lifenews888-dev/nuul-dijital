@@ -22,7 +22,7 @@ function LoginForm() {
     setLoading(true);
     setError(false);
     const fd = new FormData(e.currentTarget);
-    const res = await signIn("credentials", {
+    const res = await signIn("admin", {
       email: String(fd.get("email")),
       password: String(fd.get("password")),
       redirect: false,

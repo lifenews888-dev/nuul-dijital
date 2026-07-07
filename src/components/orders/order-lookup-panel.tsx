@@ -43,7 +43,7 @@ function serviceStatusKey(status: PublicServiceOrderSummary["status"]) {
   return `status.${status}` as const;
 }
 
-function OrderCard({
+export function OrderCard({
   order,
   locale,
 }: {
@@ -331,6 +331,11 @@ export function OrderLookupPanel({ initialEmail, verified, error, locale }: Prop
       ) : (
         <form onSubmit={onRequestLink} className="rounded-2xl border border-white/10 bg-white/5 p-6">
           <p className="text-sm text-muted-foreground">{t("formHint")}</p>
+          <p className="mt-2 text-sm">
+            <Link href="/app/login" className="text-accent hover:underline">
+              {t("fullAccount")}
+            </Link>
+          </p>
           <div className="mt-5 flex flex-col gap-2">
             <Label htmlFor="order-lookup-email">{tf("email")}</Label>
             <Input

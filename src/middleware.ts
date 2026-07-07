@@ -32,6 +32,18 @@ export default function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  if (pathname.startsWith("/app")) {
+    if (pathname.startsWith("/app/login")) return NextResponse.next();
+    const hasSession = SESSION_COOKIES.some((name) => req.cookies.has(name));
+    if (!hasSession) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/app/login";
+      url.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
+  }
+
   return intlMiddleware(req);
 }
 

@@ -558,8 +558,38 @@
       }
     }
   },
+  "app": {
+    "portalTitle": "My account",
+    "dashboardTitle": "Dashboard",
+    "dashboardSubtitle": "Orders, services, and next steps",
+    "loginTitle": "Sign in",
+    "loginSubtitle": "We'll email you a secure sign-in link",
+    "sendLink": "Send link",
+    "emailSentTitle": "Check your email",
+    "emailSentBody": "Use the sign-in link within 15 minutes.",
+    "requestError": "Could not send the email. Please try again.",
+    "verified": "You're signed in.",
+    "signOut": "Sign out",
+    "organization": "Organization",
+    "loading": "Loading...",
+    "loadError": "Could not load your data.",
+    "retry": "Try again",
+    "empty": "No orders yet. Start with a domain or hosting plan.",
+    "guestLookup": "Guest? Look up an order",
+    "quickDomains": "Search domains",
+    "quickDomainsHint": "Register a new domain",
+    "quickHosting": "Hosting",
+    "quickHostingHint": "Host your website",
+    "quickEmail": "Business email",
+    "quickEmailHint": "Professional mailboxes",
+    "errors": {
+      "invalid": "This link is invalid or has expired.",
+      "rateLimited": "Too many attempts. Please wait and try again."
+    }
+  },
   "ordersLookup": {
     "formHint": "Enter the email you used when ordering and we'll send you a sign-in link.",
+    "fullAccount": "Create a full account → /app",
     "sendLink": "Send link",
     "emailSentTitle": "Check your email",
     "emailSentBody": "If there are orders for this address, you'll receive a sign-in link. Use it within 15 minutes.",
