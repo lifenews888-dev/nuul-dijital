@@ -379,12 +379,23 @@ export async function markRenewalInvoicePaid(
     if (subscription) {
       const newStart = subscription.currentPeriodEnd;
       const newEnd = addMonths(newStart, subscription.billingMonths);
+      const subMeta =
+        subscription.metadata &&
+        typeof subscription.metadata === "object" &&
+        !Array.isArray(subscription.metadata)
+          ? { ...(subscription.metadata as Record<string, unknown>) }
+          : {};
+      delete subMeta.suspendedAt;
+      delete subMeta.suspendReason;
+      delete subMeta.overdueInvoiceId;
+
       await tx.subscription.update({
         where: { id: subscription.id },
         data: {
           status: "ACTIVE",
           currentPeriodStart: newStart,
           currentPeriodEnd: newEnd,
+          metadata: subMeta as Prisma.InputJsonValue,
         },
       });
     }
