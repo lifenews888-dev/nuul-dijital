@@ -216,7 +216,7 @@
     "ordersLookup": {
       "label": "Orders",
       "title": "Your <accent>orders</accent>",
-      "description": "Sign in with the email you used at checkout to view your domain order history.",
+      "description": "Verify with the email you used at checkout to view your domain and service order history.",
       "metaTitle": "Order lookup",
       "metaDescription": "Get a magic link by email to view and track your Nuul Digital domain orders."
     },
@@ -614,11 +614,25 @@
     }
   },
   "ordersLookup": {
-    "formHint": "Enter the email you used when ordering and we'll send you a sign-in link.",
-    "fullAccount": "Create a full account → /app",
+    "formTitle": "Verify by email",
+    "formHint": "Enter the email you used when ordering and we'll send a secure verification link.",
+    "securityNote": "We'll only send a one-time secure link to your inbox.",
+    "fullAccountTitle": "Full account",
+    "fullAccountHint": "Billing, renewals, and all orders in one place",
+    "fullAccountCta": "Sign in",
     "sendLink": "Send link",
+    "resendLink": "Try a different email",
     "emailSentTitle": "Check your email",
-    "emailSentBody": "If there are orders for this address, you'll receive a sign-in link. Use it within 15 minutes.",
+    "emailSentBody": "If there are orders for this address, you'll receive a verification link shortly.",
+    "emailSentTip1": "Check your inbox and spam folder",
+    "emailSentTip2": "The link expires in 15 minutes",
+    "emailSentTip3": "Click the link to view your orders instantly",
+    "steps": {
+      "enterEmail": "Enter email",
+      "checkInbox": "Check inbox",
+      "viewOrders": "View orders"
+    },
+    "verifiedTitle": "Verified",
     "requestError": "Could not send the email. Please try again.",
     "verified": "You're signed in. Your orders are below.",
     "signedInAs": "Signed in as",

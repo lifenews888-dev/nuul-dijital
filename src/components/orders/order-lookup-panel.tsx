@@ -2,7 +2,17 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowRight, Check, Loader2, LogOut, Mail, Package } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Inbox,
+  Loader2,
+  LogOut,
+  Mail,
+  Package,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +26,7 @@ import type {
 } from "@/lib/domains/order-lookup-public";
 import { formatDomainPrice } from "@/lib/domains/format";
 import { formatDate } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 type Props = {
   initialEmail: string | null;
@@ -41,6 +52,196 @@ function serviceStatusKey(status: PublicServiceOrderSummary["status"]) {
     return `statusService.${status}` as const;
   }
   return `status.${status}` as const;
+}
+
+function VerificationSteps({ activeStep }: { activeStep: 1 | 2 | 3 }) {
+  const t = useTranslations("ordersLookup");
+
+  const steps = [
+    { num: 1, label: t("steps.enterEmail") },
+    { num: 2, label: t("steps.checkInbox") },
+    { num: 3, label: t("steps.viewOrders") },
+  ] as const;
+
+  return (
+    <ol className="grid grid-cols-3 gap-2">
+      {steps.map((step) => {
+        const done = step.num < activeStep;
+        const active = step.num === activeStep;
+        return (
+          <li
+            key={step.num}
+            className={cn(
+              "rounded-xl border px-2 py-3 text-center transition-colors",
+              done && "border-accent/30 bg-accent/10",
+              active && "border-accent/50 bg-accent/15 ring-1 ring-accent/20",
+              !done && !active && "border-white/10 bg-white/[0.02]"
+            )}
+          >
+            <span
+              className={cn(
+                "mx-auto flex size-7 items-center justify-center rounded-full text-xs font-bold",
+                done || active
+                  ? "bg-accent-gradient text-white"
+                  : "border border-white/15 bg-white/5 text-muted-foreground"
+              )}
+            >
+              {done ? <Check className="size-3.5" /> : step.num}
+            </span>
+            <p
+              className={cn(
+                "mt-2 text-[11px] font-medium leading-tight",
+                active ? "text-foreground" : "text-muted-foreground"
+              )}
+            >
+              {step.label}
+            </p>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function OrderVerificationForm({ locale }: { locale: string }) {
+  const t = useTranslations("ordersLookup");
+  const tf = useTranslations("forms");
+  const [email, setEmail] = useState("");
+  const [requestState, setRequestState] = useState<"idle" | "loading" | "sent" | "error">("idle");
+
+  async function onRequestLink(e: React.FormEvent) {
+    e.preventDefault();
+    setRequestState("loading");
+    try {
+      const res = await fetch("/api/orders/lookup/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, locale }),
+      });
+      if (res.ok) {
+        track("order_lookup_request", { locale });
+        setEmail("");
+        setRequestState("sent");
+      } else {
+        setRequestState("error");
+      }
+    } catch {
+      setRequestState("error");
+    }
+  }
+
+  if (requestState === "sent") {
+    return (
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-card/80 shadow-xl backdrop-blur">
+        <div className="border-b border-white/10 bg-accent/5 px-6 py-5">
+          <VerificationSteps activeStep={2} />
+        </div>
+        <div className="px-6 py-8 text-center">
+          <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-accent-gradient text-white shadow-lg shadow-accent/20">
+            <Inbox className="size-8" />
+          </div>
+          <h2 className="mt-5 text-xl font-bold">{t("emailSentTitle")}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t("emailSentBody")}</p>
+
+          <ul className="mt-6 space-y-3 text-left">
+            {[t("emailSentTip1"), t("emailSentTip2"), t("emailSentTip3")].map((tip) => (
+              <li
+                key={tip}
+                className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm"
+              >
+                <Check className="mt-0.5 size-4 shrink-0 text-accent" />
+                <span className="text-muted-foreground">{tip}</span>
+              </li>
+            ))}
+          </ul>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-6 w-full"
+            onClick={() => setRequestState("idle")}
+          >
+            {t("resendLink")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-hidden rounded-3xl border border-white/10 bg-card/80 shadow-xl backdrop-blur">
+      <div className="border-b border-white/10 bg-accent/5 px-6 py-5">
+        <VerificationSteps activeStep={1} />
+      </div>
+
+      <form onSubmit={onRequestLink} className="px-6 py-8">
+        <div className="flex items-start gap-4">
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-accent/30 bg-accent/10 text-accent">
+            <ShieldCheck className="size-6" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold">{t("formTitle")}</h2>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t("formHint")}</p>
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-col gap-2">
+          <Label htmlFor="order-lookup-email">{tf("email")}</Label>
+          <div className="relative">
+            <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              id="order-lookup-email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              placeholder={tf("emailPlaceholder")}
+              className="pl-10"
+            />
+          </div>
+        </div>
+
+        {requestState === "error" && (
+          <p className="mt-3 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300" role="alert">
+            {t("requestError")}
+          </p>
+        )}
+
+        <Button
+          type="submit"
+          variant="gradient"
+          className="mt-5 w-full"
+          disabled={requestState === "loading"}
+        >
+          {requestState === "loading" ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <>
+              {t("sendLink")} <ArrowRight className="size-4" />
+            </>
+          )}
+        </Button>
+
+        <p className="mt-4 text-center text-xs text-muted-foreground">{t("securityNote")}</p>
+      </form>
+
+      <div className="border-t border-white/10 bg-white/[0.02] px-6 py-5">
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+            <Sparkles className="size-4 text-accent" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium">{t("fullAccountTitle")}</p>
+            <p className="text-xs text-muted-foreground">{t("fullAccountHint")}</p>
+          </div>
+          <Button variant="outline" size="sm" asChild className="shrink-0">
+            <Link href="/app/login">{t("fullAccountCta")}</Link>
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function OrderCard({
@@ -158,11 +359,8 @@ function DomainOrderCard({
 
 export function OrderLookupPanel({ initialEmail, verified, error, locale }: Props) {
   const t = useTranslations("ordersLookup");
-  const tf = useTranslations("forms");
-  const [email, setEmail] = useState("");
   const [sessionEmail, setSessionEmail] = useState<string | null>(initialEmail);
   const [orders, setOrders] = useState<PublicOrderSummary[]>([]);
-  const [requestState, setRequestState] = useState<"idle" | "loading" | "sent" | "error">("idle");
   const [ordersState, setOrdersState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [ordersError, setOrdersError] = useState<string | null>(null);
 
@@ -204,25 +402,6 @@ export function OrderLookupPanel({ initialEmail, verified, error, locale }: Prop
     }
   }, [verified]);
 
-  async function onRequestLink(e: React.FormEvent) {
-    e.preventDefault();
-    setRequestState("loading");
-    try {
-      const res = await fetch("/api/orders/lookup/request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, locale }),
-      });
-      setRequestState(res.ok ? "sent" : "error");
-      if (res.ok) {
-        track("order_lookup_request", { locale });
-        setEmail("");
-      }
-    } catch {
-      setRequestState("error");
-    }
-  }
-
   async function onSignOut() {
     try {
       await fetch("/api/orders/lookup/signout", { method: "POST" });
@@ -244,18 +423,30 @@ export function OrderLookupPanel({ initialEmail, verified, error, locale }: Prop
 
   if (sessionEmail) {
     return (
-      <div className="space-y-6">
+      <div className="mx-auto max-w-3xl space-y-6">
         {verified && (
-          <div className="flex items-center gap-3 rounded-2xl border border-accent/30 bg-accent/10 px-5 py-4 text-sm">
-            <Check className="size-5 shrink-0 text-accent" />
-            <span>{t("verified")}</span>
+          <div className="flex items-center gap-4 rounded-2xl border border-accent/30 bg-accent/10 px-5 py-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-gradient text-white">
+              <Check className="size-5" />
+            </div>
+            <div>
+              <p className="font-medium">{t("verifiedTitle")}</p>
+              <p className="text-sm text-muted-foreground">{t("verified")}</p>
+            </div>
           </div>
         )}
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">{t("signedInAs")}</p>
-            <p className="mt-1 font-medium">{sessionEmail}</p>
+        <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-card/60 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex size-11 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+              <Mail className="size-5 text-accent" />
+            </div>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                {t("signedInAs")}
+              </p>
+              <p className="mt-0.5 font-medium">{sessionEmail}</p>
+            </div>
           </div>
           <Button type="button" variant="outline" size="sm" onClick={() => void onSignOut()}>
             <LogOut className="size-4" />
@@ -310,65 +501,18 @@ export function OrderLookupPanel({ initialEmail, verified, error, locale }: Prop
   }
 
   return (
-    <div className="mx-auto max-w-lg">
+    <div className="mx-auto max-w-lg space-y-6">
       {errorMessage && (
         <div
-          className="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-sm text-red-300"
+          className="flex items-start gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-sm text-red-300"
           role="alert"
         >
-          {errorMessage}
+          <ShieldCheck className="mt-0.5 size-5 shrink-0 opacity-70" />
+          <span>{errorMessage}</span>
         </div>
       )}
 
-      {requestState === "sent" ? (
-        <div className="flex items-start gap-3 rounded-2xl border border-accent/30 bg-accent/10 px-5 py-5 text-sm">
-          <Mail className="mt-0.5 size-5 shrink-0 text-accent" />
-          <div>
-            <p className="font-medium">{t("emailSentTitle")}</p>
-            <p className="mt-2 text-muted-foreground">{t("emailSentBody")}</p>
-          </div>
-        </div>
-      ) : (
-        <form onSubmit={onRequestLink} className="rounded-2xl border border-white/10 bg-white/5 p-6">
-          <p className="text-sm text-muted-foreground">{t("formHint")}</p>
-          <p className="mt-2 text-sm">
-            <Link href="/app/login" className="text-accent hover:underline">
-              {t("fullAccount")}
-            </Link>
-          </p>
-          <div className="mt-5 flex flex-col gap-2">
-            <Label htmlFor="order-lookup-email">{tf("email")}</Label>
-            <Input
-              id="order-lookup-email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              placeholder={tf("emailPlaceholder")}
-            />
-          </div>
-          {requestState === "error" && (
-            <p className="mt-3 text-sm text-red-400" role="alert">
-              {t("requestError")}
-            </p>
-          )}
-          <Button
-            type="submit"
-            variant="gradient"
-            className="mt-5 w-full sm:w-auto"
-            disabled={requestState === "loading"}
-          >
-            {requestState === "loading" ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <>
-                {t("sendLink")} <ArrowRight className="size-4" />
-              </>
-            )}
-          </Button>
-        </form>
-      )}
+      <OrderVerificationForm locale={locale} />
     </div>
   );
 }
