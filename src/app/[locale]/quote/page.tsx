@@ -10,8 +10,28 @@ export const metadata = buildMetadata({
   path: "/quote",
 });
 
-export default async function QuotePage() {
-  const t = await getTranslations("pages.quote");
+function normalizeDomain(raw: string): string {
+  return raw
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/.*$/, "")
+    .toLowerCase()
+    .trim();
+}
+
+export default async function QuotePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ domain?: string; journey?: string }>;
+}) {
+  const [{ domain, journey }, t] = await Promise.all([
+    searchParams,
+    getTranslations("pages.quote"),
+  ]);
+
+  const initial = domain
+    ? { domainStatus: "HAVE" as const, domainName: normalizeDomain(domain) }
+    : undefined;
+
   return (
     <>
       <PageHeader
@@ -21,7 +41,7 @@ export default async function QuotePage() {
       />
       <section className="container-wide pb-24">
         <div className="mx-auto max-w-4xl">
-          <QuoteWizard />
+          <QuoteWizard initial={initial} journeyId={journey} />
         </div>
       </section>
     </>

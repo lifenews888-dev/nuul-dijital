@@ -41,8 +41,12 @@ model User {
   projects   Project[]
   caseStudies CaseStudy[]
   media      MediaAsset[]
-  revisions  ContentRevision[]
-  activity   ActivityLog[]
+  revisions        ContentRevision[]
+  activity         ActivityLog[]
+  domainOrders        DomainOrder[]
+  fulfilledDomains    DomainOrder[]  @relation("DomainFulfilledBy")
+  serviceOrders       ServiceOrder[]
+  provisionedServices ServiceOrder[] @relation("ServiceProvisionedBy")
 }
 
 model Account {
@@ -368,8 +372,10 @@ model Lead {
   budget    String?
   timeline  String?
   details   String?    @db.Text
-  status    LeadStatus @default(NEW)
-  createdAt DateTime   @default(now())
+  status       LeadStatus    @default(NEW)
+  createdAt    DateTime      @default(now())
+  domainOrders  DomainOrder[]
+  serviceOrders ServiceOrder[]
 }
 
 model ContactMessage {
@@ -455,6 +461,267 @@ model ProjectBrief {
   meetingAt    String? // scheduled meeting date/time
   quoteSentAt  DateTime? // when the final quote was emailed to the client
   createdAt    DateTime   @default(now())
+  domainOrders DomainOrder[]
+}
+
+// ============================================================
+//  Domains & Growth Funnel
+// ============================================================
+
+enum TldStatus {
+  ACTIVE
+  DISABLED
+}
+
+model TldProduct {
+  id            String    @id @default(cuid())
+  tld           String    @unique
+  labelMn       String
+  labelEn       String
+  registerPrice Int
+  renewPrice    Int
+  transferPrice Int?
+  minYears      Int       @default(1)
+  maxYears      Int       @default(5)
+  featured      Boolean   @default(false)
+  sortOrder     Int       @default(0)
+  status        TldStatus @default(ACTIVE)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  orders DomainOrder[]
+}
+
+model DomainSearch {
+  id          String   @id @default(cuid())
+  query       String
+  ipHash      String?
+  userAgent   String?
+  resultCount Int
+  results     Json
+  latencyMs   Int?
+  cached      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([query])
+}
+
+enum DomainOrderStatus {
+  DRAFT
+  PENDING_PAYMENT
+  PAID
+  FULFILLING
+  COMPLETED
+  CANCELLED
+  REFUNDED
+  EXPIRED
+}
+
+enum PaymentMethod {
+  QPAY
+  BANK_TRANSFER
+  MANUAL
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  EXPIRED
+  REFUNDED
+}
+
+model DomainOrder {
+  id              String            @id @default(cuid())
+  orderNumber     String            @unique
+  domainName      String
+  domainLabel     String
+  tldProductId    String
+  tldProduct      TldProduct        @relation(fields: [tldProductId], references: [id])
+  years           Int               @default(1)
+  unitPrice       Int
+  totalAmount     Int
+  currency        String            @default("MNT")
+  status          DomainOrderStatus @default(PENDING_PAYMENT)
+
+  customerName       String
+  customerEmail      String
+  customerPhone      String
+  company            String?
+  registrantType     String            @default("INDIVIDUAL")
+  registrantAddress  String
+  registrantIdType   String?
+  registrantIdNumber String?
+  businessRegNumber  String?
+  registrantVerified Boolean           @default(false)
+
+  userId         String?
+  user           User?              @relation(fields: [userId], references: [id])
+  leadId         String?
+  lead           Lead?              @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  projectBriefId String?
+  projectBrief   ProjectBrief?      @relation(fields: [projectBriefId], references: [id], onDelete: SetNull)
+  journeyId      String?
+  journey        OnboardingJourney? @relation(fields: [journeyId], references: [id], onDelete: SetNull)
+
+  registrarName    String?
+  registrarOrderId String?
+  fulfilledAt      DateTime?
+  fulfilledById    String?
+  fulfilledBy      User?             @relation("DomainFulfilledBy", fields: [fulfilledById], references: [id])
+  adminNotes       String?           @db.Text
+  domainExpiresAt  DateTime?
+
+  payment   Payment?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([customerEmail])
+  @@index([domainName])
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  domainOrderId  String?       @unique
+  domainOrder    DomainOrder?  @relation(fields: [domainOrderId], references: [id], onDelete: Cascade)
+  serviceOrderId String?       @unique
+  serviceOrder   ServiceOrder? @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  method         PaymentMethod
+  amount        Int
+  status        PaymentStatus @default(PENDING)
+  qpayInvoiceId String?
+  qpayQrImage   String?       @db.Text
+  qpayShortUrl  String?
+  transactionId String?
+  paidAt        DateTime?
+  expiresAt     DateTime?
+  metadata      Json?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status])
+  @@index([qpayInvoiceId])
+}
+
+enum JourneyStep {
+  DOMAIN_SEARCH
+  DOMAIN_PURCHASED
+  HOSTING_SELECTED
+  EMAIL_CONFIGURED
+  WEBSITE_BRIEF
+  LOGO_GENERATED
+  SEO_SETUP
+  MAPS_LISTED
+  SOCIAL_CONNECTED
+  CHATBOT_LIVE
+  COMPLETED
+}
+
+enum JourneyStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ABANDONED
+}
+
+model OnboardingJourney {
+  id             String         @id @default(cuid())
+  sessionKey     String         @unique
+  email          String?
+  phone          String?
+  businessName   String?
+  businessNameMn String?
+  currentStep    JourneyStep    @default(DOMAIN_SEARCH)
+  status         JourneyStatus  @default(ACTIVE)
+  selectedDomain String?
+  metadata       Json?
+  domainOrders   DomainOrder[]
+  serviceOrders  ServiceOrder[]
+  suggestionRuns DomainSuggestionRun[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([email])
+  @@index([status, updatedAt])
+}
+
+enum ServiceType {
+  HOSTING
+  EMAIL
+}
+
+model ServiceOrder {
+  id            String            @id @default(cuid())
+  orderNumber   String            @unique
+  serviceType   ServiceType
+  planKey       String
+  domainName    String?
+  unitPrice     Int
+  totalAmount   Int
+  billingMonths Int               @default(1)
+  currency      String            @default("MNT")
+  status        DomainOrderStatus @default(PENDING_PAYMENT)
+
+  customerName  String
+  customerEmail String
+  customerPhone String
+  company       String?
+
+  userId    String?
+  user      User?              @relation(fields: [userId], references: [id])
+  leadId    String?
+  lead      Lead?              @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  journeyId String?
+  journey   OnboardingJourney? @relation(fields: [journeyId], references: [id], onDelete: SetNull)
+
+  provisionedAt     DateTime?
+  provisionedById   String?
+  provisionedBy     User?   @relation("ServiceProvisionedBy", fields: [provisionedById], references: [id])
+  adminNotes        String? @db.Text
+  provisionDetails  Json?
+
+  payment   Payment?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([customerEmail])
+  @@index([serviceType])
+  @@index([domainName])
+}
+
+model ServiceBundle {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  nameMn      String
+  nameEn      String
+  description String   @db.Text
+  items       Json
+  priceMnt    Int
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DomainSuggestionRun {
+  id          String             @id @default(cuid())
+  inputText   String
+  inputLocale String             @default("mn")
+  candidates  Json
+  checked     Json?
+  model       String?
+  tokenUsage  Int?
+  ipHash      String?
+  journeyId   String?
+  journey     OnboardingJourney? @relation(fields: [journeyId], references: [id], onDelete: SetNull)
+  createdAt   DateTime           @default(now())
+
+  @@index([createdAt])
+  @@index([inputText, inputLocale])
 }
 
 // AI assistant chat history (per visitor session)

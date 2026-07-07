@@ -57,6 +57,15 @@ export const briefSchema = z.object({
   timeline: z.string().optional(),
   budget: z.string().optional(),
   notes: z.string().optional(),
+  journeyId: z.string().cuid().optional(),
+});
+
+export const serviceWaitlistSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(2).optional(),
+  service: z.enum(["hosting", "email", "ssl"]),
+  plan: z.string().optional(),
+  journeyId: z.string().cuid().optional(),
 });
 
 export type ContactInput = z.infer<typeof contactSchema>;

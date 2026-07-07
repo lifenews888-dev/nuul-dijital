@@ -23,6 +23,7 @@ export const navLinks = [
   { label: "Нүүр", href: "/" },
   { label: "Бидний тухай", href: "/about" },
   { label: "Үйлчилгээ", href: "/services" },
+  { label: "Домэйн", href: "/domains" },
   { label: "Салбарууд", href: "/industries" },
   { label: "Портфолио", href: "/portfolio" },
   { label: "Кейс судалгаа", href: "/case-studies" },
@@ -54,6 +55,7 @@ export const footerNav = [
   {
     title: "Нөөц",
     links: [
+      { label: "Домэйн хайх", href: "/domains" },
       { label: "Төслийн бриф / Үнийн санал", href: "/quote" },
       { label: "Портфолио", href: "/portfolio" },
       { label: "Кейс судалгаа", href: "/case-studies" },

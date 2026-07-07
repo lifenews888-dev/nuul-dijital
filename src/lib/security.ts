@@ -3,11 +3,10 @@ import { rateLimit, getClientIp, type RateLimitResult } from "./rate-limit";
 
 /**
  * Same-origin check for state-changing API requests (CSRF mitigation).
- * Browsers always send Origin on cross-origin POST; we reject mismatches.
  */
 export function isSameOrigin(req: Request): boolean {
   const origin = req.headers.get("origin");
-  if (!origin) return true; // same-origin fetches may omit Origin; allow (cookies are SameSite=Lax)
+  if (!origin) return true;
   try {
     const allowed = new Set<string>();
     const host = req.headers.get("host");
@@ -26,12 +25,11 @@ type GuardOptions = { key: string; limit?: number; windowMs?: number };
 
 /**
  * Combined CSRF + rate-limit guard for mutation API routes.
- * Returns a NextResponse to short-circuit on failure, or null to proceed.
  */
-export function guardMutation(
+export async function guardMutation(
   req: Request,
   { key, limit = 5, windowMs = 60_000 }: GuardOptions
-): { response: NextResponse | null; rate: RateLimitResult } {
+): Promise<{ response: NextResponse | null; rate: RateLimitResult }> {
   if (!isSameOrigin(req)) {
     return {
       response: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
@@ -40,7 +38,7 @@ export function guardMutation(
   }
 
   const ip = getClientIp(req);
-  const rate = rateLimit(`${key}:${ip}`, limit, windowMs);
+  const rate = await rateLimit(`${key}:${ip}`, limit, windowMs);
   if (!rate.success) {
     return {
       response: NextResponse.json(

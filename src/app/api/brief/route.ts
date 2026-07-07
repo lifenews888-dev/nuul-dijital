@@ -13,7 +13,7 @@ const domainLabel: Record<string, string> = {
 };
 
 export async function POST(req: Request) {
-  const { response } = guardMutation(req, { key: "brief", limit: 5, windowMs: 60_000 });
+  const { response } = await guardMutation(req, { key: "brief", limit: 5, windowMs: 60_000 });
   if (response) return response;
 
   try {
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     const d = parsed.data;
     const estimate = estimateBrief(d);
 
-    await persist((db) =>
+    const brief = await persist((db) =>
       db.projectBrief.create({
         data: {
           estimateMin: estimate.min,
@@ -56,6 +56,21 @@ export async function POST(req: Request) {
         },
       })
     );
+
+    if (d.journeyId && brief) {
+      await persist(async (db) => {
+        await db.$transaction([
+          db.domainOrder.updateMany({
+            where: { journeyId: d.journeyId },
+            data: { projectBriefId: brief.id },
+          }),
+          db.onboardingJourney.update({
+            where: { id: d.journeyId },
+            data: { currentStep: "WEBSITE_BRIEF" },
+          }),
+        ]);
+      });
+    }
 
     await sendEmail({
       subject: `🎨 Шинэ загвар сайт хүсэлт — ${d.name}`,

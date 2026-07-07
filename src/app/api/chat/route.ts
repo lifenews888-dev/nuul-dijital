@@ -170,7 +170,7 @@ async function persistExchange(sessionId: string, userText: string, reply: strin
 }
 
 export async function POST(req: Request) {
-  const { response } = guardMutation(req, { key: "chat", limit: 30, windowMs: 60_000 });
+  const { response } = await guardMutation(req, { key: "chat", limit: 30, windowMs: 60_000 });
   if (response) return response;
 
   const parsed = schema.safeParse(await req.json().catch(() => null));

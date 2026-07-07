@@ -5,7 +5,7 @@ import { guardMutation } from "@/lib/security";
 import { persist } from "@/lib/persist";
 
 export async function POST(req: Request) {
-  const { response } = guardMutation(req, { key: "quote", limit: 5, windowMs: 60_000 });
+  const { response } = await guardMutation(req, { key: "quote", limit: 5, windowMs: 60_000 });
   if (response) return response;
 
   try {

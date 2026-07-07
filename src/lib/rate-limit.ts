@@ -1,15 +1,13 @@
 /**
- * Lightweight fixed-window rate limiter (in-memory).
- *
- * Suitable for single-instance / serverless-warm deployments. For multi-region
- * production behind several instances, swap the Map for Upstash Redis
- * (`@upstash/ratelimit`) — the call site API stays identical.
+ * Rate limiter with Upstash Redis (production) or in-memory fallback (local dev).
  */
+
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
 type Bucket = { count: number; resetAt: number };
 const store = new Map<string, Bucket>();
 
-// periodic cleanup to avoid unbounded growth
 let lastSweep = 0;
 function sweep(now: number) {
   if (now - lastSweep < 60_000) return;
@@ -26,12 +24,7 @@ export type RateLimitResult = {
   reset: number;
 };
 
-/**
- * @param key      unique identifier (e.g. `contact:<ip>`)
- * @param limit    max requests per window
- * @param windowMs window length in ms
- */
-export function rateLimit(key: string, limit = 5, windowMs = 60_000): RateLimitResult {
+function rateLimitInMemory(key: string, limit: number, windowMs: number): RateLimitResult {
   const now = Date.now();
   sweep(now);
 
@@ -51,14 +44,70 @@ export function rateLimit(key: string, limit = 5, windowMs = 60_000): RateLimitR
   };
 }
 
+export function isUpstashConfigured(): boolean {
+  return Boolean(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
+}
+
+const redis = isUpstashConfigured()
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    })
+  : null;
+
+let prodUpstashWarned = false;
+function warnMissingUpstashInProduction() {
+  if (prodUpstashWarned || process.env.NODE_ENV !== "production" || redis) return;
+  prodUpstashWarned = true;
+  console.warn(
+    "[rate-limit] UPSTASH_REDIS_REST_URL/TOKEN missing in production — using per-instance memory fallback (not safe for GA)."
+  );
+}
+
+const limiterCache = new Map<string, Ratelimit>();
+
+function getUpstashLimiter(limit: number, windowMs: number): Ratelimit | null {
+  if (!redis) return null;
+  const windowSec = Math.max(1, Math.ceil(windowMs / 1000));
+  const cacheKey = `${limit}:${windowSec}`;
+  let limiter = limiterCache.get(cacheKey);
+  if (!limiter) {
+    limiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(limit, `${windowSec} s`),
+      prefix: "nuul-rl",
+    });
+    limiterCache.set(cacheKey, limiter);
+  }
+  return limiter;
+}
+
+/**
+ * @param key      unique identifier (e.g. `domain-search:<ip>`)
+ * @param limit    max requests per window
+ * @param windowMs window length in ms
+ */
+export async function rateLimit(
+  key: string,
+  limit = 5,
+  windowMs = 60_000
+): Promise<RateLimitResult> {
+  warnMissingUpstashInProduction();
+  const limiter = getUpstashLimiter(limit, windowMs);
+  if (limiter) {
+    const { success, remaining, reset } = await limiter.limit(key);
+    return {
+      success,
+      remaining: Math.max(0, remaining),
+      limit,
+      reset: reset ?? Date.now() + windowMs,
+    };
+  }
+  return rateLimitInMemory(key, limit, windowMs);
+}
+
 /**
  * Best-effort client IP from proxy headers.
- *
- * Prefer `x-real-ip` — on Vercel and most managed platforms it is set by the
- * edge proxy to the true connecting IP and overwrites any client-supplied value.
- * Fall back to the LAST `x-forwarded-for` hop (the entry appended by the nearest
- * trusted proxy), not the first, which is fully client-controlled and trivially
- * spoofed to defeat per-IP rate limiting.
  */
 export function getClientIp(req: Request): string {
   const realIp = req.headers.get("x-real-ip");

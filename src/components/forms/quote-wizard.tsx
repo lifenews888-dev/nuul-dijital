@@ -54,11 +54,28 @@ type FormData = {
   notes: string;
 };
 
-const initial: FormData = {
+const defaultInitial: FormData = {
   services: [], domainStatus: "", domainName: "", hosting: null, hasLogo: null,
   pages: [], features: [], needsAuth: null, budget: "", timeline: "", colors: "",
   name: "", email: "", phone: "", company: "", about: "", goal: "", notes: "",
 };
+
+function normalizeDomain(raw: string): string {
+  return raw
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/.*$/, "")
+    .toLowerCase()
+    .trim();
+}
+
+function buildInitialState(overrides?: Partial<FormData>): FormData {
+  const merged = { ...defaultInitial, ...overrides };
+  if (overrides?.domainName) {
+    merged.domainName = normalizeDomain(overrides.domainName);
+    if (!merged.domainStatus) merged.domainStatus = "HAVE";
+  }
+  return merged;
+}
 
 const STEP_KEYS = ["step0", "step1", "step2", "step3", "step4"] as const;
 
@@ -107,11 +124,19 @@ function ChipSelect({ presets, value, onChange, placeholder }: { presets: string
   );
 }
 
-export function QuoteWizard() {
+type Props = {
+  initial?: Partial<FormData>;
+  journeyId?: string;
+};
+
+export function QuoteWizard({ initial: initialOverrides, journeyId }: Props = {}) {
   const t = useTranslations("wizard");
   const tf = useTranslations("forms");
+  const skipDomainStep =
+    !!initialOverrides?.domainName &&
+    (initialOverrides.domainStatus === "HAVE" || !initialOverrides.domainStatus);
   const [step, setStep] = useState(0);
-  const [data, setData] = useState<FormData>(initial);
+  const [data, setData] = useState<FormData>(() => buildInitialState(initialOverrides));
   const [references, setReferences] = useState<string[]>([""]);
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
 
@@ -121,16 +146,36 @@ export function QuoteWizard() {
 
   const canNext =
     (step === 0 && data.services.length > 0) ||
-    (step === 1 && !!data.domainStatus) ||
+    (step === 1 && (!!data.domainStatus || skipDomainStep)) ||
     step === 2 ||
     (step === 3 && !!data.budget && !!data.timeline) ||
     step === 4;
+
+  const goNext = () => {
+    if (step === 0 && skipDomainStep) {
+      setStep(2);
+      return;
+    }
+    setStep((s) => s + 1);
+  };
+
+  const goBack = () => {
+    if (step === 2 && skipDomainStep) {
+      setStep(0);
+      return;
+    }
+    setStep((s) => Math.max(0, s - 1));
+  };
 
   const last = STEP_KEYS.length - 1;
 
   async function submit() {
     setState("loading");
-    const payload = { ...data, references: references.map((r) => r.trim()).filter(Boolean) };
+    const payload = {
+      ...data,
+      references: references.map((r) => r.trim()).filter(Boolean),
+      ...(journeyId ? { journeyId } : {}),
+    };
     try {
       const res = await fetch("/api/brief", {
         method: "POST",
@@ -162,19 +207,23 @@ export function QuoteWizard() {
     <div className="rounded-3xl border border-white/10 bg-card p-6 sm:p-10">
       {/* progress */}
       <div className="mb-8 flex items-center gap-3">
-        {STEP_KEYS.map((key, i) => (
-          <div key={key} className="flex flex-1 items-center gap-3">
-            <div className={cn("flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors", i <= step ? "bg-accent text-white" : "bg-white/5 text-muted-foreground")}>
-              {i < step ? <Check className="size-4" /> : i + 1}
-            </div>
-            <span className={cn("hidden text-sm font-medium lg:block", i <= step ? "text-foreground" : "text-muted-foreground")}>{t(key)}</span>
-            {i < last && (
-              <div className="h-px flex-1 bg-white/10">
-                <div className="h-px bg-accent transition-all duration-500" style={{ width: i < step ? "100%" : "0%" }} />
+        {STEP_KEYS.map((key, i) => {
+          const stepDone = skipDomainStep && i === 1 ? step >= 2 : i < step;
+          const stepActive = skipDomainStep && i === 1 ? step >= 2 : i <= step;
+          return (
+            <div key={key} className="flex flex-1 items-center gap-3">
+              <div className={cn("flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors", stepActive ? "bg-accent text-white" : "bg-white/5 text-muted-foreground")}>
+                {stepDone ? <Check className="size-4" /> : i + 1}
               </div>
-            )}
-          </div>
-        ))}
+              <span className={cn("hidden text-sm font-medium lg:block", stepActive ? "text-foreground" : "text-muted-foreground")}>{t(key)}</span>
+              {i < last && (
+                <div className="h-px flex-1 bg-white/10">
+                  <div className="h-px bg-accent transition-all duration-500" style={{ width: stepDone ? "100%" : "0%" }} />
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <AnimatePresence mode="wait">
@@ -304,11 +353,11 @@ export function QuoteWizard() {
       </AnimatePresence>
 
       <div className="mt-8 flex items-center justify-between">
-        <Button variant="ghost" onClick={() => setStep((s) => Math.max(0, s - 1))} className={cn(step === 0 && "invisible")}>
+        <Button variant="ghost" onClick={goBack} className={cn(step === 0 && "invisible")}>
           <ArrowLeft className="size-4" /> {t("back")}
         </Button>
         {step < last ? (
-          <Button variant="gradient" disabled={!canNext} onClick={() => setStep((s) => s + 1)}>
+          <Button variant="gradient" disabled={!canNext} onClick={goNext}>
             {t("next")} <ArrowRight className="size-4" />
           </Button>
         ) : (

@@ -46,3 +46,26 @@ export async function getVercelConfig(): Promise<{ token: string | null; teamId:
   }
   return { token, teamId };
 }
+
+/**
+ * Reads a boolean feature flag from SiteSetting. When the row is missing,
+ * returns true only if defaultValue is the string "true".
+ */
+export async function getSiteFlag(key: string, defaultValue = "false"): Promise<boolean> {
+  if (!process.env.DATABASE_URL) return defaultValue === "true";
+  try {
+    const row = await db.siteSetting.findUnique({ where: { key } });
+    if (!row) return defaultValue === "true";
+    return row.value === "true";
+  } catch {
+    return defaultValue === "true";
+  }
+}
+
+/** Cached site flags for SSR pages (revalidated via SETTINGS_TAG). */
+export const getCachedSiteFlag = (key: string, defaultValue = "false") =>
+  unstable_cache(
+    async () => getSiteFlag(key, defaultValue),
+    [`site-flag-${key}`],
+    { tags: [SETTINGS_TAG], revalidate: 300 }
+  );

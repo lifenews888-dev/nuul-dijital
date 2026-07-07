@@ -161,6 +161,61 @@ async function main() {
     }
   }
 
+  // Domain TLD catalog — upsert so prices stay idempotent on re-run.
+  const tldProducts = [
+    { tld: ".mn", labelMn: "Монгол", labelEn: "Mongolia", registerPrice: 45000, renewPrice: 45000, sortOrder: 0, featured: true },
+    { tld: ".com", labelMn: "Ком", labelEn: "Commercial", registerPrice: 62500, renewPrice: 62500, sortOrder: 1, featured: true },
+    { tld: ".org", labelMn: "Байгууллага", labelEn: "Organization", registerPrice: 75000, renewPrice: 75000, sortOrder: 2, featured: false },
+    { tld: ".net", labelMn: "Сүлжээ", labelEn: "Network", registerPrice: 94600, renewPrice: 94600, sortOrder: 3, featured: false },
+    { tld: ".shop", labelMn: "Дэлгүүр", labelEn: "Shop", registerPrice: 88000, renewPrice: 88000, sortOrder: 4, featured: false },
+  ];
+
+  for (const t of tldProducts) {
+    await db.tldProduct.upsert({
+      where: { tld: t.tld },
+      update: {
+        labelMn: t.labelMn,
+        labelEn: t.labelEn,
+        registerPrice: t.registerPrice,
+        renewPrice: t.renewPrice,
+        sortOrder: t.sortOrder,
+        featured: t.featured,
+        status: "ACTIVE",
+      },
+      create: {
+        tld: t.tld,
+        labelMn: t.labelMn,
+        labelEn: t.labelEn,
+        registerPrice: t.registerPrice,
+        renewPrice: t.renewPrice,
+        sortOrder: t.sortOrder,
+        featured: t.featured,
+        status: "ACTIVE",
+      },
+    });
+  }
+
+  const siteSettings: { key: string; value: string }[] = [
+    { key: "domains_module_enabled", value: "false" },
+    { key: "domains_ai_suggest_enabled", value: "false" },
+    { key: "domains_qpay_enabled", value: "true" },
+    { key: "domains_auto_register_enabled", value: "false" },
+    { key: "domains_service_orders_enabled", value: "false" },
+    { key: "domains_registrar_provider", value: "manual" },
+    { key: "bankName", value: "Хаан банк" },
+    { key: "bankAccountName", value: "Nuul Digital LLC" },
+    { key: "bankAccountNumber", value: "5000000000" },
+    { key: "bankIban", value: "MN00 0000 0000 0000 0000" },
+  ];
+
+  for (const s of siteSettings) {
+    await db.siteSetting.upsert({
+      where: { key: s.key },
+      update: { value: s.value },
+      create: { key: s.key, value: s.value },
+    });
+  }
+
   console.log("✅ Seed complete.");
 }
 

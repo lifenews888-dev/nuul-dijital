@@ -680,6 +680,27 @@ export async function saveVercelConfig(formData: FormData) {
   revalidatePath("/admin/settings");
 }
 
+/** Save bank account details for domain bank-transfer checkout. */
+export async function saveBankSettings(formData: FormData) {
+  await requirePermission("settings", "update");
+  const fields = ["bankName", "bankAccountName", "bankAccountNumber", "bankIban"] as const;
+  for (const key of fields) {
+    const value = str(formData, key);
+    await db.siteSetting.upsert({
+      where: { key },
+      update: { value },
+      create: { key, value },
+    });
+  }
+  revalidateTag(SETTINGS_TAG);
+  await logActivity({
+    action: "UPDATE",
+    entity: "SiteSetting",
+    summary: "Банкны дансны тохиргоо шинэчилсэн",
+  });
+  revalidatePath("/admin/settings");
+}
+
 /** Remove the stored Vercel token (falls back to the env var if any). */
 export async function clearVercelToken() {
   await requirePermission("settings", "update");

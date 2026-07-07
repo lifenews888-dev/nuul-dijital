@@ -9,6 +9,7 @@ import { TextReveal } from "@/components/motion/text-reveal";
 import { GradientMesh } from "@/components/shared/gradient-mesh";
 import { Aurora } from "@/components/motion/aurora";
 import { Magnetic } from "@/components/motion/magnetic";
+import { DomainSearchTeaser } from "@/components/domains/domain-search-teaser";
 import type { Stat } from "@/data/company";
 
 export function Hero({ stats }: { stats: Stat[] }) {
@@ -66,6 +67,15 @@ export function Hero({ stats }: { stats: Stat[] }) {
                 <Play className="size-4" /> {t("viewWork")}
               </Link>
             </Button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.95 }}
+            className="flex w-full justify-center"
+          >
+            <DomainSearchTeaser />
           </motion.div>
         </div>
 

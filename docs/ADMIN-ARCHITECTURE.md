@@ -19,6 +19,8 @@ A role-based, audited, versioned content management system built into the Next.j
 | Leads (quotes) | pipeline | — | — | `/admin/leads` |
 | Contact Requests | read flag | — | — | `/admin/contacts` |
 | Meetings | pipeline | — | — | `/admin/meetings` |
+| Domain Orders | pipeline | — | — | `/admin/domains/orders` |
+| TLD Pricing | active flag | — | — | `/admin/domains/pricing` |
 | Activity Log | — | — | — | `/admin/activity` |
 
 ## 2. Status workflow
@@ -34,12 +36,12 @@ A role-based, audited, versioned content management system built into the Next.j
 | Role | Capability |
 |---|---|
 | **SUPER_ADMIN** | `*` — everything, incl. users & settings |
-| **ADMIN** | all content + testimonials/team/faqs/jobs + media + leads + read activity |
-| **EDITOR** | create/read/update/**publish** content, manage testimonials/faqs/jobs, media (no delete), read leads & activity |
+| **ADMIN** | all content + testimonials/team/faqs/jobs + media + leads + **domains:\*** + read activity |
+| **EDITOR** | create/read/update/**publish** content, manage testimonials/faqs/jobs, media (no delete), read leads, **domains:read/update**, read activity |
 | **AUTHOR** | create/read/update content (no publish, no delete), upload media |
 
 Permissions are `resource:action` strings (`content`, `testimonials`, `team`, `faqs`, `jobs`,
-`media`, `leads`, `activity`, `users`, `settings` × `create/read/update/delete/publish/manage`)
+`media`, `leads`, `domains`, `activity`, `users`, `settings` × `create/read/update/delete/publish/manage`)
 with `*` wildcards. `can(role, resource, action)` and `assertCan(...)` enforce it; the admin
 sidebar is filtered by `visibleSections(role)`. Every server action calls `requirePermission()`.
 
@@ -96,3 +98,15 @@ so the dashboard renders even without a database.
 - **DB-backed public pages:** swap `src/data/*` reads for `db.*` queries filtered by live status, with ISR.
 - **Multi-user:** add `@auth/prisma-adapter`, seed `User` rows with `passwordHash` (bcrypt) + role; the RBAC matrix already supports all four roles.
 - **New entity:** add the model → a `save*/delete*` action (with `requirePermission` + `logActivity`) → a form + list/new/[id] pages → a sidebar entry keyed to a `visibleSections` resource.
+
+## 11. Domains module (admin)
+
+- **Resource:** `domains` in `src/lib/rbac.ts`
+  - `ADMIN` / `SUPER_ADMIN`: `domains:*` (orders, pricing, fulfillment)
+  - `EDITOR`: `domains:read`, `domains:update` (queue + status changes, no pricing CRUD)
+- **Sidebar** (`admin-shell.tsx`):
+  - `Домэйн захиалга` → `/admin/domains/orders` (`visibleSections.domains`)
+  - `TLD үнэ` → `/admin/domains/pricing` (`visibleSections.domainsManage` = `domains:manage`)
+- **Guards:** list pages call `requirePermission("domains", "read"|"manage")`; mutations (PR 10) use `domains:update` / `domains:manage`.
+- **Fulfillment states:** `PENDING_PAYMENT → PAID → FULFILLING → COMPLETED` (+ `CANCELLED`, `REFUNDED`, `EXPIRED`).
+- **Note:** Admin domain routes are **exempt** from the public `domains_module_enabled` kill switch so in-flight orders can be fulfilled when the storefront is disabled.

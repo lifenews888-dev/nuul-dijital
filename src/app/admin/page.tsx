@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { FileText, FolderKanban, Inbox, CalendarCheck, ClipboardList, ArrowRight, Database } from "lucide-react";
+import { FileText, FolderKanban, Inbox, CalendarCheck, ClipboardList, ArrowRight, Database, Globe, Server } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireUser, safe } from "@/lib/admin";
+import { DOMAIN_ORDER_STATUS_LABELS } from "@/lib/domains/order-status";
 import { formatDate } from "@/lib/utils";
+import type { DomainOrderStatus } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +12,7 @@ export default async function AdminDashboard() {
   await requireUser();
   const dbConnected = Boolean(process.env.DATABASE_URL);
 
-  const [posts, projects, leads, briefs, contacts, meetings, recentLeads, postsByStatus, recentActivity] =
+  const [posts, projects, leads, briefs, contacts, meetings, domainQueue, serviceQueue, recentDomainOrders, recentLeads, postsByStatus, recentActivity] =
     await Promise.all([
       safe(() => db.post.count(), 0),
       safe(() => db.project.count(), 0),
@@ -18,6 +20,24 @@ export default async function AdminDashboard() {
       safe(() => db.projectBrief.count({ where: { status: "NEW" } }), 0),
       safe(() => db.contactMessage.count({ where: { read: false } }), 0),
       safe(() => db.meeting.count({ where: { status: "REQUESTED" } }), 0),
+      safe(
+        () => db.domainOrder.count({ where: { status: { in: ["PAID", "FULFILLING"] } } }),
+        0
+      ),
+      safe(
+        () => db.serviceOrder.count({ where: { status: { in: ["PAID", "FULFILLING"] } } }),
+        0
+      ),
+      safe(
+        () =>
+          db.domainOrder.findMany({
+            where: { status: { in: ["PAID", "FULFILLING", "PENDING_PAYMENT"] } },
+            orderBy: { createdAt: "desc" },
+            take: 5,
+            select: { id: true, orderNumber: true, domainName: true, status: true, createdAt: true },
+          }),
+        [] as { id: string; orderNumber: string; domainName: string; status: string; createdAt: Date }[]
+      ),
       safe(
         () => db.lead.findMany({ orderBy: { createdAt: "desc" }, take: 6 }),
         [] as Awaited<ReturnType<typeof db.lead.findMany>>
@@ -42,6 +62,8 @@ export default async function AdminDashboard() {
     { label: "Шинэ загвар хүсэлт", value: briefs, icon: ClipboardList, href: "/admin/briefs" },
     { label: "Уншаагүй хүсэлт", value: contacts, icon: Inbox, href: "/admin/contacts" },
     { label: "Хүлээгдэж буй уулзалт", value: meetings, icon: CalendarCheck, href: "/admin/meetings" },
+    { label: "Домэйн бүртгэл", value: domainQueue, icon: Globe, href: "/admin/domains/orders?status=PAID" },
+    { label: "Үйлчилгээ тохируулга", value: serviceQueue, icon: Server, href: "/admin/services/orders?status=PAID" },
   ];
 
   const statusBreakdown = [
@@ -70,7 +92,7 @@ export default async function AdminDashboard() {
         </div>
       )}
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s) => (
           <Link
             key={s.label}
@@ -102,6 +124,38 @@ export default async function AdminDashboard() {
           ))}
         </div>
       </div>
+
+      {recentDomainOrders.length > 0 && (
+        <div className="mt-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Домэйн захиалга</h2>
+            <Link href="/admin/domains/orders" className="text-sm text-accent hover:underline">
+              Бүгдийг үзэх
+            </Link>
+          </div>
+          <div className="mt-4 overflow-hidden rounded-2xl border border-white/10">
+            <ul className="divide-y divide-white/5">
+              {recentDomainOrders.map((o) => (
+                <li key={o.id}>
+                  <Link
+                    href={`/admin/domains/orders/${o.id}`}
+                    className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-white/[0.02]"
+                  >
+                    <div className="min-w-0">
+                      <div className="truncate font-mono text-sm">{o.orderNumber}</div>
+                      <div className="truncate text-sm text-muted-foreground">{o.domainName}</div>
+                    </div>
+                    <div className="shrink-0 text-right text-xs text-muted-foreground">
+                      <div>{DOMAIN_ORDER_STATUS_LABELS[o.status as DomainOrderStatus] ?? o.status}</div>
+                      <time>{formatDate(o.createdAt)}</time>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         {/* Recent activity */}

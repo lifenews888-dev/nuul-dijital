@@ -3,6 +3,7 @@
     "home": "Home",
     "about": "About",
     "services": "Services",
+    "domains": "Domains",
     "industries": "Industries",
     "portfolio": "Portfolio",
     "caseStudies": "Case Studies",
@@ -29,6 +30,13 @@
       "subtitle": "Web development, AI chatbots, automation and digital solutions that take your business to the next level — world-class quality, built for the Mongolian market.",
       "startProject": "Start your project",
       "viewWork": "View our work"
+    },
+    "domainTeaser": {
+      "title": "Find your business domain",
+      "placeholder": "kingwash",
+      "ariaLabel": "Search domain name",
+      "search": "Search",
+      "example": "Example: kingwash.mn — Car wash center"
     },
     "services": {
       "label": "Services",
@@ -155,10 +163,68 @@
       "title": "Bring your project <accent>to life</accent>",
       "description": "Fill in your project details in a few steps — services, domain, pages, features, budget. We'll review, prepare a mockup and get back to you within 24 hours with a clear quote."
     },
+    "domains": {
+      "label": "Domains",
+      "title": "Your business <accent>domain</accent>",
+      "description": "The first step to getting online in 10 minutes — find your domain and move on to hosting, email, and more.",
+      "metaTitle": "Domain search",
+      "metaDescription": "Search and compare .mn and international domains, check pricing, and order online. Nuul Digital — your first step to digital growth."
+    },
+    "hosting": {
+      "label": "Hosting",
+      "title": "Fast, reliable <accent>hosting</accent>",
+      "description": "SSD hosting on Mongolian servers — connect your domain and manage everything from one place.",
+      "metaTitle": "Web hosting",
+      "metaDescription": "Mongolia-based SSD hosting with Starter, Pro, and Business plans. One platform for domain, SSL, and email.",
+      "plansTitle": "Plans",
+      "comingSoon": "Coming soon",
+      "notify": "Get notified",
+      "ctaDomains": "Order your domain",
+      "ctaQuote": "Build a website"
+    },
+    "businessEmail": {
+      "label": "Business email",
+      "title": "Professional <accent>business email</accent>",
+      "description": "Build trust with name@company.mn — automatically configured with your hosting.",
+      "metaTitle": "Business email",
+      "metaDescription": "Business email on your own domain — name@company.mn. Secure, professional, coming soon with Nuul hosting.",
+      "plansTitle": "Plans",
+      "comingSoon": "Coming soon",
+      "notify": "Get notified",
+      "highlightLabel": "Your business address",
+      "highlightExample": "name@company.mn",
+      "highlightBody": "Not Gmail — an email on your own domain looks more professional and builds trust.",
+      "hostingNote": "Business email is automatically configured with Nuul hosting.",
+      "ctaHosting": "Choose hosting",
+      "ctaDomains": "Order your domain"
+    },
+    "ssl": {
+      "label": "SSL",
+      "title": "Secure <accent>HTTPS</accent> connection",
+      "description": "SSL certificates protect your website and email while helping search engines trust your site.",
+      "metaTitle": "SSL certificate",
+      "metaDescription": "Free SSL with Nuul hosting — HTTPS, auto-renewal, and Let's Encrypt support.",
+      "comingSoon": "Free",
+      "notify": "Get notified",
+      "freeTitle": "Free with hosting",
+      "freeBody": "Every Nuul hosting customer gets SSL at no extra cost.",
+      "featuresTitle": "What you get",
+      "hostingNote": "SSL is included free on all Nuul hosting plans.",
+      "ctaHosting": "Choose hosting",
+      "ctaDomains": "Order your domain"
+    },
+    "ordersLookup": {
+      "label": "Orders",
+      "title": "Your <accent>orders</accent>",
+      "description": "Sign in with the email you used at checkout to view your domain order history.",
+      "metaTitle": "Order lookup",
+      "metaDescription": "Get a magic link by email to view and track your Nuul Digital domain orders."
+    },
     "legal": {
       "label": "Legal",
       "privacyTitle": "Privacy Policy",
       "termsTitle": "Terms of Service",
+      "domainRegistrationTitle": "Domain Registration Terms",
       "privacy": [
         { "h": "1. What information we collect", "p": "Through contact forms, quote requests and newsletter sign-ups we collect your name, email, phone and company details." },
         { "h": "2. How we use information", "p": "We use the information we collect only to respond to your request, deliver our services, and — with your consent — send you marketing updates." },
@@ -172,6 +238,15 @@
         { "h": "3. Intellectual property", "p": "Intellectual property rights in delivered work transfer to the client once payment is made in full." },
         { "h": "4. Liability", "p": "We strive to deliver our services to a high professional standard but are not liable for indirect damages." },
         { "h": "5. Contact", "p": "If you have any questions about these terms, contact us at hello@nuul.digital." }
+      ],
+      "domainRegistration": [
+        { "h": "1. Scope of service", "p": "Nuul Digital acts as your agent to register, renew, and transfer domain names. Authoritative registry rights remain with registry.mn / NIC.MN." },
+        { "h": "2. Registrant obligations", "p": "You must provide accurate identity information and submit required documents within 3 business days of ordering. False information may result in cancellation." },
+        { "h": "3. .mn domain policy", "p": "Use, prohibited content, and dispute resolution for .mn domains are governed by official NIC.MN policy. See https://registry.mn" },
+        { "h": "4. Renewal and expiry", "p": "Domains are typically registered for 1 year. Renewal reminders are sent by email. Grace periods after expiry are defined by the registry." },
+        { "h": "5. Refunds", "p": "No refunds after a domain has been successfully registered. If registration fails, we offer a full refund or an alternative domain name." },
+        { "h": "6. Nuul Digital liability", "p": "We aim to activate your domain within 24 hours of confirmed payment. We are not liable for delays caused by third-party registry systems." },
+        { "h": "7. Contact", "p": "For domain disputes or questions, contact hello@nuul.digital." }
       ]
     }
   },
@@ -276,6 +351,296 @@
     "goalPlaceholder": "e.g. online sales, bookings, showcase...",
     "notesLabel": "Additional notes",
     "notesPlaceholder": "Anything else you'd like to tell us..."
+  },
+  "domains": {
+    "searchPlaceholder": "Domain name (e.g. kingwash)",
+    "searchButton": "Search",
+    "searchAria": "Search domain name",
+    "invalidChars": "Use letters (a-z), numbers (0-9), and hyphens (-) only",
+    "idleHint": "Enter a name to search",
+    "resultsTitle": "Search results",
+    "buy": "Buy now",
+    "retry": "Check again",
+    "perYear": "/year",
+    "suggestionsTitle": "Suggested names",
+    "aiSuggest": {
+      "searchTab": "Search",
+      "tab": "AI suggest",
+      "title": "Describe your business",
+      "hint": "Write in Mongolian or English — AI will suggest domain names",
+      "placeholder": "E.g. Car wash center King Wash, Ulaanbaatar...",
+      "submit": "Get suggestions",
+      "submitting": "Generating suggestions...",
+      "transliterated": "Latin form",
+      "sourceAi": "AI",
+      "sourceRules": "Rules",
+      "sourceCache": "Cache",
+      "disabled": "AI suggestions are temporarily unavailable",
+      "rateLimited": "Too many requests. Please wait and try again.",
+      "error": "Could not get suggestions. Please try again.",
+      "idleHint": "Describe your business to get AI-powered domain suggestions",
+      "minLength": "Enter at least 3 characters"
+    },
+    "rateLimited": "Too many requests. Please wait and try again.",
+    "searchError": "Search failed. Please try again.",
+    "moduleDisabled": "The domains service is temporarily unavailable.",
+    "status": {
+      "AVAILABLE": "Available",
+      "TAKEN": "Taken",
+      "UNKNOWN": "Unverified",
+      "RESERVED": "Checkout in progress"
+    },
+    "growthStack": {
+      "label": "Next steps",
+      "title": "Everything from one platform",
+      "steps": {
+        "domain": "Domain",
+        "hosting": "Hosting",
+        "email": "Email",
+        "website": "Website",
+        "ai": "AI"
+      }
+    },
+    "nextSteps": {
+      "label": "Next steps",
+      "title": "Keep growing your digital presence",
+      "subtitle": "{domain} is paid — choose your next service",
+      "steps": {
+        "domain": "Domain ordered",
+        "hosting": "Choose hosting",
+        "email": "Business email",
+        "website": "AI website"
+      }
+    },
+    "maintenance": {
+      "label": "Domains",
+      "title": "Coming soon",
+      "description": "Domain search and ordering is being prepared.",
+      "body": "We're launching a unified search and checkout experience for .mn and international domains. Contact us today if you need a domain right away.",
+      "contact": "Contact us",
+      "quote": "Get a quote"
+    },
+    "checkout": {
+      "label": "Checkout",
+      "title": "Confirm your order",
+      "successTitle": "Order created",
+      "successBody": "Your domain has been reserved. Please complete payment within 24 hours.",
+      "paidTitle": "Payment successful!",
+      "paidBody": "Payment received. We'll activate your domain within 24 hours.",
+      "paymentNext": "Payment will be available in the next step. A confirmation email has been sent.",
+      "paymentSection": "Payment method",
+      "payMethodQPay": "QPay",
+      "payMethodBank": "Bank transfer",
+      "payWithQPay": "Pay with QPay",
+      "payLater": "Pay later",
+      "paymentLoading": "Preparing QPay...",
+      "paymentError": "Could not create QPay invoice. Please try again.",
+      "orderNumber": "Order number",
+      "domain": "Domain",
+      "total": "Total",
+      "perYear": "/year",
+      "close": "Close",
+      "done": "Got it",
+      "contactSection": "Contact details",
+      "registrantSection": "Registrant information",
+      "name": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "company": "Company name",
+      "businessReg": "Company registration number",
+      "individual": "Individual",
+      "business": "Business",
+      "idType": "ID document type",
+      "idNumber": "ID number",
+      "address": "Address",
+      "years": "Registration period",
+      "yearUnit": "year(s)",
+      "acceptTermsPrefix": "I accept the",
+      "termsLink": "terms of service",
+      "acceptRegistryPrefix": "I accept the",
+      "registryLink": "domain registration policy",
+      "submit": "Create order",
+      "submitting": "Creating...",
+      "submitError": "Order failed. Please try again.",
+      "conflict": "Someone else is checking out this domain. Please wait and try again.",
+      "idTypes": {
+        "NATIONAL_ID": "National ID",
+        "PASSPORT": "Passport",
+        "OTHER": "Other"
+      },
+      "errors": {
+        "name": "Name required (2+ characters)",
+        "email": "Invalid email",
+        "phone": "Invalid phone number",
+        "address": "Address required (5+ characters)",
+        "company": "Company name required",
+        "businessReg": "Registration number required",
+        "idNumber": "ID number required",
+        "terms": "Please accept the terms of service",
+        "registry": "Please accept the domain registration policy"
+      }
+    }
+  },
+  "services": {
+    "featured": "Popular",
+    "pricePeriod": "/mo",
+    "orderNow": "Order now",
+    "checkout": {
+      "title": "Confirm your order",
+      "perMonth": "/mo",
+      "close": "Close",
+      "successTitle": "Order created",
+      "successBody": "Order number: {orderNumber}. Please complete payment within 24 hours.",
+      "paid": "Payment received!",
+      "done": "Got it",
+      "name": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "company": "Company name",
+      "domain": "Domain",
+      "domainHint": "Optional — enter your domain if you already have one.",
+      "paymentMethod": "Payment method",
+      "bankTransfer": "Bank transfer",
+      "acceptTerms": "I accept the",
+      "termsLink": "terms of service",
+      "submit": "Order — {price}/mo",
+      "paymentError": "Could not create QPay invoice. Please try again.",
+      "submitError": "Order failed. Please try again.",
+      "errors": {
+        "name": "Name required (2+ characters)",
+        "email": "Invalid email",
+        "phone": "Invalid phone number",
+        "terms": "Please accept the terms of service"
+      }
+    },
+    "waitlist": {
+      "title": "Coming soon",
+      "subtitle": "Leave your email — we'll notify you when this service launches",
+      "subtitleSsl": "SSL launches with hosting — leave your email if you'd like a heads-up",
+      "selectedPlan": "Selected plan",
+      "submit": "Notify me",
+      "done": "You're on the list! We'll be in touch when we launch.",
+      "error": "Something went wrong. Please try again."
+    },
+    "sslFeatures": [
+      "Automatic Let's Encrypt certificates",
+      "HTTPS — padlock in the browser",
+      "Auto-renewal every 90 days",
+      "No extra charge with hosting",
+      "Better SEO and customer trust"
+    ],
+    "hostingPlans": {
+      "starter": {
+        "name": "Starter",
+        "features": ["5 GB SSD", "1 website", "Free SSL", "Daily backups", "Email support"]
+      },
+      "pro": {
+        "name": "Pro",
+        "features": ["20 GB SSD", "5 websites", "Free SSL", "Daily backups", "24/7 support", "cPanel access"]
+      },
+      "business": {
+        "name": "Business",
+        "features": ["50 GB SSD", "10 websites", "Free SSL", "Daily backups", "Priority support", "Static IP"]
+      }
+    },
+    "emailPlans": {
+      "basic": {
+        "name": "Basic",
+        "features": ["1 mailbox", "5 GB storage", "Webmail access", "Spam protection"]
+      },
+      "pro": {
+        "name": "Pro",
+        "features": ["5 mailboxes", "25 GB storage", "IMAP / SMTP", "Calendar sync", "Spam protection"]
+      },
+      "team": {
+        "name": "Team",
+        "features": ["20 mailboxes", "100 GB storage", "Group aliases", "Admin panel", "24/7 support"]
+      }
+    }
+  },
+  "ordersLookup": {
+    "formHint": "Enter the email you used when ordering and we'll send you a sign-in link.",
+    "sendLink": "Send link",
+    "emailSentTitle": "Check your email",
+    "emailSentBody": "If there are orders for this address, you'll receive a sign-in link. Use it within 15 minutes.",
+    "requestError": "Could not send the email. Please try again.",
+    "verified": "You're signed in. Your orders are below.",
+    "signedInAs": "Signed in as",
+    "signOut": "Sign out",
+    "loading": "Loading orders...",
+    "loadError": "Could not load orders.",
+    "retry": "Try again",
+    "empty": "No orders found for this email.",
+    "browseDomains": "Search domains",
+    "historyTitle": "Order history",
+    "orderNumber": "Order number",
+    "years": "{count, plural, one {# year} other {# years}}",
+    "payment": "Payment",
+    "expires": "Expires",
+    "provisioned": "Activated",
+    "billingMonths": "{count, plural, one {# month} other {# months}}",
+    "serviceType": {
+      "HOSTING": "Hosting",
+      "EMAIL": "Business email"
+    },
+    "statusService": {
+      "FULFILLING": "Setting up",
+      "COMPLETED": "Active"
+    },
+    "errors": {
+      "invalid": "This link is invalid or has expired. Request a new email.",
+      "rateLimited": "Too many attempts. Please wait and try again."
+    },
+    "status": {
+      "DRAFT": "Draft",
+      "PENDING_PAYMENT": "Awaiting payment",
+      "PAID": "Paid",
+      "FULFILLING": "Registering",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
+      "REFUNDED": "Refunded",
+      "EXPIRED": "Expired"
+    },
+    "paymentStatus": {
+      "PENDING": "Pending",
+      "PROCESSING": "Processing",
+      "COMPLETED": "Paid",
+      "FAILED": "Failed",
+      "EXPIRED": "Expired",
+      "REFUNDED": "Refunded"
+    },
+    "paymentMethod": {
+      "QPAY": "QPay",
+      "BANK_TRANSFER": "Bank transfer",
+      "MANUAL": "Manual"
+    }
+  },
+  "payments": {
+    "qpay": {
+      "label": "Payment",
+      "title": "Pay with QPay",
+      "successTitle": "Payment successful!",
+      "successBody": "Payment received. We'll activate your domain within 24 hours.",
+      "expiredTitle": "Time expired",
+      "expiredBody": "The payment window has closed. Please create a new invoice.",
+      "amountLabel": "Amount due",
+      "timer": "Time left",
+      "openApp": "Open QPay app",
+      "bankApps": "Pay via bank app",
+      "qrAlt": "QPay QR code",
+      "close": "Close"
+    },
+    "bank": {
+      "title": "Bank transfer",
+      "subtitle": "Use the details below to complete your payment",
+      "amount": "Amount due",
+      "bankName": "Bank",
+      "accountNumber": "Account number",
+      "accountName": "Account name",
+      "iban": "IBAN",
+      "reference": "Payment reference",
+      "hint": "Always include the order number as the payment reference. We'll email you once payment is confirmed."
+    }
   },
   "footer": {
     "tagline": "We build Mongolia's digital future. A modern agency accelerating the digital transformation of Mongolian organizations.",
