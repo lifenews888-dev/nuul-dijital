@@ -64,12 +64,15 @@ type Props = {
   onSuccess?: (order: OrderSuccess) => void;
 };
 
+const selectClass =
+  "flex h-11 w-full rounded-xl border border-input bg-muted px-4 text-sm text-foreground backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
 function chip(active: boolean) {
   return cn(
     "rounded-2xl border px-4 py-3 text-sm font-medium transition-all",
     active
-      ? "border-accent bg-accent/10 text-foreground"
-      : "border-white/10 bg-white/[0.02] text-muted-foreground hover:border-white/20"
+      ? "border-accent bg-accent/15 text-foreground"
+      : "border-border bg-muted/60 text-foreground/80 hover:border-accent/30"
   );
 }
 
@@ -339,13 +342,13 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="relative flex h-full w-full max-w-lg flex-col border-l border-white/10 bg-background shadow-2xl"
+            className="relative flex h-full w-full max-w-lg flex-col border-l border-border bg-background shadow-2xl"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
           >
-            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   {t("label")}
@@ -529,7 +532,7 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
                             id="checkout-id-type"
                             value={form.registrantIdType}
                             onChange={(e) => up("registrantIdType", e.target.value)}
-                            className="flex h-11 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-sm backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            className={selectClass}
                           >
                             {ID_TYPES.map((id) => (
                               <option key={id} value={id}>
@@ -595,7 +598,7 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
                       id="checkout-years"
                       value={form.years}
                       onChange={(e) => up("years", Number(e.target.value))}
-                      className="flex h-11 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-sm backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className={selectClass}
                     >
                       {[1, 2, 3, 4, 5].map((y) => (
                         <option key={y} value={y}>
@@ -605,13 +608,13 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
                     </select>
                   </div>
 
-                  <div className="space-y-3 rounded-2xl border border-white/10 bg-card/40 p-4">
+                  <div className="space-y-3 rounded-2xl border border-border bg-muted/40 p-4">
                     <label className="flex cursor-pointer items-start gap-3">
                       <input
                         type="checkbox"
                         checked={form.acceptTerms}
                         onChange={(e) => up("acceptTerms", e.target.checked)}
-                        className="mt-1 size-4 rounded border-white/20 accent-accent"
+                        className="mt-1 size-4 rounded border-border accent-accent"
                       />
                       <span className="text-sm text-muted-foreground">
                         {t("acceptTermsPrefix")}{" "}
@@ -629,7 +632,7 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
                         type="checkbox"
                         checked={form.acceptRegistryPolicy}
                         onChange={(e) => up("acceptRegistryPolicy", e.target.checked)}
-                        className="mt-1 size-4 rounded border-white/20 accent-accent"
+                        className="mt-1 size-4 rounded border-border accent-accent"
                       />
                       <span className="text-sm text-muted-foreground">
                         {t("acceptRegistryPrefix")}{" "}
@@ -653,7 +656,7 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
                     </p>
                   )}
 
-                  <div className="sticky bottom-0 -mx-5 border-t border-white/10 bg-background/95 px-5 py-4 backdrop-blur">
+                  <div className="sticky bottom-0 -mx-5 border-t border-border bg-background/95 px-5 py-4 backdrop-blur">
                     <div className="mb-3 flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">{t("total")}</span>
                       <span className="text-lg font-bold">{formatDomainPrice(totalAmount, locale)}</span>

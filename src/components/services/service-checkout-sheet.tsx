@@ -52,8 +52,8 @@ function chip(active: boolean) {
   return cn(
     "rounded-2xl border px-4 py-3 text-sm font-medium transition-all",
     active
-      ? "border-accent bg-accent/10 text-foreground"
-      : "border-white/10 bg-white/[0.02] text-muted-foreground hover:border-white/20"
+      ? "border-accent bg-accent/15 text-foreground"
+      : "border-border bg-muted/60 text-foreground/80 hover:border-accent/30"
   );
 }
 
@@ -273,13 +273,13 @@ export function ServiceCheckoutSheet({
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-white/10 bg-background shadow-2xl"
+            className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-border bg-background shadow-2xl"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
           >
-            <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+            <div className="flex items-center justify-between border-b border-border px-6 py-4">
               <div>
                 <h2 id={titleId} className="text-lg font-bold">
                   {success

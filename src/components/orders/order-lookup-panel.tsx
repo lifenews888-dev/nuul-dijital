@@ -25,8 +25,8 @@ import type {
   PublicServiceOrderSummary,
 } from "@/lib/domains/order-lookup-public";
 import { formatDomainPrice } from "@/lib/domains/format";
+import { FlowSteps } from "@/components/orders/flow-steps";
 import { formatDate } from "@/lib/utils";
-import { cn } from "@/lib/utils";
 
 type Props = {
   initialEmail: string | null;
@@ -52,55 +52,6 @@ function serviceStatusKey(status: PublicServiceOrderSummary["status"]) {
     return `statusService.${status}` as const;
   }
   return `status.${status}` as const;
-}
-
-function VerificationSteps({ activeStep }: { activeStep: 1 | 2 | 3 }) {
-  const t = useTranslations("ordersLookup");
-
-  const steps = [
-    { num: 1, label: t("steps.enterEmail") },
-    { num: 2, label: t("steps.checkInbox") },
-    { num: 3, label: t("steps.viewOrders") },
-  ] as const;
-
-  return (
-    <ol className="grid grid-cols-3 gap-2">
-      {steps.map((step) => {
-        const done = step.num < activeStep;
-        const active = step.num === activeStep;
-        return (
-          <li
-            key={step.num}
-            className={cn(
-              "rounded-xl border px-2 py-3 text-center transition-colors",
-              done && "border-accent/30 bg-accent/10",
-              active && "border-accent/50 bg-accent/15 ring-1 ring-accent/20",
-              !done && !active && "border-white/10 bg-white/[0.02]"
-            )}
-          >
-            <span
-              className={cn(
-                "mx-auto flex size-7 items-center justify-center rounded-full text-xs font-bold",
-                done || active
-                  ? "bg-accent-gradient text-white"
-                  : "border border-white/15 bg-white/5 text-muted-foreground"
-              )}
-            >
-              {done ? <Check className="size-3.5" /> : step.num}
-            </span>
-            <p
-              className={cn(
-                "mt-2 text-[11px] font-medium leading-tight",
-                active ? "text-foreground" : "text-muted-foreground"
-              )}
-            >
-              {step.label}
-            </p>
-          </li>
-        );
-      })}
-    </ol>
-  );
 }
 
 function OrderVerificationForm({ locale }: { locale: string }) {
@@ -130,27 +81,33 @@ function OrderVerificationForm({ locale }: { locale: string }) {
     }
   }
 
+  const verificationSteps = [
+    { num: 1, label: t("steps.enterEmail") },
+    { num: 2, label: t("steps.checkInbox") },
+    { num: 3, label: t("steps.viewOrders") },
+  ];
+
   if (requestState === "sent") {
     return (
-      <div className="overflow-hidden rounded-3xl border border-white/10 bg-card/80 shadow-xl backdrop-blur">
-        <div className="border-b border-white/10 bg-accent/5 px-6 py-5">
-          <VerificationSteps activeStep={2} />
+      <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-xl">
+        <div className="border-b border-border bg-muted/40 px-6 py-5">
+          <FlowSteps steps={verificationSteps} activeStep={2} />
         </div>
         <div className="px-6 py-8 text-center">
           <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-accent-gradient text-white shadow-lg shadow-accent/20">
             <Inbox className="size-8" />
           </div>
-          <h2 className="mt-5 text-xl font-bold">{t("emailSentTitle")}</h2>
+          <h2 className="mt-5 text-xl font-bold text-foreground">{t("emailSentTitle")}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t("emailSentBody")}</p>
 
           <ul className="mt-6 space-y-3 text-left">
             {[t("emailSentTip1"), t("emailSentTip2"), t("emailSentTip3")].map((tip) => (
               <li
                 key={tip}
-                className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm"
+                className="flex items-start gap-3 rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm"
               >
                 <Check className="mt-0.5 size-4 shrink-0 text-accent" />
-                <span className="text-muted-foreground">{tip}</span>
+                <span className="text-foreground/80">{tip}</span>
               </li>
             ))}
           </ul>
@@ -169,9 +126,9 @@ function OrderVerificationForm({ locale }: { locale: string }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-white/10 bg-card/80 shadow-xl backdrop-blur">
-      <div className="border-b border-white/10 bg-accent/5 px-6 py-5">
-        <VerificationSteps activeStep={1} />
+    <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-xl">
+      <div className="border-b border-border bg-muted/40 px-6 py-5">
+        <FlowSteps steps={verificationSteps} activeStep={1} />
       </div>
 
       <form onSubmit={onRequestLink} className="px-6 py-8">
@@ -180,7 +137,7 @@ function OrderVerificationForm({ locale }: { locale: string }) {
             <ShieldCheck className="size-6" />
           </div>
           <div>
-            <h2 className="text-lg font-bold">{t("formTitle")}</h2>
+            <h2 className="text-lg font-bold text-foreground">{t("formTitle")}</h2>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t("formHint")}</p>
           </div>
         </div>
@@ -226,13 +183,13 @@ function OrderVerificationForm({ locale }: { locale: string }) {
         <p className="mt-4 text-center text-xs text-muted-foreground">{t("securityNote")}</p>
       </form>
 
-      <div className="border-t border-white/10 bg-white/[0.02] px-6 py-5">
+      <div className="border-t border-border bg-muted/30 px-6 py-5">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-muted">
             <Sparkles className="size-4 text-accent" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">{t("fullAccountTitle")}</p>
+            <p className="text-sm font-medium text-foreground">{t("fullAccountTitle")}</p>
             <p className="text-xs text-muted-foreground">{t("fullAccountHint")}</p>
           </div>
           <Button variant="outline" size="sm" asChild className="shrink-0">
