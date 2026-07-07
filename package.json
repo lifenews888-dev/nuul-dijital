@@ -15,6 +15,7 @@
     "db:seed": "prisma db seed",
     "test:rdap": "tsx scripts/test-rdap.ts",
     "domains:enable": "tsx scripts/enable-domains-module.ts",
+    "domains:enable-service-orders": "tsx scripts/enable-service-orders.ts",
     "verify:domains-deploy": "tsx scripts/verify-domains-deploy.ts"
   },
   "prisma": {
