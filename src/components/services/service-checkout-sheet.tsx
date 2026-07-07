@@ -2,12 +2,16 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Loader2, X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/navigation";
+import {
+  CheckoutConfirmation,
+  CheckoutQPayAction,
+} from "@/components/orders/checkout-confirmation";
 import { BankTransferPanel } from "@/components/payments/bank-transfer-panel";
 import { QPayPaymentModal } from "@/components/payments/qpay-payment-modal";
 import type { BankSettings } from "@/lib/domains/bank-settings";
@@ -86,6 +90,12 @@ export function ServiceCheckoutSheet({
   const [paymentComplete, setPaymentComplete] = useState(false);
 
   const serviceType = service === "hosting" ? "HOSTING" : "EMAIL";
+
+  const checkoutSteps = [
+    { num: 1, label: t("steps.orderCreated") },
+    { num: 2, label: t("steps.pay") },
+    { num: 3, label: t("steps.confirmed") },
+  ] as const;
 
   const reset = useCallback(() => {
     setCustomerName("");
@@ -272,7 +282,11 @@ export function ServiceCheckoutSheet({
             <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
               <div>
                 <h2 id={titleId} className="text-lg font-bold">
-                  {t("title")}
+                  {success
+                    ? paymentComplete
+                      ? t("paidTitle")
+                      : t("successTitle")
+                    : t("title")}
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   {planName} · {formatDomainPrice(priceMnt, locale)}
@@ -286,18 +300,36 @@ export function ServiceCheckoutSheet({
 
             <div className="flex-1 overflow-y-auto px-6 py-6">
               {success ? (
-                <div className="space-y-6">
-                  <div className="flex items-start gap-3 rounded-2xl border border-accent/30 bg-accent/10 px-5 py-4">
-                    <Check className="mt-0.5 size-5 shrink-0 text-accent" />
-                    <div>
-                      <p className="font-medium">{t("successTitle")}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {t("successBody", { orderNumber: success.orderNumber })}
-                      </p>
-                    </div>
-                  </div>
-
-                  {success.paymentMethod === "BANK_TRANSFER" && bank && (
+                <CheckoutConfirmation
+                  activeStep={paymentComplete ? 3 : 2}
+                  title={paymentComplete ? t("paidTitle") : t("successTitle")}
+                  body={
+                    paymentComplete
+                      ? t("paidBody")
+                      : t("successBody", { planName: success.planName })
+                  }
+                  steps={[...checkoutSteps]}
+                  details={[
+                    { label: t("orderNumber"), value: success.orderNumber, mono: true },
+                    { label: t("plan"), value: success.planName },
+                    ...(success.reference !== success.planName
+                      ? [{ label: t("domain"), value: success.reference }]
+                      : []),
+                    {
+                      label: t("total"),
+                      value: formatDomainPrice(success.totalAmount, locale),
+                      highlight: true,
+                    },
+                  ]}
+                  tips={
+                    paymentComplete
+                      ? [t("paidTip1"), t("paidTip2"), t("paidTip3")]
+                      : [t("successTip1"), t("successTip2"), t("successTip3")]
+                  }
+                  doneLabel={t("done")}
+                  onDone={onClose}
+                >
+                  {!paymentComplete && success.paymentMethod === "BANK_TRANSFER" && bank && (
                     <BankTransferPanel
                       orderNumber={success.orderNumber}
                       domain={success.reference}
@@ -305,19 +337,16 @@ export function ServiceCheckoutSheet({
                       bank={bank}
                     />
                   )}
-
-                  {success.paymentMethod === "QPAY" && qpayError && (
-                    <p className="text-sm text-red-400">{qpayError}</p>
+                  {!paymentComplete && success.paymentMethod === "QPAY" && (
+                    <CheckoutQPayAction
+                      label={t("payWithQPay")}
+                      loadingLabel={t("paymentLoading")}
+                      loading={qpayLoading}
+                      error={qpayError}
+                      onClick={() => void startQPay(success)}
+                    />
                   )}
-
-                  {paymentComplete && (
-                    <p className="text-sm text-accent">{t("paid")}</p>
-                  )}
-
-                  <Button type="button" variant="outline" className="w-full" onClick={onClose}>
-                    {t("done")}
-                  </Button>
-                </div>
+                </CheckoutConfirmation>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="space-y-2">
@@ -443,6 +472,7 @@ export function ServiceCheckoutSheet({
               open={qpayOpen}
               onClose={() => setQpayOpen(false)}
               onSuccess={() => {
+                setQpayOpen(false);
                 setPaymentComplete(true);
                 track("service_payment_success", {
                   service,

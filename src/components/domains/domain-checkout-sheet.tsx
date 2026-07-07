@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Loader2, X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
 import { OnboardingNextSteps } from "@/components/domains/onboarding-next-steps";
+import {
+  CheckoutConfirmation,
+  CheckoutQPayAction,
+} from "@/components/orders/checkout-confirmation";
 import { BankTransferPanel } from "@/components/payments/bank-transfer-panel";
 import { QPayPaymentModal } from "@/components/payments/qpay-payment-modal";
 import type { BankSettings } from "@/lib/domains/bank-settings";
@@ -310,6 +314,12 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
 
   const totalAmount = result ? result.price * form.years : 0;
 
+  const checkoutSteps = [
+    { num: 1, label: t("steps.orderCreated") },
+    { num: 2, label: t("steps.pay") },
+    { num: 3, label: t("steps.confirmed") },
+  ] as const;
+
   return (
     <AnimatePresence>
       {open && result && (
@@ -358,21 +368,28 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
 
             <div className="flex-1 overflow-y-auto px-5 py-6">
               {success ? (
-                <div className="flex flex-col items-center gap-5 text-center">
-                  <div className="flex size-16 items-center justify-center rounded-full bg-accent-gradient text-white">
-                    <Check className="size-8" />
-                  </div>
-                  <p className="text-muted-foreground">
-                    {paymentComplete ? t("paidBody") : t("successBody")}
-                  </p>
-                  <div className="w-full rounded-2xl border border-white/10 bg-card/60 p-4 text-left">
-                    <p className="text-sm text-muted-foreground">{t("orderNumber")}</p>
-                    <p className="font-mono font-semibold">{success.orderNumber}</p>
-                    <p className="mt-3 text-sm text-muted-foreground">{t("domain")}</p>
-                    <p className="font-semibold">{success.domain}</p>
-                    <p className="mt-3 text-sm text-muted-foreground">{t("total")}</p>
-                    <p className="font-bold">{formatDomainPrice(success.totalAmount, locale)}</p>
-                  </div>
+                <CheckoutConfirmation
+                  activeStep={paymentComplete ? 3 : 2}
+                  title={paymentComplete ? t("paidTitle") : t("successTitle")}
+                  body={paymentComplete ? t("paidBody") : t("successBody")}
+                  steps={[...checkoutSteps]}
+                  details={[
+                    { label: t("orderNumber"), value: success.orderNumber, mono: true },
+                    { label: t("domain"), value: success.domain },
+                    {
+                      label: t("total"),
+                      value: formatDomainPrice(success.totalAmount, locale),
+                      highlight: true,
+                    },
+                  ]}
+                  tips={
+                    paymentComplete
+                      ? [t("paidTip1"), t("paidTip2"), t("paidTip3")]
+                      : [t("successTip1"), t("successTip2"), t("successTip3")]
+                  }
+                  doneLabel={t("done")}
+                  onDone={onClose}
+                >
                   {paymentComplete ? (
                     <OnboardingNextSteps
                       domain={success.domain}
@@ -387,34 +404,16 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
                       bank={bank}
                       className="w-full text-left"
                     />
-                  ) : (
-                    <>
-                      {qpayError && (
-                        <p className="w-full rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200" role="alert">
-                          {qpayError}
-                        </p>
-                      )}
-                      <Button
-                        variant="gradient"
-                        onClick={() => success && startQPay(success)}
-                        disabled={qpayLoading}
-                        className="w-full"
-                      >
-                        {qpayLoading ? (
-                          <>
-                            <Loader2 className="animate-spin" />
-                            {t("paymentLoading")}
-                          </>
-                        ) : (
-                          t("payWithQPay")
-                        )}
-                      </Button>
-                    </>
-                  )}
-                  <Button variant="ghost" onClick={onClose} className="w-full">
-                    {t("done")}
-                  </Button>
-                </div>
+                  ) : success.paymentMethod === "QPAY" ? (
+                    <CheckoutQPayAction
+                      label={t("payWithQPay")}
+                      loadingLabel={t("paymentLoading")}
+                      loading={qpayLoading}
+                      error={qpayError}
+                      onClick={() => void startQPay(success)}
+                    />
+                  ) : null}
+                </CheckoutConfirmation>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="rounded-2xl border border-accent/20 bg-accent/5 p-4">
