@@ -510,6 +510,45 @@
         "terms": "Please accept the terms of service",
         "registry": "Please accept the domain registration policy"
       }
+    },
+    "renewal": {
+      "label": "Renewal",
+      "title": "Renew domain",
+      "close": "Close",
+      "currentExpiry": "Current expiry",
+      "perYear": "/year",
+      "yearUnit": "year(s)",
+      "years": "Period",
+      "domain": "Domain",
+      "total": "Total",
+      "paymentMethod": "Payment method",
+      "bankTransfer": "Bank transfer",
+      "acceptTerms": "I accept the",
+      "termsLink": "terms of service",
+      "submit": "Create renewal order",
+      "submitting": "Creating...",
+      "submitError": "Could not create the renewal order. Please try again.",
+      "successTitle": "Renewal order created",
+      "successBody": "Renewal for {domain} is ready. Complete payment to confirm.",
+      "paidTitle": "Renewal successful!",
+      "paidBody": "Payment received. Your domain period has been extended.",
+      "successTip1": "Complete payment within 24 hours",
+      "successTip2": "The expiry date updates automatically after payment",
+      "paidTip1": "Your new expiry date was sent by email",
+      "paidTip2": "Registrar confirmation within 24 hours",
+      "orderNumber": "Order number",
+      "payWithQPay": "Pay with QPay",
+      "paymentLoading": "Preparing QPay...",
+      "paymentError": "Could not create the QPay invoice.",
+      "done": "Got it",
+      "steps": {
+        "orderCreated": "Order",
+        "pay": "Payment",
+        "confirmed": "Confirmed"
+      },
+      "errors": {
+        "terms": "Please accept the terms of service"
+      }
     }
   },
   "services": {
@@ -737,6 +776,8 @@
     "years": "{count, plural, one {# year} other {# years}}",
     "payment": "Payment",
     "expires": "Expires",
+    "renewNow": "Renew",
+    "renewalPending": "A renewal order is pending — please complete payment.",
     "provisioned": "Activated",
     "billingMonths": "{count, plural, one {# month} other {# months}}",
     "serviceType": {

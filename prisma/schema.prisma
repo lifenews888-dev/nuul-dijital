@@ -703,6 +703,10 @@ model DomainOrder {
   adminNotes       String?           @db.Text
   domainExpiresAt  DateTime?
 
+  renewalSourceOrderId String?
+  renewalSourceOrder   DomainOrder?  @relation("DomainRenewal", fields: [renewalSourceOrderId], references: [id], onDelete: SetNull)
+  renewalOrders        DomainOrder[] @relation("DomainRenewal")
+
   payment   Payment?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -711,6 +715,7 @@ model DomainOrder {
   @@index([customerEmail])
   @@index([domainName])
   @@index([orgId])
+  @@index([renewalSourceOrderId])
 }
 
 model Payment {

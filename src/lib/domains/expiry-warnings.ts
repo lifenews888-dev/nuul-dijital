@@ -28,7 +28,10 @@ function endOfUtcDay(date: Date): Date {
 }
 
 async function sendDomainExpiryWarning(
-  order: Pick<DomainOrder, "orderNumber" | "domainName" | "customerEmail" | "customerName" | "domainExpiresAt">,
+  order: Pick<
+    DomainOrder,
+    "id" | "orderNumber" | "domainName" | "customerEmail" | "customerName" | "domainExpiresAt"
+  >,
   daysLeft: number
 ): Promise<void> {
   const expiresLabel =
@@ -60,11 +63,11 @@ async function sendDomainExpiryWarning(
       </p>
       <p style="font-family:sans-serif">Захиалгын дугаар: <strong>${escapeHtml(order.orderNumber)}</strong></p>
       <p style="font-family:sans-serif">
-        Домэйнээ шинэчлэхийн тулд <a href="${siteUrl}/domains">домэйн хэсэг</a> рүү орж
-        эсвэл <a href="${siteUrl}/contact">бидэнтэй холбогдоно</a> уу.
+        <a href="${siteUrl}/app?renew=${encodeURIComponent(order.id)}">Домэйн шинэчлэх</a>
+        (нэвтэрсний дараа QPay-ээр төлнө).
       </p>
       <p style="font-family:sans-serif;color:#666;font-size:13px">
-        Та Nuul Digital-ээр бүртгүүлсэн бол <a href="${siteUrl}/app">Миний бүртгэл</a> дээр захиалгаа хянаж болно.
+        Эсвэл <a href="${siteUrl}/app">Миний бүртгэл</a> → «Шинэчлэх» товчоор үргэлжлүүлнэ.
       </p>`,
   });
 }
@@ -91,6 +94,7 @@ export async function sendDomainExpiryWarnings(
         domainExpiresAt: { gte: rangeStart, lte: rangeEnd },
       },
       select: {
+        id: true,
         orderNumber: true,
         domainName: true,
         customerEmail: true,

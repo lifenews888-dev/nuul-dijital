@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { logActivity } from "@/lib/activity";
 import { createDomainInvoice } from "@/lib/billing/activate";
+import { computeRenewedExpiry } from "@/lib/domains/renewals";
 import { db } from "@/lib/db";
 import { formatDomainPrice } from "@/lib/domains/format";
 import { buildPaymentReceiptHtml } from "@/lib/domains/receipt";
@@ -38,7 +39,12 @@ export async function markOrderPaid(
 
   const order = payment.domainOrder;
 
-  if (payment.status === "COMPLETED" && order.status === "PAID") {
+  const isRenewalOrder = Boolean(order.renewalSourceOrderId);
+
+  if (
+    payment.status === "COMPLETED" &&
+    (order.status === "PAID" || (isRenewalOrder && order.status === "COMPLETED"))
+  ) {
     return {
       alreadyPaid: true,
       orderId: order.id,
@@ -66,6 +72,19 @@ export async function markOrderPaid(
     ...(opts.callbackPayload !== undefined ? { callbackPayload: opts.callbackPayload } : {}),
   };
 
+  let renewedExpiresAt: Date | null = null;
+  if (isRenewalOrder && order.renewalSourceOrderId) {
+    const source = await db.domainOrder.findUnique({
+      where: { id: order.renewalSourceOrderId },
+      select: { domainExpiresAt: true },
+    });
+    renewedExpiresAt = computeRenewedExpiry(
+      source?.domainExpiresAt ?? null,
+      order.years,
+      paidAt
+    );
+  }
+
   await db.$transaction(async (tx) => {
     await tx.payment.update({
       where: { id: payment.id },
@@ -77,19 +96,35 @@ export async function markOrderPaid(
       },
     });
 
-    await tx.domainOrder.update({
-      where: { id: order.id },
-      data: { status: "PAID" },
-    });
+    if (isRenewalOrder && order.renewalSourceOrderId && renewedExpiresAt) {
+      await tx.domainOrder.update({
+        where: { id: order.renewalSourceOrderId },
+        data: { domainExpiresAt: renewedExpiresAt },
+      });
 
-    if (order.journeyId) {
-      try {
-        await tx.onboardingJourney.update({
-          where: { id: order.journeyId },
-          data: { currentStep: "DOMAIN_PURCHASED" },
-        });
-      } catch {
-        /* journey may have been deleted */
+      await tx.domainOrder.update({
+        where: { id: order.id },
+        data: {
+          status: "COMPLETED",
+          fulfilledAt: paidAt,
+          domainExpiresAt: renewedExpiresAt,
+        },
+      });
+    } else {
+      await tx.domainOrder.update({
+        where: { id: order.id },
+        data: { status: "PAID" },
+      });
+
+      if (order.journeyId) {
+        try {
+          await tx.onboardingJourney.update({
+            where: { id: order.journeyId },
+            data: { currentStep: "DOMAIN_PURCHASED" },
+          });
+        } catch {
+          /* journey may have been deleted */
+        }
       }
     }
 
@@ -99,7 +134,9 @@ export async function markOrderPaid(
   const priceLabel = formatDomainPrice(payment.amount, "mn");
 
   await sendEmail({
-    subject: `Домэйн төлбөр хүлээн авлаа — ${order.orderNumber}`,
+    subject: isRenewalOrder
+      ? `Домэйн шинэчлэлтийн төлбөр — ${order.orderNumber}`
+      : `Домэйн төлбөр хүлээн авлаа — ${order.orderNumber}`,
     replyTo: order.customerEmail,
     html: `
       <h2 style="font-family:sans-serif">Төлбөр хүлээн авлаа</h2>
@@ -110,13 +147,37 @@ export async function markOrderPaid(
         ${row("Нэр", order.customerName)}
         ${row("Имэйл", order.customerEmail)}
       </table>
-      <p style="font-family:sans-serif">Бид 24 цагийн дотор домэйнийг бүртгэнэ.</p>`,
+      <p style="font-family:sans-serif">${
+        isRenewalOrder
+          ? "Домэйний хугацаа шинэчлэгдлээ. Registrar дээр баталгаажуулалт хийгдэнэ."
+          : "Бид 24 цагийн дотор домэйнийг бүртгэнэ."
+      }</p>`,
   });
+
+  const renewedExpiryLabel =
+    renewedExpiresAt?.toLocaleDateString("mn-MN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }) ?? "";
 
   await sendEmail({
     to: order.customerEmail,
-    subject: `Төлбөр амжилттай — ${order.domainName}`,
-    html: `
+    subject: isRenewalOrder
+      ? `Домэйн шинэчлэгдлээ — ${order.domainName}`
+      : `Төлбөр амжилттай — ${order.domainName}`,
+    html: isRenewalOrder
+      ? `
+      <h2 style="font-family:sans-serif">Домэйн шинэчлэгдлээ!</h2>
+      <p style="font-family:sans-serif"><strong>${escapeHtml(order.domainName)}</strong> домэйний шинэчлэлтийн төлбөр хүлээн авлаа.</p>
+      ${buildPaymentReceiptHtml(order, {
+        method: payment.method,
+        amount: payment.amount,
+        paidAt,
+        transactionId: opts.transactionId ?? payment.transactionId,
+      })}
+      <p style="font-family:sans-serif">Шинэ дуусах хугацаа: <strong>${escapeHtml(renewedExpiryLabel)}</strong></p>`
+      : `
       <h2 style="font-family:sans-serif">Төлбөр амжилттай!</h2>
       <p style="font-family:sans-serif"><strong>${escapeHtml(order.domainName)}</strong> домэйний төлбөр хүлээн авлаа.</p>
       ${buildPaymentReceiptHtml(order, {

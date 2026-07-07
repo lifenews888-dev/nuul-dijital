@@ -204,15 +204,24 @@ function OrderVerificationForm({ locale }: { locale: string }) {
 export function OrderCard({
   order,
   locale,
+  onRenewDomain,
 }: {
   order: PublicOrderSummary;
   locale: string;
+  onRenewDomain?: (order: PublicDomainOrderSummary) => void;
 }) {
   const t = useTranslations("ordersLookup");
   const ts = useTranslations("services");
 
   if (order.kind === "domain") {
-    return <DomainOrderCard order={order} locale={locale} t={t} />;
+    return (
+      <DomainOrderCard
+        order={order}
+        locale={locale}
+        t={t}
+        onRenew={onRenewDomain}
+      />
+    );
   }
 
   const planNs = order.serviceType === "HOSTING" ? "hostingPlans" : "emailPlans";
@@ -268,10 +277,12 @@ function DomainOrderCard({
   order,
   locale,
   t,
+  onRenew,
 }: {
   order: PublicDomainOrderSummary;
   locale: string;
   t: ReturnType<typeof useTranslations<"ordersLookup">>;
+  onRenew?: (order: PublicDomainOrderSummary) => void;
 }) {
   const dateLocale = locale === "en" ? "en-US" : "mn-MN";
 
@@ -305,10 +316,20 @@ function DomainOrderCard({
               : ""}
         </p>
       )}
-      {order.domainExpiresAt && order.status === "COMPLETED" && (
+      {order.domainExpiresAt && order.status === "COMPLETED" && !order.isRenewal && (
         <p className="mt-2 text-xs text-muted-foreground">
           {t("expires")}: {formatDate(order.domainExpiresAt, dateLocale)}
         </p>
+      )}
+      {order.renewable && onRenew && (
+        <div className="mt-4">
+          <Button type="button" size="sm" variant="gradient" onClick={() => onRenew(order)}>
+            {t("renewNow")}
+          </Button>
+        </div>
+      )}
+      {order.pendingRenewalOrderId && (
+        <p className="mt-2 text-xs text-amber-400">{t("renewalPending")}</p>
       )}
     </li>
   );

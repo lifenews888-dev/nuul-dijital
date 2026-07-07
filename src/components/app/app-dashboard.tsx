@@ -5,12 +5,17 @@ import { useLocale, useTranslations } from "next-intl";
 import { Check, Loader2, Package } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { DomainRenewalCheckoutSheet } from "@/components/domains/domain-renewal-checkout-sheet";
 import { track } from "@/lib/analytics";
-import type { PublicOrderSummary } from "@/lib/domains/order-lookup-public";
+import type {
+  PublicDomainOrderSummary,
+  PublicOrderSummary,
+} from "@/lib/domains/order-lookup-public";
 import { OrderCard } from "@/components/orders/order-lookup-panel";
 
 type Props = {
   verified?: boolean;
+  renewOrderId?: string | null;
 };
 
 type OrdersResponse = {
@@ -19,7 +24,7 @@ type OrdersResponse = {
   error?: string;
 };
 
-export function AppDashboard({ verified }: Props) {
+export function AppDashboard({ verified, renewOrderId }: Props) {
   const t = useTranslations("app");
   const to = useTranslations("ordersLookup");
   const locale = useLocale();
@@ -27,6 +32,8 @@ export function AppDashboard({ verified }: Props) {
   const [orgName, setOrgName] = useState<string | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
+  const [renewTarget, setRenewTarget] = useState<PublicDomainOrderSummary | null>(null);
+  const [renewOpen, setRenewOpen] = useState(false);
 
   const loadOrders = useCallback(async () => {
     setState("loading");
@@ -59,6 +66,23 @@ export function AppDashboard({ verified }: Props) {
   useEffect(() => {
     if (verified) track("app_login_verified");
   }, [verified]);
+
+  useEffect(() => {
+    if (!renewOrderId || state !== "ready") return;
+    const match = orders.find(
+      (o): o is PublicDomainOrderSummary =>
+        o.kind === "domain" && o.id === renewOrderId && o.renewable
+    );
+    if (match) {
+      setRenewTarget(match);
+      setRenewOpen(true);
+    }
+  }, [renewOrderId, state, orders]);
+
+  const openRenewal = useCallback((order: PublicDomainOrderSummary) => {
+    setRenewTarget(order);
+    setRenewOpen(true);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -137,10 +161,27 @@ export function AppDashboard({ verified }: Props) {
           <h2 className="text-lg font-semibold">{to("historyTitle")}</h2>
           <ul className="space-y-3">
             {orders.map((order) => (
-              <OrderCard key={order.id} order={order} locale={locale} />
+              <OrderCard
+                key={order.id}
+                order={order}
+                locale={locale}
+                onRenewDomain={openRenewal}
+              />
             ))}
           </ul>
         </div>
+      )}
+
+      {renewTarget && (
+        <DomainRenewalCheckoutSheet
+          open={renewOpen}
+          sourceOrder={renewTarget}
+          onClose={() => {
+            setRenewOpen(false);
+            setRenewTarget(null);
+          }}
+          onSuccess={() => void loadOrders()}
+        />
       )}
     </div>
   );

@@ -21,6 +21,9 @@ function serviceLineDescription(order: ServiceOrder): string {
 function domainLineDescription(order: DomainOrder): string {
   const years = order.years;
   const yearLabel = years === 1 ? "1 жил" : `${years} жил`;
+  if (order.renewalSourceOrderId) {
+    return `Домэйн шинэчлэлт — ${order.domainName} (${yearLabel})`;
+  }
   return `Домэйн бүртгэл — ${order.domainName} (${yearLabel})`;
 }
 

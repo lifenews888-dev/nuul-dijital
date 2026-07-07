@@ -17,9 +17,9 @@ async function isDomainsModuleEnabled(): Promise<boolean> {
 export default async function AppDashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ verified?: string }>;
+  searchParams: Promise<{ verified?: string; renew?: string }>;
 }) {
-  const [{ verified }, enabled, user] = await Promise.all([
+  const [{ verified, renew }, enabled, user] = await Promise.all([
     searchParams,
     isDomainsModuleEnabled(),
     getAppUser(),
@@ -36,7 +36,7 @@ export default async function AppDashboardPage({
         titleKey="dashboardTitle"
         subtitleKey="dashboardSubtitle"
       />
-      <AppDashboard verified={verified === "1"} />
+      <AppDashboard verified={verified === "1"} renewOrderId={renew ?? null} />
     </>
   );
 }

@@ -99,6 +99,16 @@ export const domainOrderSchema = z
     }
   });
 
+export const domainRenewalSchema = z.object({
+  sourceOrderId: z.string().cuid(),
+  years: z.number().int().min(1).max(10).default(1),
+  paymentMethod: z.enum(["QPAY", "BANK_TRANSFER"]).default("QPAY"),
+  locale: z.enum(["mn", "en"]).optional(),
+  acceptTerms: z.literal(true, {
+    errorMap: () => ({ message: "Үйлчилгээний нөхцөлийг зөвшөөрнө үү" }),
+  }),
+});
+
 export type DomainSearchInput = z.infer<typeof domainSearchSchema>;
 export type DomainSuggestInput = z.infer<typeof domainSuggestSchema>;
 export type DomainOrderInput = z.infer<typeof domainOrderSchema>;

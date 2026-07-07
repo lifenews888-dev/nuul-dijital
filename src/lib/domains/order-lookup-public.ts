@@ -20,6 +20,12 @@ export type PublicDomainOrderSummary = {
   fulfilledAt: string | null;
   domainExpiresAt: string | null;
   payment: PublicPaymentSummary | null;
+  isRenewal: boolean;
+  renewable: boolean;
+  renewPriceMnt: number | null;
+  minYears: number;
+  maxYears: number;
+  pendingRenewalOrderId: string | null;
 };
 
 export type PublicServiceOrderSummary = {
@@ -53,7 +59,18 @@ function toPublicPayment(payment: Payment | null): PublicPaymentSummary | null {
   };
 }
 
-export function toPublicDomainOrderSummary(order: OrderWithPayment): PublicDomainOrderSummary {
+type DomainOrderPublicInput = OrderWithPayment & {
+  renewalSourceOrderId?: string | null;
+  tldProduct?: { renewPrice: number; minYears: number; maxYears: number; status: string };
+  renewalOrders?: { id: string }[];
+  renewable?: boolean;
+};
+
+export function toPublicDomainOrderSummary(order: DomainOrderPublicInput): PublicDomainOrderSummary {
+  const renewPriceMnt =
+    order.tldProduct?.status === "ACTIVE" ? order.tldProduct.renewPrice : null;
+  const pendingRenewalOrderId = order.renewalOrders?.[0]?.id ?? null;
+
   return {
     kind: "domain",
     id: order.id,
@@ -67,6 +84,12 @@ export function toPublicDomainOrderSummary(order: OrderWithPayment): PublicDomai
     fulfilledAt: order.fulfilledAt?.toISOString() ?? null,
     domainExpiresAt: order.domainExpiresAt?.toISOString() ?? null,
     payment: toPublicPayment(order.payment),
+    isRenewal: Boolean(order.renewalSourceOrderId),
+    renewPriceMnt,
+    minYears: order.tldProduct?.minYears ?? 1,
+    maxYears: order.tldProduct?.maxYears ?? 5,
+    pendingRenewalOrderId,
+    renewable: order.renewable ?? false,
   };
 }
 
