@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getAppContext } from "@/lib/app";
 import { requireDomainsModule } from "@/lib/domains/module-guard";
+import { orderBelongsToCustomer } from "@/lib/orders/verify-order-access";
 import {
   createInvoice,
   getQPayCallbackUrl,
@@ -43,6 +45,17 @@ export async function POST(req: Request) {
   });
   if (response) return response;
 
+  const ctx = await getAppContext();
+  if (!ctx) {
+    return NextResponse.json(
+      {
+        error: "AUTH_REQUIRED",
+        message: "Төлбөр төлөхийн өмнө бүртгэлдээ нэвтэрнэ үү.",
+      },
+      { status: 401 }
+    );
+  }
+
   try {
     const body = await req.json();
     const parsed = createSchema.safeParse(body);
@@ -56,6 +69,13 @@ export async function POST(req: Request) {
     }
 
     const { order, payment, description } = payable;
+
+    if (!orderBelongsToCustomer(order, ctx)) {
+      return NextResponse.json(
+        { error: "ORDER_FORBIDDEN", message: "Энэ захиалгыг төлөх эрхгүй байна" },
+        { status: 403 }
+      );
+    }
 
     if (order.status === "PAID") {
       return NextResponse.json(

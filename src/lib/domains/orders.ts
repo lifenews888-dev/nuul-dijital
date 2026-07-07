@@ -22,6 +22,8 @@ export type CreateOrderInput = {
   paymentMethod: "QPAY" | "BANK_TRANSFER";
   journeyId?: string;
   locale?: string;
+  orgId?: string;
+  userId?: string;
 };
 
 export type CreateOrderResult = {
@@ -135,6 +137,8 @@ export async function createDomainOrder(input: CreateOrderInput): Promise<Create
             registrantIdNumber: input.registrantIdNumber?.trim() || null,
             businessRegNumber: input.businessRegNumber?.trim() || null,
             journeyId: input.journeyId ?? null,
+            orgId: input.orgId ?? null,
+            userId: input.userId ?? null,
           },
         });
 

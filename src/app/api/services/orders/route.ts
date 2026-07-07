@@ -52,13 +52,23 @@ export async function POST(req: Request) {
 
     const domainName = rawDomain?.trim() || undefined;
     const appCtx = await getAppContext();
+    if (!appCtx) {
+      return NextResponse.json(
+        {
+          error: "AUTH_REQUIRED",
+          message: "Төлбөр баталгаажуулахын өмнө бүртгэлдээ нэвтэрнэ үү.",
+        },
+        { status: 401 }
+      );
+    }
 
     const { order, payment } = await createServiceOrder({
       ...orderInput,
+      customerEmail: appCtx.user.email,
       domainName,
       locale,
-      orgId: appCtx?.organization.id,
-      userId: appCtx?.user.id,
+      orgId: appCtx.organization.id,
+      userId: appCtx.user.id,
     });
 
     const serviceLabel = SERVICE_TYPE_LABELS[order.serviceType];

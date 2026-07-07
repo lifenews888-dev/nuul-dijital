@@ -4,6 +4,7 @@ import {
   normalizeLookupEmail,
 } from "@/lib/domains/order-lookup";
 import { requireDomainsModule } from "@/lib/domains/module-guard";
+import { safeCallbackUrl } from "@/lib/auth-callback";
 import { escapeHtml, sendEmail } from "@/lib/mail";
 import { guardMutation } from "@/lib/security";
 import { siteConfig } from "@/lib/site";
@@ -35,8 +36,9 @@ export async function POST(req: Request) {
       (req.headers.get("accept-language")?.startsWith("en") ? "en" : "mn");
 
     const token = createMagicLinkToken(email);
+    const callbackUrl = safeCallbackUrl(parsed.data.callbackUrl, "/app");
     const base = siteConfig.url.replace(/\/$/, "");
-    const link = `${base}/api/app/auth/verify?token=${encodeURIComponent(token)}&locale=${locale}`;
+    const link = `${base}/api/app/auth/verify?token=${encodeURIComponent(token)}&locale=${locale}&callbackUrl=${encodeURIComponent(callbackUrl)}`;
 
     await sendEmail({
       to: email,

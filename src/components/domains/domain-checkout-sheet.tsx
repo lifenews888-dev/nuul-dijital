@@ -10,10 +10,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
 import { OnboardingNextSteps } from "@/components/domains/onboarding-next-steps";
+import { CheckoutAuthGate } from "@/components/orders/checkout-auth-gate";
 import {
   CheckoutConfirmation,
   CheckoutQPayAction,
 } from "@/components/orders/checkout-confirmation";
+import { useCheckoutSession } from "@/hooks/use-checkout-session";
 import { BankTransferPanel } from "@/components/payments/bank-transfer-panel";
 import { QPayPaymentModal } from "@/components/payments/qpay-payment-modal";
 import type { BankSettings } from "@/lib/domains/bank-settings";
@@ -108,6 +110,9 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
   const [bank, setBank] = useState<BankSettings | null>(null);
   const [paymentComplete, setPaymentComplete] = useState(false);
 
+  const { state: sessionState, user: sessionUser, reload: reloadSession } =
+    useCheckoutSession(open);
+
   const reset = useCallback(() => {
     setForm({
       customerName: "",
@@ -188,6 +193,16 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
   }, [open, reset]);
 
   useEffect(() => {
+    if (sessionUser) {
+      setForm((f) => ({
+        ...f,
+        customerEmail: sessionUser.email,
+        customerName: f.customerName || sessionUser.name || f.customerName,
+      }));
+    }
+  }, [sessionUser]);
+
+  useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -226,7 +241,9 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
   const validate = (): boolean => {
     const next: Record<string, string> = {};
     if (form.customerName.trim().length < 2) next.customerName = t("errors.name");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.customerEmail)) next.customerEmail = t("errors.email");
+    if (!sessionUser && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.customerEmail)) {
+      next.customerEmail = t("errors.email");
+    }
     if (form.customerPhone.replace(/[\s-]/g, "").length < 8) next.customerPhone = t("errors.phone");
     if (form.registrantAddress.trim().length < 5) next.registrantAddress = t("errors.address");
     if (form.registrantType === "INDIVIDUAL" && !form.registrantIdNumber.trim()) {
@@ -279,6 +296,9 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
       const data = await res.json();
 
       if (!res.ok) {
+        if (res.status === 401 && data.error === "AUTH_REQUIRED") {
+          await reloadSession();
+        }
         if (res.status === 409 && data.error === "DOMAIN_RESERVED") {
           setSubmitError(t("conflict"));
         } else if (data.message) {
@@ -417,6 +437,12 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
                     />
                   ) : null}
                 </CheckoutConfirmation>
+              ) : sessionState === "loading" ? (
+                <div className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
+                  <Loader2 className="size-5 animate-spin" />
+                </div>
+              ) : sessionState === "guest" ? (
+                <CheckoutAuthGate onAuthenticated={() => void reloadSession()} />
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="rounded-2xl border border-accent/20 bg-accent/5 p-4">
@@ -449,14 +475,13 @@ export function DomainCheckoutSheet({ open, result, journeyId, onClose, onSucces
                       <Input
                         id="checkout-email"
                         type="email"
-                        value={form.customerEmail}
-                        onChange={(e) => up("customerEmail", e.target.value)}
+                        value={sessionUser?.email ?? form.customerEmail}
+                        readOnly
+                        className="bg-muted/80"
                         autoComplete="email"
                         required
                       />
-                      {errors.customerEmail && (
-                        <p className="text-xs text-red-400">{errors.customerEmail}</p>
-                      )}
+                      <p className="text-xs text-muted-foreground">{t("accountEmailHint")}</p>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="checkout-phone">{t("phone")}</Label>

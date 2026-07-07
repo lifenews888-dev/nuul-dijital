@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/navigation";
+import { CheckoutAuthGate } from "@/components/orders/checkout-auth-gate";
 import {
   CheckoutConfirmation,
   CheckoutQPayAction,
 } from "@/components/orders/checkout-confirmation";
+import { useCheckoutSession } from "@/hooks/use-checkout-session";
 import { BankTransferPanel } from "@/components/payments/bank-transfer-panel";
 import { QPayPaymentModal } from "@/components/payments/qpay-payment-modal";
 import type { BankSettings } from "@/lib/domains/bank-settings";
@@ -88,6 +90,9 @@ export function ServiceCheckoutSheet({
   const [qpayError, setQpayError] = useState<string | null>(null);
   const [bank, setBank] = useState<BankSettings | null>(null);
   const [paymentComplete, setPaymentComplete] = useState(false);
+
+  const { state: sessionState, user: sessionUser, reload: reloadSession } =
+    useCheckoutSession(open);
 
   const serviceType = service === "hosting" ? "HOSTING" : "EMAIL";
 
@@ -168,6 +173,15 @@ export function ServiceCheckoutSheet({
   }, [open, reset]);
 
   useEffect(() => {
+    if (sessionUser) {
+      setCustomerEmail(sessionUser.email);
+      if (sessionUser.name && !customerName) {
+        setCustomerName(sessionUser.name);
+      }
+    }
+  }, [sessionUser, customerName]);
+
+  useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -188,7 +202,9 @@ export function ServiceCheckoutSheet({
   const validate = (): boolean => {
     const next: Record<string, string> = {};
     if (customerName.trim().length < 2) next.customerName = t("errors.name");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) next.customerEmail = t("errors.email");
+    if (!sessionUser && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
+      next.customerEmail = t("errors.email");
+    }
     if (customerPhone.replace(/[\s-]/g, "").length < 8) next.customerPhone = t("errors.phone");
     if (!acceptTerms) next.acceptTerms = t("errors.terms");
     setErrors(next);
@@ -224,6 +240,9 @@ export function ServiceCheckoutSheet({
       const data = await res.json();
 
       if (!res.ok) {
+        if (res.status === 401 && data.error === "AUTH_REQUIRED") {
+          await reloadSession();
+        }
         setSubmitError(data.message ?? t("submitError"));
         return;
       }
@@ -347,6 +366,12 @@ export function ServiceCheckoutSheet({
                     />
                   )}
                 </CheckoutConfirmation>
+              ) : sessionState === "loading" ? (
+                <div className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
+                  <Loader2 className="size-5 animate-spin" />
+                </div>
+              ) : sessionState === "guest" ? (
+                <CheckoutAuthGate onAuthenticated={() => void reloadSession()} />
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="space-y-2">
@@ -367,13 +392,12 @@ export function ServiceCheckoutSheet({
                     <Input
                       id="svc-email"
                       type="email"
-                      value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      value={sessionUser?.email ?? customerEmail}
+                      readOnly
+                      className="bg-muted/80"
                       autoComplete="email"
                     />
-                    {errors.customerEmail && (
-                      <p className="text-xs text-red-400">{errors.customerEmail}</p>
-                    )}
+                    <p className="text-xs text-muted-foreground">{t("accountEmailHint")}</p>
                   </div>
 
                   <div className="space-y-2">

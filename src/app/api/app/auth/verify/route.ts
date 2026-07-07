@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { safeCallbackUrl } from "@/lib/auth-callback";
 import { verifyMagicLinkToken } from "@/lib/domains/order-lookup";
 import { requireDomainsModule } from "@/lib/domains/module-guard";
 import { signIn } from "@/lib/auth";
@@ -40,8 +41,13 @@ export async function GET(req: Request) {
     );
   }
 
+  const callbackUrl = safeCallbackUrl(
+    url.searchParams.get("callbackUrl"),
+    redirectPath(locale, "?verified=1")
+  );
+
   return signIn("customer-magic-link", {
     token,
-    redirectTo: redirectPath(locale, "?verified=1"),
+    redirectTo: callbackUrl,
   });
 }

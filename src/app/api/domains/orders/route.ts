@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getAppContext } from "@/lib/app";
 import { invalidateSearchCache } from "@/lib/domains/rdap-cache";
 import { requireDomainsModule } from "@/lib/domains/module-guard";
 import { parseFqdn } from "@/lib/domains/sanitize";
@@ -28,6 +29,17 @@ export async function POST(req: Request) {
   });
   if (response) return response;
 
+  const ctx = await getAppContext();
+  if (!ctx) {
+    return NextResponse.json(
+      {
+        error: "AUTH_REQUIRED",
+        message: "Төлбөр баталгаажуулахын өмнө бүртгэлдээ нэвтэрнэ үү.",
+      },
+      { status: 401 }
+    );
+  }
+
   try {
     const body = await req.json();
     const parsed = domainOrderSchema.safeParse(body);
@@ -50,7 +62,10 @@ export async function POST(req: Request) {
 
     const { order, payment } = await createDomainOrder({
       ...orderInput,
+      customerEmail: ctx.user.email,
       locale,
+      orgId: ctx.organization.id,
+      userId: ctx.user.id,
     });
 
     const label = parseFqdn(order.domainName)?.label;
