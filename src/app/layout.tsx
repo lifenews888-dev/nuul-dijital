@@ -15,7 +15,7 @@ import { getLogoUrl } from "@/lib/settings";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://nuul.digital"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://nuul.digital"),
   ...buildMetadata(),
 };
 

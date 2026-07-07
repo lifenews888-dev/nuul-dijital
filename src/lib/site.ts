@@ -5,7 +5,7 @@ export const siteConfig = {
   tagline: "Монголын дижитал ирээдүйг бүтээнэ",
   description:
     "Nuul Digital — вэб хөгжүүлэлт, AI чатбот, бизнес автоматжуулалт, e-commerce, мобайл апп, брэндинг болон cloud шийдлээр Монголын байгууллагуудын дижитал шилжилтийг түргэсгэдэг орчин үеийн агентлаг.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://nuul.digital",
+  url: process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://nuul.digital",
   ogImage: "/og.png",
   locale: "mn_MN",
   email: "hello@nuul.digital",
