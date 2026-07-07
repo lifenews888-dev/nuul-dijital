@@ -1,13 +1,19 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { verifyMagicLinkToken } from "@/lib/domains/order-lookup";
-import { bootstrapCustomerAccount } from "@/lib/organizations";
+import {
+  normalizeLookupEmail,
+  verifyMagicLinkToken,
+} from "@/lib/domains/order-lookup";
+import { db } from "@/lib/db";
+import { verifyPassword } from "@/lib/password";
+import { bootstrapCustomerAccount, ensurePersonalOrganization } from "@/lib/organizations";
 
 /**
  * Auth.js (NextAuth v5) configuration.
  *
  * - `admin` provider: env-based credentials for /admin
  * - `customer-magic-link` provider: one-time email link for /app
+ * - `customer-password` provider: email + password for /app
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
@@ -32,6 +38,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return { id: "admin", name: "Super Admin", email, role: "SUPER_ADMIN" } as const;
         }
         return null;
+      },
+    }),
+    Credentials({
+      id: "customer-password",
+      name: "Customer Password",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const email = credentials?.email as string | undefined;
+        const password = credentials?.password as string | undefined;
+        if (!email || !password || !process.env.DATABASE_URL) return null;
+
+        const normalized = normalizeLookupEmail(email);
+        const user = await db.user.findUnique({ where: { email: normalized } });
+        if (!user?.active || user.role !== "USER" || !user.passwordHash) return null;
+
+        const valid = await verifyPassword(password, user.passwordHash);
+        if (!valid) return null;
+
+        await ensurePersonalOrganization(user);
+
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: "USER",
+        };
       },
     }),
     Credentials({

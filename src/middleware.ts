@@ -33,7 +33,13 @@ export default function middleware(req: NextRequest) {
   }
 
   if (pathname.startsWith("/app")) {
-    if (pathname.startsWith("/app/login")) return NextResponse.next();
+    if (
+      pathname.startsWith("/app/login") ||
+      pathname.startsWith("/app/set-password") ||
+      pathname.startsWith("/app/forgot-password")
+    ) {
+      return NextResponse.next();
+    }
     const hasSession = SESSION_COOKIES.some((name) => req.cookies.has(name));
     if (!hasSession) {
       const url = req.nextUrl.clone();

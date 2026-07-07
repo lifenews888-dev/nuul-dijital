@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 
 type Props = {
   icon: LucideIcon;
-  titleKey: "dashboardTitle" | "billingTitle";
-  subtitleKey: "dashboardSubtitle" | "billingSubtitle";
+  titleKey: "dashboardTitle" | "billingTitle" | "accountTitle";
+  subtitleKey: "dashboardSubtitle" | "billingSubtitle" | "accountSubtitle";
 };
 
 export function AppPageHeader({ icon: Icon, titleKey, subtitleKey }: Props) {

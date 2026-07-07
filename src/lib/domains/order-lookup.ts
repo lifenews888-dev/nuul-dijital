@@ -4,11 +4,12 @@ import { parseCookie } from "@/lib/domains/journey";
 export const ORDER_LOOKUP_COOKIE = "nuul_order_lookup";
 export const ORDER_LOOKUP_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 export const MAGIC_LINK_TTL_MS = 15 * 60 * 1000;
+export const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
 
 type TokenPayload = {
   email: string;
   exp: number;
-  type: "magic" | "session";
+  type: "magic" | "session" | "password-reset";
 };
 
 function getSecret(): string {
@@ -95,6 +96,23 @@ export function createSessionToken(email: string): string {
     type: "session",
   };
   return encodeToken(JSON.stringify(payload));
+}
+
+export function createPasswordResetToken(email: string): string {
+  const payload: TokenPayload = {
+    email: normalizeLookupEmail(email),
+    exp: Date.now() + PASSWORD_RESET_TTL_MS,
+    type: "password-reset",
+  };
+  return encodeToken(JSON.stringify(payload));
+}
+
+export function verifyPasswordResetToken(token: string): string | null {
+  const raw = decodeToken(token);
+  if (!raw) return null;
+  const data = parsePayload(raw);
+  if (!data || data.type !== "password-reset") return null;
+  return data.email;
 }
 
 export function verifySessionToken(token: string): string | null {

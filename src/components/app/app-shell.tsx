@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, LayoutDashboard, LogOut } from "lucide-react";
+import { CreditCard, LayoutDashboard, LogOut, User } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -19,6 +19,7 @@ type Props = {
 const NAV_ITEMS = [
   { href: "/app", labelKey: "navDashboard" as const, icon: LayoutDashboard, exact: true },
   { href: "/app/billing", labelKey: "navBilling" as const, icon: CreditCard, exact: false },
+  { href: "/app/account", labelKey: "navAccount" as const, icon: User, exact: false },
 ];
 
 export function AppShell({ userEmail, orgName, children }: Props) {
