@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import type { Project } from "@/data/projects";
-import { Link } from "@/i18n/navigation";
+import { ProjectCardLink } from "@/components/portfolio/project-card-link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -52,8 +52,8 @@ export function PortfolioGrid({ projects }: { projects: Project[] }) {
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.4 }}
             >
-              <Link
-                href={`/portfolio/${p.slug}`}
+              <ProjectCardLink
+                project={p}
                 className="group block overflow-hidden rounded-3xl border border-white/10 bg-card"
               >
                 <div className="relative aspect-[16/10] overflow-hidden">
@@ -87,7 +87,7 @@ export function PortfolioGrid({ projects }: { projects: Project[] }) {
                     ))}
                   </div>
                 </div>
-              </Link>
+              </ProjectCardLink>
             </motion.div>
           ))}
         </AnimatePresence>

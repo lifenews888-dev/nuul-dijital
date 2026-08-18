@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Project } from "@/data/projects";
+import { ProjectCardLink } from "@/components/portfolio/project-card-link";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { Tilt } from "@/components/motion/tilt";
 import { Button } from "@/components/ui/button";
@@ -41,8 +42,8 @@ export function PortfolioShowcase({ projects }: { projects: Project[] }) {
               className={i === 0 ? "lg:col-span-2" : ""}
             >
               <Tilt max={4}>
-              <Link
-                href={`/portfolio/${p.slug}`}
+              <ProjectCardLink
+                project={p}
                 className="group relative block overflow-hidden rounded-3xl border border-white/10 bg-card"
               >
                 <div className={`relative overflow-hidden ${i === 0 ? "aspect-[16/8]" : "aspect-[16/10]"}`}>
@@ -76,7 +77,7 @@ export function PortfolioShowcase({ projects }: { projects: Project[] }) {
                     ))}
                   </div>
                 </div>
-              </Link>
+              </ProjectCardLink>
               </Tilt>
             </motion.div>
           ))}

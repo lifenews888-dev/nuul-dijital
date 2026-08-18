@@ -41,7 +41,12 @@ export function ProjectForm({ project }: { project?: Project }) {
         </div>
         <TextAreaField name="description" label="Тайлбар" defaultValue={project?.description} required rows={3} />
         <TextField name="image" label="Үндсэн зураг (URL)" defaultValue={project?.image} required />
-        <TextField name="link" label="Вэб холбоос" defaultValue={project?.link ?? ""} />
+        <TextField
+          name="link"
+          label="Вэб холбоос"
+          defaultValue={project?.link ?? ""}
+          placeholder="https://example.mn — оруулбал карт дотоод хуудсын оронд энэ хаяг руу чиглэнэ"
+        />
         <TextAreaField
           name="technologies"
           label="Технологи"

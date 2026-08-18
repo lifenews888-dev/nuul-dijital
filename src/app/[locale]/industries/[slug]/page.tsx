@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, AlertTriangle } from "lucide-react";
 import { industries, getIndustry } from "@/data/industries";
 import { getProjects, getCaseStudies } from "@/lib/content";
+import { ProjectCardLink } from "@/components/portfolio/project-card-link";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Button } from "@/components/ui/button";
@@ -80,9 +81,9 @@ export default async function IndustryDetailPage({
             <h2 className="text-2xl font-bold">Энэ салбарын ажлууд</h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               {projects.map((p) => (
-                <Link
+                <ProjectCardLink
                   key={p!.slug}
-                  href={`/portfolio/${p!.slug}`}
+                  project={p!}
                   className="group rounded-2xl border border-white/10 bg-card p-6 transition-colors hover:border-white/20"
                 >
                   <Badge>{p!.industry}</Badge>
@@ -90,7 +91,7 @@ export default async function IndustryDetailPage({
                   <span className="mt-1 inline-flex items-center gap-1 text-sm text-accent">
                     Төсөл үзэх <ArrowRight className="size-3" />
                   </span>
-                </Link>
+                </ProjectCardLink>
               ))}
               {cases.map((c) => (
                 <Link
