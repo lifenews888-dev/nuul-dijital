@@ -1,6 +1,7 @@
 import { saveCaseStudy } from "@/app/(private)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
 import { ImageField } from "@/components/admin/image-field";
+import { ImageListField } from "@/components/admin/image-list-field";
 import { StatusFields, SeoFields } from "@/components/admin/forms/content-fields";
 import { Button } from "@/components/ui/button";
 
@@ -12,6 +13,8 @@ type CaseStudy = {
   industry: string;
   excerpt: string;
   cover: string;
+  gallery: string[];
+  videoUrl: string | null;
   duration: string;
   services: string[];
   challenge: string;
@@ -44,6 +47,18 @@ export function CaseStudyForm({ caseStudy }: { caseStudy?: CaseStudy }) {
           <TextField name="duration" label="Хугацаа" defaultValue={caseStudy?.duration} required />
         </div>
         <ImageField name="cover" label="Cover зураг" defaultValue={caseStudy?.cover} required hint="JPG, PNG — 4MB хүртэл" />
+        <ImageListField
+          name="gallery"
+          label="Зургийн цомог"
+          defaultValue={(caseStudy?.gallery ?? []).join("\n")}
+          hint="Олон зураг зэрэг сонгож болно"
+        />
+        <TextField
+          name="videoUrl"
+          label="Видео танилцуулга (URL)"
+          defaultValue={caseStudy?.videoUrl ?? ""}
+          placeholder="YouTube, Vimeo эсвэл .mp4 холбоос"
+        />
         <TextAreaField name="excerpt" label="Хураангуй" defaultValue={caseStudy?.excerpt} required rows={2} />
         <TextAreaField name="challenge" label="Сорилт" defaultValue={caseStudy?.challenge} required rows={4} />
         <TextAreaField name="solution" label="Шийдэл" defaultValue={caseStudy?.solution} required rows={4} />

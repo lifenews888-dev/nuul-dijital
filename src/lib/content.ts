@@ -28,7 +28,13 @@ type Results = { label: string; value: string }[];
  */
 export const CONTENT_TAG = "site-content";
 
-export type PublicTeamMember = { name: string; role: string; avatar: string };
+export type PublicTeamMember = {
+  name: string;
+  role: string;
+  avatar: string;
+  /** { network: url } for the networks the admin filled in. */
+  socials?: Record<string, string>;
+};
 export type PublicTestimonial = {
   quote: string;
   author: string;
@@ -44,7 +50,15 @@ export const getTeam = unstable_cache(
     try {
       const rows = await db.teamMember.findMany({ where: { active: true }, orderBy: { order: "asc" } });
       if (!rows.length) return staticTeam;
-      return rows.map((r) => ({ name: r.name, role: r.role, avatar: r.avatar }));
+      return rows.map((r) => ({
+        name: r.name,
+        role: r.role,
+        avatar: r.avatar,
+        socials:
+          r.socials && typeof r.socials === "object" && !Array.isArray(r.socials)
+            ? (r.socials as Record<string, string>)
+            : undefined,
+      }));
     } catch {
       return staticTeam;
     }
@@ -124,6 +138,7 @@ export const getProjects = unstable_cache(
         results: (r.results as unknown as Results) ?? [],
         image: r.image,
         gallery: r.gallery,
+        videoUrl: r.videoUrl ?? undefined,
         link: r.link ?? undefined,
         year: r.year,
         services: r.services,
@@ -153,6 +168,8 @@ export const getCaseStudies = unstable_cache(
         industry: r.industry,
         excerpt: r.excerpt,
         cover: r.cover,
+        gallery: r.gallery,
+        videoUrl: r.videoUrl ?? undefined,
         duration: r.duration,
         services: r.services,
         challenge: r.challenge,

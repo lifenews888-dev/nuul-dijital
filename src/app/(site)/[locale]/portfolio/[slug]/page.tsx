@@ -9,6 +9,7 @@ import { CTASection } from "@/components/sections/cta-section";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/motion/reveal";
+import { VideoEmbed } from "@/components/shared/video-embed";
 import { buildMetadata } from "@/lib/seo";
 
 export async function generateStaticParams() {
@@ -107,6 +108,12 @@ export default async function ProjectDetailPage({
                 </div>
               </div>
             </Reveal>
+
+            {p.videoUrl && (
+              <Reveal>
+                <VideoEmbed url={p.videoUrl} title={`${p.name} — видео танилцуулга`} />
+              </Reveal>
+            )}
 
             {p.gallery.length > 0 && (
               <Reveal>

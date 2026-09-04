@@ -7,6 +7,7 @@ export type Project = {
   results: { label: string; value: string }[];
   image: string;
   gallery: string[];
+  videoUrl?: string;
   link?: string;
   year: string;
   services: string[];

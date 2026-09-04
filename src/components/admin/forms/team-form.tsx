@@ -1,6 +1,7 @@
 import { saveTeamMember } from "@/app/(private)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
 import { ImageField } from "@/components/admin/image-field";
+import { SocialLinksField } from "@/components/admin/social-links-field";
 import { Button } from "@/components/ui/button";
 
 type TeamMember = {
@@ -25,12 +26,10 @@ export function TeamForm({ member }: { member?: TeamMember }) {
         </div>
         <ImageField name="avatar" label="Зураг" defaultValue={member?.avatar} required hint="JPG, PNG — 4MB хүртэл" />
         <TextAreaField name="bio" label="Намтар" defaultValue={member?.bio ?? ""} rows={3} />
-        <TextAreaField
+        <SocialLinksField
           name="socials"
-          label="Сошиал холбоосууд (JSON)"
-          defaultValue={member?.socials ? JSON.stringify(member.socials, null, 2) : ""}
-          hint='Жишээ: { "linkedin": "https://...", "twitter": "https://..." }'
-          rows={4}
+          label="Сошиал холбоосууд"
+          defaultValue={member?.socials}
         />
         <div className="grid gap-5 sm:grid-cols-2">
           <TextField name="order" label="Дараалал" type="number" defaultValue={member?.order ?? 0} />

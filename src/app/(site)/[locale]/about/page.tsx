@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHeader } from "@/components/shared/page-header";
+import { SocialLinks } from "@/components/shared/social-links";
 import { CTASection } from "@/components/sections/cta-section";
 import { Counter } from "@/components/motion/counter";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
@@ -106,6 +107,7 @@ export default async function AboutPage({
                 </div>
                 <div className="mt-4 font-semibold">{m.name}</div>
                 <div className="text-xs text-muted-foreground">{m.role}</div>
+                <SocialLinks links={m.socials} name={m.name} />
               </div>
             </StaggerItem>
           ))}

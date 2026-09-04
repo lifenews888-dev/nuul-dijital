@@ -5,6 +5,8 @@ export type CaseStudy = {
   industry: string;
   excerpt: string;
   cover: string;
+  gallery?: string[];
+  videoUrl?: string;
   duration: string;
   services: string[];
   challenge: string;

@@ -24,6 +24,10 @@ const nextConfig = {
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://plausible.io",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
+      // Video showcases: uploaded files stream from blob storage, and pasted
+      // YouTube/Vimeo links render as embeds (VideoEmbed allows no other host).
+      "media-src 'self' blob: https:",
+      "frame-src https://www.youtube-nocookie.com https://player.vimeo.com",
       "font-src 'self' data:",
       "connect-src 'self' https://www.google-analytics.com https://plausible.io https://*.vercel-insights.com",
       "frame-ancestors 'none'",

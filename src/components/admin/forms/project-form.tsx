@@ -15,6 +15,7 @@ type Project = {
   results: unknown;
   image: string;
   gallery: string[];
+  videoUrl: string | null;
   link: string | null;
   year: string;
   services: string[];
@@ -68,6 +69,12 @@ export function ProjectForm({ project }: { project?: Project }) {
           label="Зургийн цомог"
           defaultValue={project?.gallery.join("\n")}
           hint="Олон зураг зэрэг сонгож болно"
+        />
+        <TextField
+          name="videoUrl"
+          label="Видео танилцуулга (URL)"
+          defaultValue={project?.videoUrl ?? ""}
+          placeholder="YouTube, Vimeo эсвэл .mp4 холбоос"
         />
         <TextAreaField
           name="results"
