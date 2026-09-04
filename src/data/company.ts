@@ -5,7 +5,7 @@ export type Value = { title: string; description: string };
 export const stats: Stat[] = [
   { value: 120, suffix: "+", label: "Амжилттай төсөл" },
   { value: 50, suffix: "+", label: "Хамтрагч байгууллага" },
-  { value: 8, suffix: " жил", label: "Салбарын туршлага" },
+  { value: 5, suffix: " жил", label: "Салбарын туршлага" },
   { value: 98, suffix: "%", label: "Үйлчлүүлэгчийн ханамж" },
 ];
 

@@ -1,5 +1,7 @@
 import { saveProject } from "@/app/(private)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
+import { ImageField } from "@/components/admin/image-field";
+import { ImageListField } from "@/components/admin/image-list-field";
 import { StatusFields, SeoFields } from "@/components/admin/forms/content-fields";
 import { Button } from "@/components/ui/button";
 
@@ -40,7 +42,7 @@ export function ProjectForm({ project }: { project?: Project }) {
           <TextField name="year" label="Он" defaultValue={project?.year} required />
         </div>
         <TextAreaField name="description" label="Тайлбар" defaultValue={project?.description} required rows={3} />
-        <TextField name="image" label="Үндсэн зураг (URL)" defaultValue={project?.image} required />
+        <ImageField name="image" label="Үндсэн зураг" defaultValue={project?.image} required hint="JPG, PNG — 4MB хүртэл" />
         <TextField
           name="link"
           label="Вэб холбоос"
@@ -61,12 +63,11 @@ export function ProjectForm({ project }: { project?: Project }) {
           hint="Мөр бүрт нэг"
           rows={3}
         />
-        <TextAreaField
+        <ImageListField
           name="gallery"
           label="Зургийн цомог"
           defaultValue={project?.gallery.join("\n")}
-          hint="Зурагны URL — мөр бүрт нэг"
-          rows={3}
+          hint="Олон зураг зэрэг сонгож болно"
         />
         <TextAreaField
           name="results"

@@ -1,5 +1,6 @@
 import { saveCaseStudy } from "@/app/(private)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
+import { ImageField } from "@/components/admin/image-field";
 import { StatusFields, SeoFields } from "@/components/admin/forms/content-fields";
 import { Button } from "@/components/ui/button";
 
@@ -42,7 +43,7 @@ export function CaseStudyForm({ caseStudy }: { caseStudy?: CaseStudy }) {
           <TextField name="industry" label="Салбар" defaultValue={caseStudy?.industry} required />
           <TextField name="duration" label="Хугацаа" defaultValue={caseStudy?.duration} required />
         </div>
-        <TextField name="cover" label="Cover зураг (URL)" defaultValue={caseStudy?.cover} required />
+        <ImageField name="cover" label="Cover зураг" defaultValue={caseStudy?.cover} required hint="JPG, PNG — 4MB хүртэл" />
         <TextAreaField name="excerpt" label="Хураангуй" defaultValue={caseStudy?.excerpt} required rows={2} />
         <TextAreaField name="challenge" label="Сорилт" defaultValue={caseStudy?.challenge} required rows={4} />
         <TextAreaField name="solution" label="Шийдэл" defaultValue={caseStudy?.solution} required rows={4} />

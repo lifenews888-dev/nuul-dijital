@@ -5,6 +5,9 @@ import { can } from "@/lib/rbac";
 
 export const runtime = "nodejs";
 
+/** Matches the client-side guard in ImageField. */
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+
 function mediaType(mime: string): "IMAGE" | "VIDEO" | "DOCUMENT" {
   if (mime.startsWith("image/")) return "IMAGE";
   if (mime.startsWith("video/")) return "VIDEO";
@@ -22,6 +25,15 @@ export async function POST(req: Request) {
   const file = form.get("file");
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "Файл олдсонгүй." }, { status: 400 });
+  }
+
+  // The platform rejects request bodies over ~4.5MB before they reach us; this
+  // guard covers the rest and gives a message the admin can act on.
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return NextResponse.json(
+      { error: `Файл хэт том (${(file.size / 1024 / 1024).toFixed(1)}MB). 4MB-аас бага байх ёстой.` },
+      { status: 413 }
+    );
   }
 
   if (!process.env.BLOB_READ_WRITE_TOKEN) {

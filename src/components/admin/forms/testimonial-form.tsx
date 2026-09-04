@@ -1,5 +1,6 @@
 import { saveTestimonial } from "@/app/(private)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
+import { ImageField } from "@/components/admin/image-field";
 import { Button } from "@/components/ui/button";
 
 type Testimonial = {
@@ -26,7 +27,7 @@ export function TestimonialForm({ testimonial }: { testimonial?: Testimonial }) 
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
           <TextField name="company" label="Байгууллага" defaultValue={testimonial?.company} required />
-          <TextField name="avatar" label="Зураг (URL)" defaultValue={testimonial?.avatar} required />
+          <ImageField name="avatar" label="Зураг" defaultValue={testimonial?.avatar} required hint="JPG, PNG — 4MB хүртэл" />
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
           <TextField name="rating" label="Үнэлгээ (1-5)" type="number" defaultValue={testimonial?.rating ?? 5} />

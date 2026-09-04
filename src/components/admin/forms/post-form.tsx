@@ -1,5 +1,6 @@
 import { savePost } from "@/app/(private)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
+import { ImageField } from "@/components/admin/image-field";
 import { StatusFields, SeoFields } from "@/components/admin/forms/content-fields";
 import { Button } from "@/components/ui/button";
 
@@ -33,7 +34,7 @@ export function PostForm({ post }: { post?: Post }) {
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
           <TextField name="category" label="Ангилал" defaultValue={post?.category} required />
-          <TextField name="cover" label="Cover зураг (URL)" defaultValue={post?.cover} required />
+          <ImageField name="cover" label="Cover зураг" defaultValue={post?.cover} required hint="JPG, PNG — 4MB хүртэл" />
         </div>
         <TextAreaField name="excerpt" label="Хураангуй" defaultValue={post?.excerpt} required rows={2} />
         <TextAreaField name="content" label="Агуулга" defaultValue={post?.content} required rows={10} />

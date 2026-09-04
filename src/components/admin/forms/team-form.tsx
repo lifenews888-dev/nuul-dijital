@@ -1,5 +1,6 @@
 import { saveTeamMember } from "@/app/(private)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
+import { ImageField } from "@/components/admin/image-field";
 import { Button } from "@/components/ui/button";
 
 type TeamMember = {
@@ -22,7 +23,7 @@ export function TeamForm({ member }: { member?: TeamMember }) {
           <TextField name="name" label="Нэр" defaultValue={member?.name} required />
           <TextField name="role" label="Албан тушаал" defaultValue={member?.role} required />
         </div>
-        <TextField name="avatar" label="Зураг (URL)" defaultValue={member?.avatar} required />
+        <ImageField name="avatar" label="Зураг" defaultValue={member?.avatar} required hint="JPG, PNG — 4MB хүртэл" />
         <TextAreaField name="bio" label="Намтар" defaultValue={member?.bio ?? ""} rows={3} />
         <TextAreaField
           name="socials"

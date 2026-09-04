@@ -9,7 +9,7 @@ export const siteConfig = {
   ogImage: "/og.png",
   locale: "mn_MN",
   email: "hello@nuul.digital",
-  phone: "+976 7700 0000",
+  phone: "+976 8080 1677",
   address: "Сүхбаатар дүүрэг, Улаанбаатар, Монгол улс",
   social: {
     facebook: "https://facebook.com/nuuldigital",

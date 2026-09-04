@@ -1,4 +1,5 @@
 import { TextField, TextAreaField } from "@/components/admin/fields";
+import { ImageField } from "@/components/admin/image-field";
 
 const STATUS_OPTIONS = [
   { value: "DRAFT", label: "Ноорог" },
@@ -83,7 +84,7 @@ export function SeoFields({ seo }: { seo?: SeoLike }) {
         rows={3}
       />
       <div className="grid gap-5 sm:grid-cols-2">
-        <TextField name="ogImage" label="OpenGraph зураг (URL)" defaultValue={seo?.ogImage ?? ""} />
+        <ImageField name="ogImage" label="OpenGraph зураг" defaultValue={seo?.ogImage ?? ""} hint="Нийгмийн сүлжээнд харагдах зураг" />
         <TextField name="canonicalUrl" label="Canonical URL" defaultValue={seo?.canonicalUrl ?? ""} />
       </div>
     </fieldset>
