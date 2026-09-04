@@ -915,6 +915,10 @@
     "title": "Beyond domains",
     "description": "Domains, hosting, business email, and SSL — order from one platform.",
     "cta": "Learn more →",
+    "software": {
+      "title": "Software licences",
+      "short": "Adobe, Microsoft, Autodesk — billed in MNT with a VAT invoice."
+    },
     "domains": {
       "title": "Domains",
       "short": "Search and register .mn and global domains instantly."

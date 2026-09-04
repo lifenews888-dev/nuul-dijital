@@ -195,7 +195,7 @@ export function MegaMenu() {
 
                     {g.panel === "products" && (
                       <>
-                        <div className="grid grid-cols-4 gap-1">
+                        <div className="grid grid-cols-3 gap-1">
                           {infrastructureProducts.map((p) => (
                             <PanelCard
                               key={p.id}

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/site";
 import { services } from "@/data/services";
 import { industries } from "@/data/industries";
+import { softwareVendors } from "@/data/software";
 import { getProjects, getCaseStudies, getPosts, getJobs } from "@/lib/content";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -31,6 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/hosting",
     "/business-email",
     "/ssl",
+    "/software",
     "/legal/privacy",
     "/legal/terms",
     "/legal/domain-registration",
@@ -44,6 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dynamicRoutes = [
     ...services.map((s) => `/services/${s.slug}`),
     ...industries.map((i) => `/industries/${i.slug}`),
+    ...softwareVendors.map((v) => `/software/${v.slug}`),
     ...projects.map((p) => `/portfolio/${p.slug}`),
     ...caseStudies.map((c) => `/case-studies/${c.slug}`),
     ...posts.map((p) => `/blog/${p.slug}`),

@@ -54,7 +54,7 @@ export const navGroups: NavGroup[] = [
   {
     key: "products",
     panel: "products",
-    match: ["/domains", "/hosting", "/business-email", "/ssl", "/orders"],
+    match: ["/domains", "/hosting", "/business-email", "/ssl", "/software", "/orders"],
   },
   {
     key: "work",
@@ -104,6 +104,7 @@ export const footerNav = [
       { label: "Вэб хостинг", href: "/hosting" },
       { label: "Бизнес имэйл", href: "/business-email" },
       { label: "SSL баталгаажуулалт", href: "/ssl" },
+      { label: "Программ хангамжийн лиценз", href: "/software" },
       { label: "Захиалга харах", href: "/orders/lookup" },
     ],
   },

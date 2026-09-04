@@ -1013,3 +1013,22 @@ model SupportTicketMessage {
 
   @@index([ticketId, createdAt])
 }
+
+/// Enquiry from the software licensing pages (/software/request).
+model SoftwareQuote {
+  id          String     @id @default(cuid())
+  company     String
+  regNumber   String?
+  contactName String
+  email       String
+  phone       String
+  vendor      String?
+  products    String     @db.Text
+  seats       Int?
+  term        String?
+  message     String?    @db.Text
+  status      LeadStatus @default(NEW)
+  createdAt   DateTime   @default(now())
+
+  @@index([status, createdAt])
+}

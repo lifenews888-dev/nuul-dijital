@@ -71,3 +71,20 @@ export const serviceWaitlistSchema = z.object({
 export type ContactInput = z.infer<typeof contactSchema>;
 export type QuoteInput = z.infer<typeof quoteSchema>;
 export type BriefInput = z.infer<typeof briefSchema>;
+
+export const softwareQuoteSchema = z.object({
+  company: z.string().min(2),
+  regNumber: z.string().optional(),
+  contactName: z.string().min(2),
+  email: z.string().email(),
+  phone: z.string().min(6),
+  vendor: z.string().optional(),
+  products: z.string().min(2),
+  seats: z.coerce.number().int().positive().optional(),
+  term: z.string().optional(),
+  message: z.string().optional(),
+  /** Honeypot — accepted by the schema so the route can drop bots quietly. */
+  website: z.string().optional(),
+});
+
+export type SoftwareQuoteInput = z.infer<typeof softwareQuoteSchema>;
