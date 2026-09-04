@@ -9,7 +9,7 @@ import {
   adminMarkServiceOrderPaid,
   saveServiceProvisionDetails,
   updateServiceOrderStatus,
-} from "@/app/admin/services/actions";
+} from "@/app/(private)/admin/services/actions";
 import {
   DOMAIN_ORDER_TRANSITIONS,
 } from "@/lib/domains/order-status";

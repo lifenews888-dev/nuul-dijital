@@ -1,4 +1,4 @@
-import { saveProcessStep } from "@/app/admin/actions";
+import { saveProcessStep } from "@/app/(private)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
 import { Button } from "@/components/ui/button";
 import { ICON_NAMES } from "@/lib/icons";

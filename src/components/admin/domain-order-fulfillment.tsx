@@ -10,7 +10,7 @@ import {
   saveFulfillmentDetails,
   updateDomainOrderStatus,
   verifyRegistrant,
-} from "@/app/admin/domains/actions";
+} from "@/app/(private)/admin/domains/actions";
 import {
   DOMAIN_ORDER_ACTION_LABELS,
   DOMAIN_ORDER_TRANSITIONS,

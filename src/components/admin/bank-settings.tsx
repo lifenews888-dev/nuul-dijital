@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Check, Loader2 } from "lucide-react";
-import { saveBankSettings } from "@/app/admin/actions";
+import { saveBankSettings } from "@/app/(private)/admin/actions";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";

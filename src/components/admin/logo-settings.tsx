@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, Loader2, Check, AlertCircle, RotateCcw } from "lucide-react";
-import { setLogoUrl, resetLogo } from "@/app/admin/actions";
+import { setLogoUrl, resetLogo } from "@/app/(private)/admin/actions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 

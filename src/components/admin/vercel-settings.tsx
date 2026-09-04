@@ -1,5 +1,5 @@
 import { CheckCircle2, AlertCircle, DownloadCloud, Save, Trash2 } from "lucide-react";
-import { saveVercelConfig, clearVercelToken, importFromVercel } from "@/app/admin/actions";
+import { saveVercelConfig, clearVercelToken, importFromVercel } from "@/app/(private)/admin/actions";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";

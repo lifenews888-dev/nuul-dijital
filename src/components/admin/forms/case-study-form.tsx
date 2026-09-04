@@ -1,4 +1,4 @@
-import { saveCaseStudy } from "@/app/admin/actions";
+import { saveCaseStudy } from "@/app/(private)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
 import { StatusFields, SeoFields } from "@/components/admin/forms/content-fields";
 import { Button } from "@/components/ui/button";

@@ -1,4 +1,4 @@
-import { saveStat } from "@/app/admin/actions";
+import { saveStat } from "@/app/(private)/admin/actions";
 import { TextField, CheckboxField } from "@/components/admin/fields";
 import { Button } from "@/components/ui/button";
 

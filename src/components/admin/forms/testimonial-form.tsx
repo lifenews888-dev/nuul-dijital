@@ -1,4 +1,4 @@
-import { saveTestimonial } from "@/app/admin/actions";
+import { saveTestimonial } from "@/app/(private)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
 import { Button } from "@/components/ui/button";
 
