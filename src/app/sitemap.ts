@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/site";
 import { services } from "@/data/services";
 import { industries } from "@/data/industries";
-import { softwareVendors } from "@/data/software";
+import { softwareVendors, softwareCategories } from "@/data/software";
 import { getProjects, getCaseStudies, getPosts, getJobs } from "@/lib/content";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -33,6 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/business-email",
     "/ssl",
     "/software",
+    "/software/catalog",
     "/legal/privacy",
     "/legal/terms",
     "/legal/domain-registration",
@@ -47,6 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...services.map((s) => `/services/${s.slug}`),
     ...industries.map((i) => `/industries/${i.slug}`),
     ...softwareVendors.map((v) => `/software/${v.slug}`),
+    ...softwareCategories.map((c) => `/software/category/${c.slug}`),
     ...projects.map((p) => `/portfolio/${p.slug}`),
     ...caseStudies.map((c) => `/case-studies/${c.slug}`),
     ...posts.map((p) => `/blog/${p.slug}`),

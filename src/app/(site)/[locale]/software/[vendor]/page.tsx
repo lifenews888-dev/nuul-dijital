@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { softwareVendors, getSoftwareVendor } from "@/data/software";
+import { softwareVendors, getSoftwareVendor, categoriesForVendor } from "@/data/software";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Reveal } from "@/components/motion/reveal";
@@ -39,6 +39,7 @@ export default async function SoftwareVendorPage({
   setRequestLocale(locale);
   const v = getSoftwareVendor(vendor);
   if (!v) notFound();
+  const categories = categoriesForVendor(v.slug);
 
   return (
     <>
@@ -88,6 +89,26 @@ export default async function SoftwareVendorPage({
                         аль нь тохирохыг зөвлөнө.
                       </p>
                     </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {categories.length > 0 && (
+              <>
+                <h2 className="mt-14 text-2xl font-bold tracking-tight">
+                  Хамрах чиглэл{" "}
+                  <span className="text-muted-foreground">({categories.length})</span>
+                </h2>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {categories.map((c) => (
+                    <Link
+                      key={c.slug}
+                      href={`/software/category/${c.slug}`}
+                      className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-white/25 hover:text-foreground"
+                    >
+                      {c.title}
+                    </Link>
                   ))}
                 </div>
               </>

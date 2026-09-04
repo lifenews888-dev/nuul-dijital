@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AlertCircle, Check, Loader2, Send } from "lucide-react";
-import { softwareVendors } from "@/data/software";
+import { softwareVendors, getSoftwareCategory } from "@/data/software";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -12,7 +12,16 @@ import { track } from "@/lib/analytics";
 const SELECT_CLASS =
   "h-11 w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 text-sm text-foreground outline-none transition-colors focus:border-accent";
 
-export function SoftwareQuoteForm({ vendor }: { vendor?: string }) {
+export function SoftwareQuoteForm({
+  vendor,
+  category,
+}: {
+  vendor?: string;
+  category?: string;
+}) {
+  // A category link lands here with the need already named — prefill it so the
+  // visitor edits a sentence rather than starting from an empty box.
+  const categoryTitle = category ? getSoftwareCategory(category)?.title : undefined;
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -128,6 +137,7 @@ export function SoftwareQuoteForm({ vendor }: { vendor?: string }) {
           name="products"
           required
           rows={3}
+          defaultValue={categoryTitle ? `${categoryTitle} чиглэлийн шийдэл` : undefined}
           placeholder="Жишээ: Photoshop, Illustrator — 5 дизайнерт; Acrobat Pro — 3 хүнд"
         />
       </div>

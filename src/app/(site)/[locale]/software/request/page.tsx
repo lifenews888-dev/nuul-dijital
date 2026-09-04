@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { SoftwareQuoteForm } from "@/components/software/software-quote-form";
 import { buildMetadata } from "@/lib/seo";
 
-// Reads ?vendor= to preselect the manufacturer, so this page renders per request.
+// Reads ?vendor= / ?category= to prefill the form, so this page renders per request.
 export const dynamic = "force-dynamic";
 
 export const metadata = buildMetadata({
@@ -15,9 +15,9 @@ export const metadata = buildMetadata({
 export default async function SoftwareRequestPage({
   searchParams,
 }: {
-  searchParams: Promise<{ vendor?: string }>;
+  searchParams: Promise<{ vendor?: string; category?: string }>;
 }) {
-  const { vendor } = await searchParams;
+  const { vendor, category } = await searchParams;
 
   return (
     <>
@@ -33,7 +33,7 @@ export default async function SoftwareRequestPage({
 
       <section className="container-wide pb-24">
         <div className="max-w-2xl rounded-3xl border border-white/10 bg-card p-8 sm:p-10">
-          <SoftwareQuoteForm vendor={vendor} />
+          <SoftwareQuoteForm vendor={vendor} category={category} />
         </div>
       </section>
     </>
