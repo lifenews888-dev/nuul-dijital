@@ -1,5 +1,19 @@
 {
   "nav": {
+    "desc": {
+      "portfolio": "Projects we have delivered",
+      "caseStudies": "Deep dives with measurable results",
+      "industries": "Solutions tailored per sector",
+      "about": "Our story, team and values",
+      "blog": "Digital insights and guides",
+      "careers": "Open positions",
+      "contact": "Get in touch with us"
+    },
+    "products": "Products",
+    "work": "Work",
+    "company": "Company",
+    "allServices": "All services",
+    "orderLookup": "Track order",
     "home": "Home",
     "about": "About",
     "services": "Services",

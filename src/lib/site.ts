@@ -19,19 +19,62 @@ export const siteConfig = {
   },
 };
 
-export const navLinks = [
-  { label: "Нүүр", href: "/" },
-  { label: "Бидний тухай", href: "/about" },
-  { label: "Үйлчилгээ", href: "/services" },
-  { label: "Домэйн", href: "/domains" },
-  { label: "Хостинг", href: "/hosting" },
-  { label: "Имэйл", href: "/business-email" },
-  { label: "Салбарууд", href: "/industries" },
-  { label: "Портфолио", href: "/portfolio" },
-  { label: "Кейс судалгаа", href: "/case-studies" },
-  { label: "Блог", href: "/blog" },
-  { label: "Ажлын байр", href: "/careers" },
-  { label: "Холбоо барих", href: "/contact" },
+/** A plain link inside a nav group. `key` resolves under the `nav` namespace. */
+export type NavLeaf = { key: string; href: string };
+
+export type NavGroup = {
+  /** Translation key under `nav` for the trigger label. */
+  key: string;
+  /** Overview page for the group, linked from the panel footer. */
+  href?: string;
+  /**
+   * Rich panels build their cards from the matching data module, so titles and
+   * icons stay in one place; groups without a panel render `links` as a list.
+   */
+  panel?: "services" | "products";
+  links?: NavLeaf[];
+  /** Path prefixes that mark this group as the active one. */
+  match: string[];
+};
+
+/**
+ * Top-level navigation.
+ *
+ * Twelve flat links overflowed the bar and gave every page the same weight, so
+ * the tree is grouped into four triggers that open a panel. The logo is the
+ * link home, which is why there is no separate "Нүүр" entry.
+ */
+export const navGroups: NavGroup[] = [
+  {
+    key: "services",
+    href: "/services",
+    panel: "services",
+    match: ["/services"],
+  },
+  {
+    key: "products",
+    panel: "products",
+    match: ["/domains", "/hosting", "/business-email", "/ssl", "/orders"],
+  },
+  {
+    key: "work",
+    links: [
+      { key: "portfolio", href: "/portfolio" },
+      { key: "caseStudies", href: "/case-studies" },
+      { key: "industries", href: "/industries" },
+    ],
+    match: ["/portfolio", "/case-studies", "/industries"],
+  },
+  {
+    key: "company",
+    links: [
+      { key: "about", href: "/about" },
+      { key: "blog", href: "/blog" },
+      { key: "careers", href: "/careers" },
+      { key: "contact", href: "/contact" },
+    ],
+    match: ["/about", "/blog", "/careers", "/contact"],
+  },
 ];
 
 export const footerNav = [
