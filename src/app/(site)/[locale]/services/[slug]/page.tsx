@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { RegistryIcon } from "@/components/shared/registry-icon";
+import { MediaShowcase } from "@/components/shared/media-showcase";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Check, ArrowRight, ArrowLeft } from "lucide-react";
@@ -46,6 +47,13 @@ export default async function ServiceDetailPage({
       <section className="container-wide pb-24">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr]">
           <div className="flex flex-col gap-10">
+            <MediaShowcase
+              image={service.image}
+              gallery={service.gallery}
+              videoUrl={service.videoUrl}
+              title={service.title}
+            />
+
             <Reveal>
               <div>
                 <h2 className="text-2xl font-bold">Бид юу хийдэг вэ</h2>
@@ -82,6 +90,17 @@ export default async function ServiceDetailPage({
 
           <Reveal delay={0.1}>
             <div className="lg:sticky lg:top-28">
+              {service.priceMnt != null && (
+                <div className="mb-5 rounded-3xl border border-accent/25 bg-accent/[0.07] p-6">
+                  <div className="text-3xl font-bold text-accent">
+                    {service.priceMnt.toLocaleString("mn-MN")}₮
+                  </div>
+                  {service.priceNote && (
+                    <p className="mt-1 text-sm text-muted-foreground">{service.priceNote}</p>
+                  )}
+                </div>
+              )}
+
               <div
                 className={cn(
                   "rounded-3xl border border-white/10 bg-card p-8",

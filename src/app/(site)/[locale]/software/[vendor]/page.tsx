@@ -8,6 +8,7 @@ import { getSoftwareCatalogue } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Reveal } from "@/components/motion/reveal";
+import { MediaShowcase } from "@/components/shared/media-showcase";
 import { Button } from "@/components/ui/button";
 import { buildMetadata } from "@/lib/seo";
 
@@ -69,6 +70,14 @@ export default async function SoftwareVendorPage({
       <section className="container-wide py-14">
         <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
           <div>
+            <MediaShowcase
+              image={v.image}
+              gallery={v.gallery}
+              videoUrl={v.videoUrl}
+              title={v.name}
+              className="mb-12 flex flex-col gap-5"
+            />
+
             <h2 className="text-2xl font-bold tracking-tight">Бүтээгдэхүүн</h2>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
               {v.products.map((p, i) => (
@@ -120,6 +129,17 @@ export default async function SoftwareVendorPage({
           </div>
 
           <aside className="lg:sticky lg:top-28 lg:self-start">
+            {v.priceMnt != null && (
+              <div className="mb-5 rounded-3xl border border-accent/25 bg-accent/[0.07] p-6">
+                <div className="text-3xl font-bold text-accent">
+                  {v.priceMnt.toLocaleString("mn-MN")}₮
+                </div>
+                {v.priceNote && (
+                  <p className="mt-1 text-sm text-muted-foreground">{v.priceNote}</p>
+                )}
+              </div>
+            )}
+
             <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
               <h3 className="font-semibold">Хэнд тохиромжтой вэ</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{v.audience}</p>
