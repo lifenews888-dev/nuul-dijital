@@ -1,5 +1,5 @@
 import type { TldProduct } from "@prisma/client";
-import { saveTldProduct } from "@/app/(private)/admin/domains/actions";
+import { saveTldProduct } from "@/app/(admin)/admin/domains/actions";
 import { CheckboxField, TextField } from "@/components/admin/fields";
 import { Button } from "@/components/ui/button";
 

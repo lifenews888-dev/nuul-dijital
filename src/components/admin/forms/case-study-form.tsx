@@ -1,4 +1,4 @@
-import { saveCaseStudy } from "@/app/(private)/admin/actions";
+import { saveCaseStudy } from "@/app/(admin)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
 import { ImageField } from "@/components/admin/image-field";
 import { ImageListField } from "@/components/admin/image-list-field";

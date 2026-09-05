@@ -1,4 +1,4 @@
-import { savePost } from "@/app/(private)/admin/actions";
+import { savePost } from "@/app/(admin)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
 import { ImageField } from "@/components/admin/image-field";
 import { StatusFields, SeoFields } from "@/components/admin/forms/content-fields";

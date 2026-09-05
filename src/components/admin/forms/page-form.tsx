@@ -1,4 +1,4 @@
-import { savePage } from "@/app/(private)/admin/actions";
+import { savePage } from "@/app/(admin)/admin/actions";
 import { TextField, TextAreaField } from "@/components/admin/fields";
 import { StatusFields, SeoFields } from "@/components/admin/forms/content-fields";
 import { Button } from "@/components/ui/button";

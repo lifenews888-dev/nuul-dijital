@@ -1,4 +1,4 @@
-import { saveTeamMember } from "@/app/(private)/admin/actions";
+import { saveTeamMember } from "@/app/(admin)/admin/actions";
 import { TextField, TextAreaField, CheckboxField } from "@/components/admin/fields";
 import { ImageField } from "@/components/admin/image-field";
 import { SocialLinksField } from "@/components/admin/social-links-field";
