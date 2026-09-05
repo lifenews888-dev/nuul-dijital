@@ -1,5 +1,13 @@
 import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
+import { getIcon } from "@/lib/icon-registry";
+import { services as staticServices, type Service } from "@/data/services";
+import {
+  softwareVendors as staticVendors,
+  softwareCategories as staticCategories,
+  type SoftwareVendor,
+  type SoftwareCategory,
+} from "@/data/software";
 import {
   team as staticTeam,
   stats as staticStats,
@@ -281,5 +289,104 @@ export const getProcessSteps = unstable_cache(
     }
   },
   ["public-process"],
+  { tags: [CONTENT_TAG], revalidate: 300 }
+);
+
+/**
+ * Catalogue getters.
+ *
+ * Same contract as everything above: database rows win, and an empty table
+ * falls back to the bundled static catalogue. That is what lets the admin-
+ * managed catalogue ship without changing a single public page until the first
+ * row exists. `icon` is stored as a registry key and resolved back here, so the
+ * shape handed to components is identical either way.
+ */
+export const getServices = unstable_cache(
+  async (): Promise<Service[]> => {
+    if (!process.env.DATABASE_URL) return staticServices;
+    try {
+      const rows = await db.service.findMany({
+        where: { active: true },
+        orderBy: { order: "asc" },
+      });
+      if (!rows.length) return staticServices;
+      return rows.map((r) => ({
+        slug: r.slug,
+        icon: getIcon(r.icon),
+        title: r.title,
+        short: r.short,
+        description: r.description,
+        features: r.features,
+        deliverables: r.deliverables,
+        featured: r.featured,
+        accent: (r.accent as Service["accent"]) ?? undefined,
+        image: r.image ?? undefined,
+        gallery: r.gallery,
+        videoUrl: r.videoUrl ?? undefined,
+        priceMnt: r.priceMnt ?? undefined,
+        priceNote: r.priceNote ?? undefined,
+      }));
+    } catch {
+      return staticServices;
+    }
+  },
+  ["public-services"],
+  { tags: [CONTENT_TAG], revalidate: 300 }
+);
+
+export const getSoftwareCatalogue = unstable_cache(
+  async (): Promise<{ vendors: SoftwareVendor[]; categories: SoftwareCategory[] }> => {
+    const fallback = { vendors: staticVendors, categories: staticCategories };
+    if (!process.env.DATABASE_URL) return fallback;
+    try {
+      const [vendorRows, categoryRows] = await Promise.all([
+        db.softwareVendor.findMany({
+          where: { active: true },
+          orderBy: { priority: "asc" },
+          include: { categories: { select: { slug: true } } },
+        }),
+        db.softwareCategory.findMany({
+          where: { active: true },
+          orderBy: { order: "asc" },
+          include: { vendors: { select: { slug: true } } },
+        }),
+      ]);
+      // Both halves have to be present: a vendor list with no categories would
+      // render a catalogue with every coverage count at zero.
+      if (!vendorRows.length || !categoryRows.length) return fallback;
+
+      return {
+        vendors: vendorRows.map((r) => ({
+          slug: r.slug,
+          name: r.name,
+          icon: getIcon(r.icon),
+          tagline: r.tagline,
+          description: r.description,
+          products: r.products,
+          editions: r.editions.length ? r.editions : undefined,
+          audience: r.audience,
+          focus: r.focus as SoftwareVendor["focus"],
+          featured: r.featured,
+          priority: r.priority,
+          accent: (r.accent as SoftwareVendor["accent"]) ?? undefined,
+          image: r.image ?? undefined,
+          gallery: r.gallery,
+          videoUrl: r.videoUrl ?? undefined,
+          priceMnt: r.priceMnt ?? undefined,
+          priceNote: r.priceNote ?? undefined,
+        })),
+        categories: categoryRows.map((r) => ({
+          slug: r.slug,
+          title: r.title,
+          description: r.description,
+          group: r.group as SoftwareCategory["group"],
+          vendors: r.vendors.map((v) => v.slug),
+        })),
+      };
+    } catch {
+      return fallback;
+    }
+  },
+  ["public-software-catalogue"],
   { tags: [CONTENT_TAG], revalidate: 300 }
 );

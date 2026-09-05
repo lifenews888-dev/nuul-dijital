@@ -49,6 +49,12 @@ export type SoftwareVendor = {
   /** Display order on the index page; lower sorts first. */
   priority: number;
   accent?: "blue" | "cyan";
+  /** Set from the admin once a vendor is managed in the database. */
+  image?: string;
+  gallery?: string[];
+  videoUrl?: string;
+  priceMnt?: number;
+  priceNote?: string;
 };
 
 export type SoftwareCategory = {

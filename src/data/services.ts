@@ -21,6 +21,12 @@ export type Service = {
   deliverables: string[];
   featured?: boolean;
   accent?: "blue" | "cyan";
+  /** Set from the admin once a service is managed in the database. */
+  image?: string;
+  gallery?: string[];
+  videoUrl?: string;
+  priceMnt?: number;
+  priceNote?: string;
 };
 
 export const services: Service[] = [

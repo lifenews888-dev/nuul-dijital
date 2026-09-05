@@ -1035,3 +1035,84 @@ model SoftwareQuote {
 
   @@index([status, createdAt])
 }
+
+// ============================================================
+//  Catalogue — services and software licensing
+//
+//  These mirror the bundled static catalogues in src/data. The public getters
+//  fall back to that static data whenever a table is empty, so adding these
+//  models changes nothing on the site until an admin creates the first row.
+//  `icon` holds a key from the shared icon registry, not a component.
+// ============================================================
+
+model Service {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  short        String   @db.Text
+  description  String   @db.Text
+  features     String[]
+  deliverables String[]
+  icon         String
+  accent       String?
+  // Presentation media
+  image    String?
+  gallery  String[]
+  videoUrl String?
+  // Optional pricing — rendered only when set
+  priceMnt  Int?
+  priceNote String?
+  featured  Boolean  @default(false)
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, order])
+}
+
+model SoftwareVendor {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  tagline     String
+  description String   @db.Text
+  products    String[]
+  editions    String[]
+  audience    String   @db.Text
+  focus       String
+  icon        String
+  accent      String?
+  // Presentation media
+  image    String?
+  gallery  String[]
+  videoUrl String?
+  // Optional pricing — rendered only when set
+  priceMnt  Int?
+  priceNote String?
+  featured  Boolean  @default(false)
+  priority  Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categories SoftwareCategory[] @relation("VendorCategories")
+
+  @@index([active, priority])
+}
+
+model SoftwareCategory {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String   @db.Text
+  group       String
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  vendors SoftwareVendor[] @relation("VendorCategories")
+
+  @@index([active, group, order])
+}
