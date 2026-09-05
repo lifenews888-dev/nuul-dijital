@@ -68,7 +68,7 @@ function PanelCard({
   );
 }
 
-export function MegaMenu() {
+export function MegaMenu({ onOpenChange }: { onOpenChange?: (open: boolean) => void }) {
   const t = useTranslations("nav");
   const td = useTranslations("nav.desc");
   const tp = useTranslations("infraProducts");
@@ -86,6 +86,9 @@ export function MegaMenu() {
   };
 
   useEffect(() => setOpen(null), [pathname]);
+  // The bar needs its own solid surface while a panel is down, or the two
+  // read as separate floating pieces over the hero.
+  useEffect(() => onOpenChange?.(open !== null), [open, onOpenChange]);
   useEffect(() => () => cancelClose(), []);
 
   useEffect(() => {
@@ -163,7 +166,7 @@ export function MegaMenu() {
                     g.panel ? "inset-x-0" : "left-0 w-[360px]"
                   )}
                 >
-                  <div className="glass rounded-2xl p-3 shadow-2xl shadow-black/40">
+                  <div className="surface-overlay rounded-2xl p-3 shadow-2xl shadow-black/60">
                     {g.panel === "services" && (
                       <>
                         <div className="grid grid-cols-3 gap-1">
@@ -194,31 +197,38 @@ export function MegaMenu() {
                     )}
 
                     {g.panel === "products" && (
-                      <>
-                        <div className="grid grid-cols-3 gap-1">
-                          {infrastructureProducts.map((p) => (
-                            <PanelCard
-                              key={p.id}
-                              href={p.href}
-                              icon={p.icon}
-                              title={tp(`${p.id}.title`)}
-                              description={tp(`${p.id}.short`)}
-                              onNavigate={close}
-                            />
-                          ))}
-                        </div>
-                        <div className="mt-1 border-t border-white/10 pt-3">
-                          <Link
-                            href="/orders/lookup"
-                            onClick={close}
-                            className="group flex w-fit items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-accent transition-colors hover:bg-white/5"
-                          >
+                      // Five products plus the order lookup fill a 3x2 grid
+                      // exactly, so the panel has no ragged empty cell.
+                      <div className="grid grid-cols-3 gap-1">
+                        {infrastructureProducts.map((p) => (
+                          <PanelCard
+                            key={p.id}
+                            href={p.href}
+                            icon={p.icon}
+                            title={tp(`${p.id}.title`)}
+                            description={tp(`${p.id}.short`)}
+                            onNavigate={close}
+                          />
+                        ))}
+                        <Link
+                          href="/orders/lookup"
+                          onClick={close}
+                          className="group flex gap-3 rounded-xl border border-accent/20 bg-accent/[0.07] p-3 transition-colors hover:bg-accent/15"
+                        >
+                          <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-white">
                             <PackageSearch className="size-4" />
-                            {t("orderLookup")}
-                            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                          </Link>
-                        </div>
-                      </>
+                          </span>
+                          <span className="min-w-0">
+                            <span className="flex items-center gap-1 text-sm font-semibold text-foreground">
+                              {t("orderLookup")}
+                              <ArrowRight className="size-3.5 text-accent transition-transform group-hover:translate-x-0.5" />
+                            </span>
+                            <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
+                              Захиалгын явц, төлбөрийн байдлыг шалгах.
+                            </span>
+                          </span>
+                        </Link>
+                      </div>
                     )}
 
                     {g.links && (

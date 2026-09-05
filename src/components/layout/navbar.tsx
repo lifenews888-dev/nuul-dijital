@@ -24,6 +24,7 @@ export function Navbar({ logoUrl }: { logoUrl?: string | null }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const rawPathname = useRawPathname();
   const t = useTranslations("nav");
@@ -77,8 +78,10 @@ export function Navbar({ logoUrl }: { logoUrl?: string | null }) {
         className={cn(
           // `relative` anchors the mega-menu panels to the full bar width.
           "relative flex w-full max-w-[1280px] items-center justify-between rounded-2xl px-4 py-3 transition-all duration-500 sm:px-6",
-          scrolled
-            ? "glass shadow-2xl shadow-black/40"
+          // A dropped panel needs the bar solid too, otherwise the two float
+          // separately over the hero.
+          scrolled || menuOpen
+            ? "surface-overlay shadow-2xl shadow-black/50"
             : "border border-transparent bg-transparent"
         )}
       >
@@ -86,7 +89,7 @@ export function Navbar({ logoUrl }: { logoUrl?: string | null }) {
           <Logo size={logoUrl ? 52 : 36} live={!logoUrl} src={logoUrl} />
         </Link>
 
-        <MegaMenu />
+        <MegaMenu onOpenChange={setMenuOpen} />
 
         <div className="flex items-center gap-2">
           {SHOW_LANGUAGE_SWITCHER && (
@@ -114,7 +117,7 @@ export function Navbar({ logoUrl }: { logoUrl?: string | null }) {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute inset-x-4 top-20 z-40 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl glass p-4 shadow-2xl lg:hidden"
+            className="absolute inset-x-4 top-20 z-40 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl surface-overlay p-4 shadow-2xl shadow-black/50 lg:hidden"
           >
             <div className="flex flex-col gap-1">
               <Link

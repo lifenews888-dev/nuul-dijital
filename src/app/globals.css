@@ -104,8 +104,17 @@
     @apply bg-accent-gradient bg-clip-text text-transparent;
   }
 
-  .glass {
-    @apply border border-white/10 bg-white/5 backdrop-blur-xl;
+  /*
+   * Surface for the navbar, menus and sheets that sit over page content.
+   *
+   * This replaced a 5%-white "glass" fill. That reads fine over the page
+   * background but collapses over the hero: the headline behind bleeds through
+   * the blur and the muted copy inside stops being readable. A near-opaque card
+   * keeps contrast independent of whatever happens to be underneath.
+   */
+  .surface-overlay {
+    @apply border border-white/10 backdrop-blur-2xl;
+    background: hsl(var(--card) / 0.97);
   }
 
   /* Animated border glow on hover */
