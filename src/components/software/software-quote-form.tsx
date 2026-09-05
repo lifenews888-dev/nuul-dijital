@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AlertCircle, Check, Loader2, Send } from "lucide-react";
-import { softwareVendors, getSoftwareCategory } from "@/data/software";
+import type { SoftwareVendor } from "@/data/software";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -14,14 +14,17 @@ const SELECT_CLASS =
 
 export function SoftwareQuoteForm({
   vendor,
-  category,
+  categoryTitle,
+  vendors,
 }: {
   vendor?: string;
-  category?: string;
+  /**
+   * A category link lands here with the need already named, so the textarea
+   * starts as a sentence the visitor edits rather than an empty box.
+   */
+  categoryTitle?: string;
+  vendors: SoftwareVendor[];
 }) {
-  // A category link lands here with the need already named — prefill it so the
-  // visitor edits a sentence rather than starting from an empty box.
-  const categoryTitle = category ? getSoftwareCategory(category)?.title : undefined;
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -108,7 +111,7 @@ export function SoftwareQuoteForm({
           <Label htmlFor="vendor">Үйлдвэрлэгч</Label>
           <select id="vendor" name="vendor" defaultValue={vendor ?? ""} className={SELECT_CLASS}>
             <option value="">Сонгох…</option>
-            {softwareVendors.map((v) => (
+            {vendors.map((v) => (
               <option key={v.slug} value={v.slug}>
                 {v.name}
               </option>

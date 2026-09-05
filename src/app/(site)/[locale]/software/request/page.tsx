@@ -1,5 +1,7 @@
 import { PageHeader } from "@/components/shared/page-header";
 import { SoftwareQuoteForm } from "@/components/software/software-quote-form";
+import { findCategory } from "@/data/software";
+import { getSoftwareCatalogue } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 
 // Reads ?vendor= / ?category= to prefill the form, so this page renders per request.
@@ -18,6 +20,8 @@ export default async function SoftwareRequestPage({
   searchParams: Promise<{ vendor?: string; category?: string }>;
 }) {
   const { vendor, category } = await searchParams;
+  const { vendors, categories } = await getSoftwareCatalogue();
+  const categoryTitle = category ? findCategory(categories, category)?.title : undefined;
 
   return (
     <>
@@ -33,7 +37,7 @@ export default async function SoftwareRequestPage({
 
       <section className="container-wide pb-24">
         <div className="max-w-2xl rounded-3xl border border-white/10 bg-card p-8 sm:p-10">
-          <SoftwareQuoteForm vendor={vendor} category={category} />
+          <SoftwareQuoteForm vendor={vendor} categoryTitle={categoryTitle} vendors={vendors} />
         </div>
       </section>
     </>

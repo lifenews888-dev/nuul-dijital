@@ -1,23 +1,4 @@
-import {
-  BrainCircuit,
-  Boxes,
-  DatabaseBackup,
-  FileLock2,
-  FileText,
-  Fingerprint,
-  HardDrive,
-  Layers,
-  Palette,
-  PencilRuler,
-  Radar,
-  Router,
-  ScanSearch,
-  ShieldAlert,
-  ShieldCheck,
-  TabletSmartphone,
-  UserCog,
-  type LucideIcon,
-} from "lucide-react";
+import type { IconKey } from "@/lib/icon-registry";
 
 /**
  * Software licensing catalogue — 17 manufacturers across 61 product categories.
@@ -38,7 +19,8 @@ export type CategoryGroup = "application" | "security" | "infrastructure" | "oth
 export type SoftwareVendor = {
   slug: string;
   name: string;
-  icon: LucideIcon;
+  /** Key into the shared icon registry — see @/lib/icon-registry. */
+  icon: IconKey;
   tagline: string;
   description: string;
   products: string[];
@@ -97,7 +79,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "adobe",
     name: "Adobe",
-    icon: Palette,
+    icon: "Palette",
     tagline: "Бүтээлч ажлын дэлхийн стандарт",
     description:
       "Creative Cloud, Document Cloud, Adobe Express болон Acrobat Studio — дизайн, видео, PDF, цахим гарын үсгийн бүрэн шийдэл. Байгууллагын лицензийг Teams болон Enterprise хувилбараар.",
@@ -123,7 +105,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "microsoft",
     name: "Microsoft",
-    icon: Boxes,
+    icon: "Boxes",
     tagline: "Байгууллагын өдөр тутмын ажлын орчин",
     description:
       "Microsoft 365, Office, Windows, Azure, Teams, SharePoint — ажлын байрны программаас үүлэн дэд бүтэц хүртэл. CSP төлөвлөгөөний хүрээнд сарын болон жилийн захиалгаар.",
@@ -151,7 +133,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "autodesk",
     name: "Autodesk",
-    icon: PencilRuler,
+    icon: "PencilRuler",
     tagline: "Зураг төсөл, барилга, үйлдвэрлэл",
     description:
       "AutoCAD, Revit болон бусад CAD/BIM шийдэл — архитектур, барилга, инженерийн салбарын дэлхийн стандарт.",
@@ -175,7 +157,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "kaspersky",
     name: "Kaspersky",
-    icon: ShieldCheck,
+    icon: "ShieldCheck",
     tagline: "Аюулгүй байдлын өргөн цогцолбор",
     description:
       "Эндпойнт хамгаалалтаас XDR, SIEM, Threat Intelligence хүртэл — каталогийн 21 ангилалд хамрагдсан хамгийн өргөн хүрээтэй аюулгүй байдлын вендор.",
@@ -201,7 +183,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "acronis",
     name: "Acronis",
-    icon: DatabaseBackup,
+    icon: "DatabaseBackup",
     tagline: "Нөөцлөлт, сэргээлт ба кибер хамгаалалт",
     description:
       "Өгөгдлийн нөөцлөлт, гамшгийн сэргээлт, DLP болон кибер хамгаалалтыг нэг платформ дээр нэгтгэсэн шийдэл.",
@@ -221,7 +203,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "commvault",
     name: "Commvault",
-    icon: HardDrive,
+    icon: "HardDrive",
     tagline: "Байгууллагын өгөгдлийн хамгаалалт",
     description:
       "Том хэмжээний өгөгдлийн нөөцлөлт, сэргээлт болон өгөгдлийн аюулгүй байдлын (DCAP, DAG, DSPM) шийдэл.",
@@ -241,7 +223,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "crowdstrike",
     name: "CrowdStrike",
-    icon: Radar,
+    icon: "Radar",
     tagline: "Дэлхийн тэргүүлэгч XDR платформ",
     description:
       "Falcon платформ дээр суурилсан үүлэн суурьт XDR — эндпойнт, ажлын ачаалал, хэрэглэгчийн танилтыг нэг дор хамгаална.",
@@ -261,7 +243,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "forcepoint",
     name: "Forcepoint",
-    icon: FileLock2,
+    icon: "FileLock2",
     tagline: "Мэдээлэл төвтэй аюулгүй байдал",
     description:
       "DLP, вэб болон үүлний аюулгүй байдал, өгөгдлийн ангилал, WAAP — мэдээллийн урсгалыг хянаж, алдагдлаас сэргийлэх шийдэл.",
@@ -281,7 +263,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "qualys",
     name: "Qualys",
-    icon: ScanSearch,
+    icon: "ScanSearch",
     tagline: "Эмзэг байдал ба комплаенсийн удирдлага",
     description:
       "Эмзэг байдлын илрүүлэлт, автомат нэвтрэлтийн туршилт, үүл болон контейнерийн аюулгүй байдал — үүлэн платформ дээр.",
@@ -302,7 +284,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "trendai",
     name: "TrendAI",
-    icon: BrainCircuit,
+    icon: "BrainCircuit",
     tagline: "AI-д суурилсан аюулгүй байдлын платформ",
     description:
       "AI аюулгүй байдал, XDR, ASM, контейнер болон үүлний хамгаалалт, ICS/IoT — каталогийн 13 ангилалд хамрагдсан өргөн шийдэл.",
@@ -326,7 +308,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "soti",
     name: "SOTI",
-    icon: TabletSmartphone,
+    icon: "TabletSmartphone",
     tagline: "Талбарын төхөөрөмжийн удирдлага",
     description:
       "Мобайл болон IoT төхөөрөмжийг алсаас удирдах, хянах, аюулгүй байлгах платформ — салбарын ажилтантай бизнест.",
@@ -345,7 +327,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "zimperium",
     name: "Zimperium",
-    icon: ShieldAlert,
+    icon: "ShieldAlert",
     tagline: "Мобайл төхөөрөмж ба аппын хамгаалалт",
     description:
       "Гар утасны түвшний аюулыг илрүүлэх, мобайл аппликейшныг халдлагаас хамгаалах тусгай шийдэл.",
@@ -363,7 +345,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "axidian",
     name: "Axidian",
-    icon: Fingerprint,
+    icon: "Fingerprint",
     tagline: "Хэрэглэгчийн танилт ба хандалтын удирдлага",
     description:
       "Олон хүчин зүйлийн танилт, биометр, онцгой эрхийн хандалтын удирдлага (PAM) болон ITDR.",
@@ -382,7 +364,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "ideco",
     name: "Ideco",
-    icon: Router,
+    icon: "Router",
     tagline: "Сүлжээний хамгаалалт ба хандалтын хяналт",
     description:
       "Дараа үеийн галт хана (NGFW/UTM), VPN, Zero Trust хандалт болон вэб аппын хамгаалалт.",
@@ -401,7 +383,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "admin-by-request",
     name: "Admin by Request",
-    icon: UserCog,
+    icon: "UserCog",
     tagline: "Онцгой эрх ба алсын хандалт",
     description:
       "Хэрэглэгчид админ эрхийг зөвхөн хэрэгтэй үед, хяналттайгаар олгох шийдэл — эрсдэлийг бууруулж, IT багийн ачааллыг хөнгөвчилнө.",
@@ -419,7 +401,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "zstack",
     name: "ZStack",
-    icon: Layers,
+    icon: "Layers",
     tagline: "Виртуальчлал ба хувийн үүл",
     description:
       "Сервер виртуальчлал болон хувийн үүлэн дэд бүтэц байгуулах платформ — VMware-ээс шилжих боломжит хувилбар.",
@@ -437,7 +419,7 @@ export const softwareVendors: SoftwareVendor[] = [
   {
     slug: "pdf-xchange",
     name: "PDF-XChange",
-    icon: FileText,
+    icon: "FileText",
     tagline: "Хэмнэлттэй PDF шийдэл",
     description:
       "PDF засварлалт, хөрвүүлэлт, OCR болон маягтын ажил — Acrobat-ын боломжийн үнэтэй хувилбар.",
@@ -959,73 +941,85 @@ export const softwareCategories: SoftwareCategory[] = [
     vendors: ["microsoft"],
   },
 ];
-
-// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // Helpers
+//
+// These take the catalogue as an argument rather than closing over the static
+// arrays above, so the same functions serve both sources: the bundled data and
+// the admin-managed rows the content layer returns.
 // ---------------------------------------------------------------------------
 
-export const getSoftwareVendor = (slug: string): SoftwareVendor | undefined =>
-  softwareVendors.find((v) => v.slug === slug);
+export type SoftwareCatalogue = {
+  vendors: SoftwareVendor[];
+  categories: SoftwareCategory[];
+};
 
-export const getSoftwareCategory = (slug: string): SoftwareCategory | undefined =>
-  softwareCategories.find((c) => c.slug === slug);
+/** The bundled catalogue, used as the fallback when no rows exist yet. */
+export const staticCatalogue: SoftwareCatalogue = {
+  vendors: softwareVendors,
+  categories: softwareCategories,
+};
 
-export const sortedVendors = (): SoftwareVendor[] =>
-  [...softwareVendors].sort((a, b) => a.priority - b.priority);
+export const findVendor = (vendors: SoftwareVendor[], slug: string) =>
+  vendors.find((v) => v.slug === slug);
 
-export const featuredVendors = (): SoftwareVendor[] =>
-  sortedVendors().filter((v) => v.featured);
+export const findCategory = (categories: SoftwareCategory[], slug: string) =>
+  categories.find((c) => c.slug === slug);
+
+export const sortVendors = (vendors: SoftwareVendor[]): SoftwareVendor[] =>
+  [...vendors].sort((a, b) => a.priority - b.priority);
+
+export const featuredVendors = (vendors: SoftwareVendor[]): SoftwareVendor[] =>
+  sortVendors(vendors).filter((v) => v.featured);
 
 /** Categories a vendor appears in — drives the coverage badge and vendor page. */
-export const categoriesForVendor = (slug: string): SoftwareCategory[] =>
-  softwareCategories.filter((c) => c.vendors.includes(slug));
+export const categoriesForVendor = (categories: SoftwareCategory[], slug: string) =>
+  categories.filter((c) => c.vendors.includes(slug));
 
-export const vendorCoverage = (slug: string): number => categoriesForVendor(slug).length;
+export const vendorCoverage = (categories: SoftwareCategory[], slug: string): number =>
+  categoriesForVendor(categories, slug).length;
 
-export const categoriesByGroup = (): {
-  group: CategoryGroup;
-  label: string;
-  items: SoftwareCategory[];
-}[] =>
+export const categoriesByGroup = (
+  categories: SoftwareCategory[]
+): { group: CategoryGroup; label: string; items: SoftwareCategory[] }[] =>
   GROUP_ORDER.map((group) => ({
     group,
     label: GROUP_LABELS[group],
-    items: softwareCategories.filter((c) => c.group === group),
+    items: categories.filter((c) => c.group === group),
   })).filter((g) => g.items.length > 0);
 
-export const vendorsByFocus = (): {
-  focus: VendorFocus;
-  label: string;
-  items: SoftwareVendor[];
-}[] =>
+export const vendorsByFocus = (
+  vendors: SoftwareVendor[]
+): { focus: VendorFocus; label: string; items: SoftwareVendor[] }[] =>
   (Object.keys(FOCUS_LABELS) as VendorFocus[])
     .map((focus) => ({
       focus,
       label: FOCUS_LABELS[focus],
-      items: sortedVendors().filter((v) => v.focus === focus),
+      items: sortVendors(vendors).filter((v) => v.focus === focus),
     }))
     .filter((g) => g.items.length > 0);
 
 /** Free-text search over vendor names, their products, and category titles. */
-export function searchCatalog(query: string) {
+export function searchCatalogue(catalogue: SoftwareCatalogue, query: string) {
   const q = query.trim().toLowerCase();
   if (q.length < 2) return { vendors: [] as SoftwareVendor[], categories: [] as SoftwareCategory[] };
   return {
-    vendors: softwareVendors.filter(
+    vendors: catalogue.vendors.filter(
       (v) =>
         v.name.toLowerCase().includes(q) ||
         v.tagline.toLowerCase().includes(q) ||
         v.products.some((p) => p.toLowerCase().includes(q))
     ),
-    categories: softwareCategories.filter(
+    categories: catalogue.categories.filter(
       (c) => c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)
     ),
   };
 }
 
 /**
- * Categories surfaced on the /software index — the full 61 live on /software/catalog.
- * These are real category slugs, so each card links to a page that exists.
+ * Categories surfaced on the /software index — the full set lives on
+ * /software/catalog. Missing slugs are skipped, so an admin can retire a
+ * category without leaving a dead card behind.
  */
 export const FEATURED_CATEGORY_SLUGS = [
   "creative-editors",
@@ -1038,13 +1032,13 @@ export const FEATURED_CATEGORY_SLUGS = [
   "mdm-security",
 ] as const;
 
-export const featuredCategories = (): SoftwareCategory[] =>
-  FEATURED_CATEGORY_SLUGS.map((slug) => getSoftwareCategory(slug)).filter(
+export const featuredCategories = (categories: SoftwareCategory[]): SoftwareCategory[] =>
+  FEATURED_CATEGORY_SLUGS.map((slug) => findCategory(categories, slug)).filter(
     (c): c is SoftwareCategory => Boolean(c)
   );
 
-export const CATALOG_STATS = {
-  vendors: softwareVendors.length,
-  categories: softwareCategories.length,
+export const catalogueStats = (catalogue: SoftwareCatalogue) => ({
+  vendors: catalogue.vendors.length,
+  categories: catalogue.categories.length,
   groups: GROUP_ORDER.length,
-};
+});

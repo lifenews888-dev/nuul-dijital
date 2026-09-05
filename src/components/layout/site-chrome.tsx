@@ -9,6 +9,7 @@ import { PageTransition } from "@/components/motion/page-transition";
 import { Analytics } from "@/components/shared/analytics";
 import { AiAssistant } from "@/components/shared/ai-assistant";
 import { getLogoUrl } from "@/lib/settings";
+import { getServices } from "@/lib/content";
 
 /**
  * Everything inside <body> that every area of the site shares.
@@ -19,13 +20,13 @@ import { getLogoUrl } from "@/lib/settings";
  * statically renderable, while /admin and /app render at request time.
  */
 export async function SiteChrome({ children }: { children: React.ReactNode }) {
-  const logoUrl = await getLogoUrl();
+  const [logoUrl, services] = await Promise.all([getLogoUrl(), getServices()]);
 
   return (
     <NextIntlClientProvider>
       <JsonLd data={organizationJsonLd()} />
       <MotionProvider>
-        <Navbar logoUrl={logoUrl} />
+        <Navbar logoUrl={logoUrl} services={services} />
         <main className="relative">
           <PageTransition>{children}</PageTransition>
         </main>

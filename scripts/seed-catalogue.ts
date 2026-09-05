@@ -12,7 +12,6 @@
 import { PrismaClient } from "@prisma/client";
 import { services } from "../src/data/services";
 import { softwareVendors, softwareCategories } from "../src/data/software";
-import { iconKeyOf } from "../src/lib/icon-registry";
 
 const db = new PrismaClient();
 
@@ -25,7 +24,7 @@ async function seedServices() {
       description: s.description,
       features: s.features,
       deliverables: s.deliverables,
-      icon: iconKeyOf(s.icon),
+      icon: s.icon,
       accent: s.accent ?? null,
       featured: s.featured ?? false,
       order: index,
@@ -78,7 +77,7 @@ async function seedVendors() {
       editions: v.editions ?? [],
       audience: v.audience,
       focus: v.focus,
-      icon: iconKeyOf(v.icon),
+      icon: v.icon,
       accent: v.accent ?? null,
       featured: v.featured,
       priority: v.priority,

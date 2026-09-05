@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { RegistryIcon } from "@/components/shared/registry-icon";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, Loader2, Plus, X } from "lucide-react";
@@ -8,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { services } from "@/data/services";
+import type { Service } from "@/data/services";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
@@ -127,9 +128,10 @@ function ChipSelect({ presets, value, onChange, placeholder }: { presets: string
 type Props = {
   initial?: Partial<FormData>;
   journeyId?: string;
+  services: Service[];
 };
 
-export function QuoteWizard({ initial: initialOverrides, journeyId }: Props = {}) {
+export function QuoteWizard({ initial: initialOverrides, journeyId, services }: Props) {
   const t = useTranslations("wizard");
   const tf = useTranslations("forms");
   const skipDomainStep =
@@ -238,7 +240,7 @@ export function QuoteWizard({ initial: initialOverrides, journeyId }: Props = {}
                   const active = data.services.includes(s.title);
                   return (
                     <button key={s.slug} type="button" onClick={() => toggleService(s.title)} className={cn("flex items-center gap-3 text-left", chip(active))}>
-                      <s.icon className={cn("size-5 shrink-0", active && "text-accent")} />
+                      <RegistryIcon name={s.icon} className={cn("size-5 shrink-0", active && "text-accent")} />
                       {s.title}
                     </button>
                   );

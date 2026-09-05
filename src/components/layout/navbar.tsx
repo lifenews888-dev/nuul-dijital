@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight, ChevronDown } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { navGroups, type NavGroup } from "@/lib/site";
-import { services } from "@/data/services";
+import type { Service } from "@/data/services";
 import { infrastructureProducts } from "@/data/infrastructure-products";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/logo";
@@ -20,7 +20,13 @@ import { cn } from "@/lib/utils";
 // (routing, /en, translations) stays intact — flip this to true to re-enable.
 const SHOW_LANGUAGE_SWITCHER = false;
 
-export function Navbar({ logoUrl }: { logoUrl?: string | null }) {
+export function Navbar({
+  logoUrl,
+  services,
+}: {
+  logoUrl?: string | null;
+  services: Service[];
+}) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
@@ -89,7 +95,7 @@ export function Navbar({ logoUrl }: { logoUrl?: string | null }) {
           <Logo size={logoUrl ? 52 : 36} live={!logoUrl} src={logoUrl} />
         </Link>
 
-        <MegaMenu onOpenChange={setMenuOpen} />
+        <MegaMenu services={services} onOpenChange={setMenuOpen} />
 
         <div className="flex items-center gap-2">
           {SHOW_LANGUAGE_SWITCHER && (

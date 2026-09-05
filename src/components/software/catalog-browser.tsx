@@ -5,13 +5,15 @@ import { Search } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import {
   categoriesByGroup,
-  getSoftwareVendor,
-  searchCatalog,
+  findVendor,
+  searchCatalogue,
+  type SoftwareCatalogue,
   type SoftwareCategory,
+  type SoftwareVendor,
 } from "@/data/software";
 import { Input } from "@/components/ui/input";
 
-function VendorChips({ vendors }: { vendors: string[] }) {
+function VendorChips({ vendors, all }: { vendors: string[]; all: SoftwareVendor[] }) {
   return (
     <span className="flex flex-wrap gap-1.5">
       {vendors.map((slug) => (
@@ -19,29 +21,29 @@ function VendorChips({ vendors }: { vendors: string[] }) {
           key={slug}
           className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-0.5 text-[11px] text-muted-foreground"
         >
-          {getSoftwareVendor(slug)?.name}
+          {findVendor(all, slug)?.name}
         </span>
       ))}
     </span>
   );
 }
 
-function CategoryRow({ category }: { category: SoftwareCategory }) {
+function CategoryRow({ category, vendors }: { category: SoftwareCategory; vendors: SoftwareVendor[] }) {
   return (
     <Link
       href={`/software/category/${category.slug}`}
       className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 transition-colors hover:bg-white/[0.03]"
     >
       <span className="text-sm font-medium text-foreground">{category.title}</span>
-      <VendorChips vendors={category.vendors} />
+      <VendorChips vendors={category.vendors} all={vendors} />
     </Link>
   );
 }
 
-export function CatalogBrowser() {
+export function CatalogBrowser({ catalogue }: { catalogue: SoftwareCatalogue }) {
   const [query, setQuery] = useState("");
-  const groups = useMemo(() => categoriesByGroup(), []);
-  const results = useMemo(() => searchCatalog(query), [query]);
+  const groups = useMemo(() => categoriesByGroup(catalogue.categories), [catalogue.categories]);
+  const results = useMemo(() => searchCatalogue(catalogue, query), [catalogue, query]);
   const searching = query.trim().length >= 2;
 
   return (
@@ -87,7 +89,7 @@ export function CatalogBrowser() {
               </h2>
               <div className="mt-4 divide-y divide-white/5 overflow-hidden rounded-3xl border border-white/10 bg-card">
                 {results.categories.map((c) => (
-                  <CategoryRow key={c.slug} category={c} />
+                  <CategoryRow key={c.slug} category={c} vendors={catalogue.vendors} />
                 ))}
               </div>
             </div>
@@ -113,7 +115,7 @@ export function CatalogBrowser() {
               </div>
               <div className="mt-6 divide-y divide-white/5 overflow-hidden rounded-3xl border border-white/10 bg-card">
                 {g.items.map((c) => (
-                  <CategoryRow key={c.slug} category={c} />
+                  <CategoryRow key={c.slug} category={c} vendors={catalogue.vendors} />
                 ))}
               </div>
             </section>

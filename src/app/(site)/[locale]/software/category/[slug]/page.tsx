@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
+import { RegistryIcon } from "@/components/shared/registry-icon";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import {
-  GROUP_LABELS,
-  getSoftwareCategory,
-  getSoftwareVendor,
-  softwareCategories,
-} from "@/data/software";
+import { GROUP_LABELS, findCategory, findVendor } from "@/data/software";
+import { getSoftwareCatalogue } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Reveal } from "@/components/motion/reveal";
@@ -16,8 +13,9 @@ import { Button } from "@/components/ui/button";
 import { buildMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
-export function generateStaticParams() {
-  return softwareCategories.map((c) => ({ slug: c.slug }));
+export async function generateStaticParams() {
+  const { categories } = await getSoftwareCatalogue();
+  return categories.map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({
@@ -26,17 +24,18 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const c = getSoftwareCategory(slug);
+  const { vendors, categories } = await getSoftwareCatalogue();
+  const c = findCategory(categories, slug);
   if (!c) return {};
   const names = c.vendors
-    .map((s) => getSoftwareVendor(s)?.name)
+    .map((s) => findVendor(vendors, s)?.name)
     .filter(Boolean)
     .join(", ");
   return buildMetadata({
     title: `${c.title} — лиценз Монголд`,
     description: `${c.description} Шийдлүүд: ${names}. Байгууллагын лиценз төгрөгөөр, НӨАТ-ын нэхэмжлэхтэй.`,
     path: `/software/category/${c.slug}`,
-    keywords: [c.title, `${c.title} Монгол`, ...c.vendors.map((s) => getSoftwareVendor(s)?.name ?? s)],
+    keywords: [c.title, `${c.title} Монгол`, ...c.vendors.map((s) => findVendor(vendors, s)?.name ?? s)],
   });
 }
 
@@ -47,15 +46,16 @@ export default async function SoftwareCategoryPage({
 }) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
-  const c = getSoftwareCategory(slug);
+  const catalogue = await getSoftwareCatalogue();
+  const c = findCategory(catalogue.categories, slug);
   if (!c) notFound();
 
   const vendors = c.vendors
-    .map((s) => getSoftwareVendor(s))
+    .map((s) => findVendor(catalogue.vendors, s))
     .filter((v): v is NonNullable<typeof v> => Boolean(v));
 
   // Neighbours in the same group give the page somewhere to go besides "back".
-  const related = softwareCategories
+  const related = catalogue.categories
     .filter((x) => x.group === c.group && x.slug !== c.slug)
     .slice(0, 6);
 
@@ -96,7 +96,7 @@ export default async function SoftwareCategoryPage({
                       : "bg-accent/10 text-accent"
                   )}
                 >
-                  <v.icon className="size-6" />
+                  <RegistryIcon name={v.icon} className="size-6" />
                 </div>
                 <h3 className="mt-5 text-xl font-bold tracking-tight">{v.name}</h3>
                 <p className="mt-1 text-sm font-medium text-accent">{v.tagline}</p>

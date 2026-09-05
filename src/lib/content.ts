@@ -1,12 +1,13 @@
 import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
-import { getIcon } from "@/lib/icon-registry";
+
 import { services as staticServices, type Service } from "@/data/services";
 import {
   softwareVendors as staticVendors,
   softwareCategories as staticCategories,
   type SoftwareVendor,
   type SoftwareCategory,
+  type SoftwareCatalogue,
 } from "@/data/software";
 import {
   team as staticTeam,
@@ -296,12 +297,17 @@ export const getProcessSteps = unstable_cache(
  * Catalogue getters.
  *
  * Same contract as everything above: database rows win, and an empty table
- * falls back to the bundled static catalogue. That is what lets the admin-
- * managed catalogue ship without changing a single public page until the first
- * row exists. `icon` is stored as a registry key and resolved back here, so the
- * shape handed to components is identical either way.
+ * falls back to the bundled catalogue. That is what lets the admin-managed
+ * catalogue ship without changing a public page until the first row exists.
+ *
+ * Icons travel through the cache as registry keys, never as components:
+ * unstable_cache serialises what it stores, and a React component does not
+ * survive that — it comes back as a plain object and rendering it throws
+ * "Element type is invalid". So the cached layer speaks keys and the exported
+ * getter resolves them, which keeps the shape handed to components identical
+ * on both paths.
  */
-export const getServices = unstable_cache(
+const cachedServices = unstable_cache(
   async (): Promise<Service[]> => {
     if (!process.env.DATABASE_URL) return staticServices;
     try {
@@ -312,7 +318,7 @@ export const getServices = unstable_cache(
       if (!rows.length) return staticServices;
       return rows.map((r) => ({
         slug: r.slug,
-        icon: getIcon(r.icon),
+        icon: r.icon as Service["icon"],
         title: r.title,
         short: r.short,
         description: r.description,
@@ -334,32 +340,30 @@ export const getServices = unstable_cache(
   { tags: [CONTENT_TAG], revalidate: 300 }
 );
 
+export const getServices = cachedServices;
+
 export const getSoftwareCatalogue = unstable_cache(
-  async (): Promise<{ vendors: SoftwareVendor[]; categories: SoftwareCategory[] }> => {
+  async (): Promise<SoftwareCatalogue> => {
     const fallback = { vendors: staticVendors, categories: staticCategories };
     if (!process.env.DATABASE_URL) return fallback;
     try {
       const [vendorRows, categoryRows] = await Promise.all([
-        db.softwareVendor.findMany({
-          where: { active: true },
-          orderBy: { priority: "asc" },
-          include: { categories: { select: { slug: true } } },
-        }),
+        db.softwareVendor.findMany({ where: { active: true }, orderBy: { priority: "asc" } }),
         db.softwareCategory.findMany({
           where: { active: true },
           orderBy: { order: "asc" },
           include: { vendors: { select: { slug: true } } },
         }),
       ]);
-      // Both halves have to be present: a vendor list with no categories would
-      // render a catalogue with every coverage count at zero.
+      // Both halves have to be present: vendors without categories would render
+      // a catalogue with every coverage count at zero.
       if (!vendorRows.length || !categoryRows.length) return fallback;
 
       return {
         vendors: vendorRows.map((r) => ({
           slug: r.slug,
           name: r.name,
-          icon: getIcon(r.icon),
+          icon: r.icon as SoftwareVendor["icon"],
           tagline: r.tagline,
           description: r.description,
           products: r.products,

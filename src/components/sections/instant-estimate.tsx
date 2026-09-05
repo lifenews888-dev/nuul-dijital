@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import { RegistryIcon } from "@/components/shared/registry-icon";
 import { useTranslations } from "next-intl";
 import { motion, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import { Sparkles, Zap, ArrowRight, Check } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { services } from "@/data/services";
+import type { Service } from "@/data/services";
 import { estimateBrief, formatMnt } from "@/lib/estimate";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ function AnimatedMnt({ value }: { value: number }) {
   return <motion.span>{text}</motion.span>;
 }
 
-export function InstantEstimate() {
+export function InstantEstimate({ services }: { services: Service[] }) {
   const t = useTranslations("home.estimate");
   const [selServices, setSelServices] = useState<string[]>(["Вэб хөгжүүлэлт"]);
   const [selFeatures, setSelFeatures] = useState<string[]>([]);
@@ -77,7 +78,7 @@ export function InstantEstimate() {
                           : "border-white/10 bg-white/[0.02] text-muted-foreground hover:border-white/20"
                       )}
                     >
-                      <s.icon className={cn("size-4", active && "text-accent")} />
+                      <RegistryIcon name={s.icon} className={cn("size-4", active && "text-accent")} />
                       {s.title}
                     </button>
                   );

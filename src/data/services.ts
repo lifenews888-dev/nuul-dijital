@@ -1,19 +1,9 @@
-import {
-  Globe,
-  Bot,
-  Workflow,
-  ShoppingCart,
-  Smartphone,
-  Palette,
-  Sparkles,
-  Cloud,
-  Megaphone,
-  type LucideIcon,
-} from "lucide-react";
+import type { IconKey } from "@/lib/icon-registry";
 
 export type Service = {
   slug: string;
-  icon: LucideIcon;
+  /** Key into the shared icon registry — see @/lib/icon-registry. */
+  icon: IconKey;
   title: string;
   short: string;
   description: string;
@@ -32,7 +22,7 @@ export type Service = {
 export const services: Service[] = [
   {
     slug: "web-development",
-    icon: Globe,
+    icon: "Globe",
     title: "Вэб хөгжүүлэлт",
     short: "Хурдан, аюулгүй, өргөтгөх боломжтой вэб платформ.",
     description:
@@ -49,7 +39,7 @@ export const services: Service[] = [
   },
   {
     slug: "ai-chatbots",
-    icon: Bot,
+    icon: "Bot",
     title: "AI чатбот",
     short: "24/7 ажиллах ухаалаг харилцагчийн туслах.",
     description:
@@ -66,7 +56,7 @@ export const services: Service[] = [
   },
   {
     slug: "automation",
-    icon: Workflow,
+    icon: "Workflow",
     title: "Бизнес автоматжуулалт",
     short: "Давтагдах ажлыг автоматжуулж цаг хэмнэнэ.",
     description:
@@ -81,7 +71,7 @@ export const services: Service[] = [
   },
   {
     slug: "ecommerce",
-    icon: ShoppingCart,
+    icon: "ShoppingCart",
     title: "E-commerce систем",
     short: "Борлуулалтыг өсгөх онлайн худалдааны платформ.",
     description:
@@ -96,7 +86,7 @@ export const services: Service[] = [
   },
   {
     slug: "mobile-apps",
-    icon: Smartphone,
+    icon: "Smartphone",
     title: "Мобайл аппликейшн",
     short: "iOS ба Android-д зориулсан нэгдсэн апп.",
     description:
@@ -111,7 +101,7 @@ export const services: Service[] = [
   },
   {
     slug: "ui-ux-design",
-    icon: Palette,
+    icon: "Palette",
     title: "UI/UX дизайн",
     short: "Хэрэглэгч төвтэй, гоо сайхан интерфейс.",
     description:
@@ -126,7 +116,7 @@ export const services: Service[] = [
   },
   {
     slug: "branding",
-    icon: Sparkles,
+    icon: "Sparkles",
     title: "Брэндинг",
     short: "Танигдахуйц, тогтвортой брэнд таних тэмдэг.",
     description:
@@ -136,7 +126,7 @@ export const services: Service[] = [
   },
   {
     slug: "cloud-infrastructure",
-    icon: Cloud,
+    icon: "Cloud",
     title: "Cloud дэд бүтэц",
     short: "Найдвартай, өргөтгөх боломжтой үүлэн орчин.",
     description:
@@ -146,7 +136,7 @@ export const services: Service[] = [
   },
   {
     slug: "digital-marketing",
-    icon: Megaphone,
+    icon: "Megaphone",
     title: "Дижитал маркетинг",
     short: "Өсөлтөд чиглэсэн өгөгдөлд суурилсан маркетинг.",
     description:

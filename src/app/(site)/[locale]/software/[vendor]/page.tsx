@@ -3,15 +3,17 @@ import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { softwareVendors, getSoftwareVendor, categoriesForVendor } from "@/data/software";
+import { findVendor, categoriesForVendor } from "@/data/software";
+import { getSoftwareCatalogue } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { buildMetadata } from "@/lib/seo";
 
-export function generateStaticParams() {
-  return softwareVendors.map((v) => ({ vendor: v.slug }));
+export async function generateStaticParams() {
+  const { vendors } = await getSoftwareCatalogue();
+  return vendors.map((v) => ({ vendor: v.slug }));
 }
 
 export async function generateMetadata({
@@ -20,7 +22,8 @@ export async function generateMetadata({
   params: Promise<{ vendor: string }>;
 }): Promise<Metadata> {
   const { vendor } = await params;
-  const v = getSoftwareVendor(vendor);
+  const { vendors } = await getSoftwareCatalogue();
+  const v = findVendor(vendors, vendor);
   if (!v) return {};
   return buildMetadata({
     title: `${v.name} лиценз Монголд`,
@@ -37,9 +40,10 @@ export default async function SoftwareVendorPage({
 }) {
   const { locale, vendor } = await params;
   setRequestLocale(locale);
-  const v = getSoftwareVendor(vendor);
+  const catalogue = await getSoftwareCatalogue();
+  const v = findVendor(catalogue.vendors, vendor);
   if (!v) notFound();
-  const categories = categoriesForVendor(v.slug);
+  const categories = categoriesForVendor(catalogue.categories, v.slug);
 
   return (
     <>

@@ -18,8 +18,9 @@ import {
 } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { navGroups, type NavGroup } from "@/lib/site";
-import { services } from "@/data/services";
+import type { Service } from "@/data/services";
 import { infrastructureProducts } from "@/data/infrastructure-products";
+import { getIcon } from "@/lib/icon-registry";
 import { cn } from "@/lib/utils";
 
 /** Grace period so the pointer can travel from a trigger into its panel. */
@@ -44,11 +45,13 @@ function PanelCard({
   onNavigate,
 }: {
   href: string;
-  icon: LucideIcon;
+  /** A component for the bundled product list, a registry key for catalogue rows. */
+  icon: LucideIcon | string;
   title: string;
   description: string;
   onNavigate: () => void;
 }) {
+  const Resolved = typeof Icon === "string" ? getIcon(Icon) : Icon;
   return (
     <Link
       href={href}
@@ -56,7 +59,7 @@ function PanelCard({
       className="group flex gap-3 rounded-xl p-3 transition-colors hover:bg-white/5"
     >
       <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent transition-colors group-hover:bg-accent group-hover:text-white">
-        <Icon className="size-4" />
+        <Resolved className="size-4" />
       </span>
       <span className="min-w-0">
         <span className="block text-sm font-semibold text-foreground">{title}</span>
@@ -68,7 +71,13 @@ function PanelCard({
   );
 }
 
-export function MegaMenu({ onOpenChange }: { onOpenChange?: (open: boolean) => void }) {
+export function MegaMenu({
+  services,
+  onOpenChange,
+}: {
+  services: Service[];
+  onOpenChange?: (open: boolean) => void;
+}) {
   const t = useTranslations("nav");
   const td = useTranslations("nav.desc");
   const tp = useTranslations("infraProducts");

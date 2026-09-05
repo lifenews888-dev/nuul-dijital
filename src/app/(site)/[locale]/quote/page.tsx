@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { getServices } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { QuoteWizard } from "@/components/forms/quote-wizard";
 import { buildMetadata } from "@/lib/seo";
@@ -23,9 +24,10 @@ export default async function QuotePage({
 }: {
   searchParams: Promise<{ domain?: string; journey?: string }>;
 }) {
-  const [{ domain, journey }, t] = await Promise.all([
+  const [{ domain, journey }, t, services] = await Promise.all([
     searchParams,
     getTranslations("pages.quote"),
+    getServices(),
   ]);
 
   const initial = domain
@@ -41,7 +43,7 @@ export default async function QuotePage({
       />
       <section className="container-wide pb-24">
         <div className="mx-auto max-w-4xl">
-          <QuoteWizard initial={initial} journeyId={journey} />
+          <QuoteWizard initial={initial} journeyId={journey} services={services} />
         </div>
       </section>
     </>

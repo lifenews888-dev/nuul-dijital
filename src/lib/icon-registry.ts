@@ -79,9 +79,3 @@ export const ICON_KEYS = Object.keys(ICON_REGISTRY) as IconKey[];
 export function getIcon(key: string | null | undefined): LucideIcon {
   return (key && ICON_REGISTRY[key as IconKey]) || Sparkles;
 }
-
-/** The key for a component, so the seed can translate the static catalogues. */
-export function iconKeyOf(icon: LucideIcon): IconKey {
-  const found = ICON_KEYS.find((k) => ICON_REGISTRY[k] === icon);
-  return found ?? "Sparkles";
-}

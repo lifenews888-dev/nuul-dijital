@@ -1,7 +1,8 @@
 import { ArrowLeft } from "lucide-react";
 import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { CATALOG_STATS } from "@/data/software";
+import { catalogueStats } from "@/data/software";
+import { getSoftwareCatalogue } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { CatalogBrowser } from "@/components/software/catalog-browser";
 import { CTASection } from "@/components/sections/cta-section";
@@ -9,7 +10,8 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Программ хангамжийн бүтэн каталог",
-  description: `${CATALOG_STATS.vendors} үйлдвэрлэгчийн ${CATALOG_STATS.categories} ангиллын программ хангамж — хэрэгцээт шийдлээ хайж олоод үнийн санал аваарай.`,
+  description:
+    "Байгууллагын программ хангамжийн бүтэн каталог — хэрэгцээт шийдлээ хайж олоод үнийн санал аваарай.",
   path: "/software/catalog",
   keywords: ["программ хангамжийн каталог", "лицензийн жагсаалт", "SIEM", "DLP", "XDR", "MDM"],
 });
@@ -21,6 +23,8 @@ export default async function SoftwareCatalogPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const catalogue = await getSoftwareCatalogue();
+  const stats = catalogueStats(catalogue);
 
   return (
     <>
@@ -28,11 +32,11 @@ export default async function SoftwareCatalogPage({
         label="Бүтэн каталог"
         title={
           <>
-            {CATALOG_STATS.categories} ангиллын{" "}
+            {stats.categories} ангиллын{" "}
             <span className="text-gradient-accent">программ хангамж</span>
           </>
         }
-        description={`${CATALOG_STATS.vendors} үйлдвэрлэгчийн шийдлийг ангиллаар нь эрэмбэлэв. Хэрэгцээт шийдлээ хайж олоод үнийн санал аваарай.`}
+        description={`${stats.vendors} үйлдвэрлэгчийн шийдлийг ангиллаар нь эрэмбэлэв. Хэрэгцээт шийдлээ хайж олоод үнийн санал аваарай.`}
       />
 
       <section className="container-wide">
@@ -45,7 +49,7 @@ export default async function SoftwareCatalogPage({
       </section>
 
       <section className="container-wide py-12 pb-24">
-        <CatalogBrowser />
+        <CatalogBrowser catalogue={catalogue} />
       </section>
 
       <CTASection />

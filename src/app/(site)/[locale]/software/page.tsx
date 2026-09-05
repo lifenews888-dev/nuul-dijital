@@ -1,13 +1,15 @@
 import { ArrowRight, BadgeCheck, Coins, Headphones, ScanSearch } from "lucide-react";
+import { RegistryIcon } from "@/components/shared/registry-icon";
 import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import {
-  CATALOG_STATS,
+  catalogueStats,
   featuredCategories,
-  softwareVendors,
+  findVendor,
   vendorCoverage,
   vendorsByFocus,
 } from "@/data/software";
+import { getSoftwareCatalogue } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Reveal } from "@/components/motion/reveal";
@@ -18,7 +20,8 @@ import { cn } from "@/lib/utils";
 
 export const metadata = buildMetadata({
   title: "Программ хангамжийн лиценз",
-  description: `Adobe, Microsoft, Autodesk, Kaspersky болон ${CATALOG_STATS.vendors} үйлдвэрлэгчийн ${CATALOG_STATS.categories} ангиллын программ хангамжийн лиценз — төгрөгөөр, НӨАТ-ын нэхэмжлэхтэй.`,
+  description:
+    "Adobe, Microsoft, Autodesk, Kaspersky болон бусад үйлдвэрлэгчийн программ хангамжийн лиценз — төгрөгөөр, НӨАТ-ын нэхэмжлэхтэй.",
   path: "/software",
   keywords: [
     "Adobe лиценз Монгол",
@@ -53,8 +56,10 @@ export default async function SoftwarePage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const groups = vendorsByFocus();
-  const featured = featuredCategories();
+  const { vendors, categories } = await getSoftwareCatalogue();
+  const stats = catalogueStats({ vendors, categories });
+  const groups = vendorsByFocus(vendors);
+  const featured = featuredCategories(categories);
 
   return (
     <>
@@ -66,7 +71,7 @@ export default async function SoftwarePage({
             <span className="text-gradient-accent">төгрөгөөр, нэхэмжлэхтэй</span>
           </>
         }
-        description={`${CATALOG_STATS.vendors} үйлдвэрлэгчийн ${CATALOG_STATS.categories} ангиллын программ хангамжийг албан ёсны дистрибьюторын сувгаар нийлүүлнэ. Гадаад карт, валютын хүндрэлгүй — монгол нэхэмжлэх, монгол дэмжлэг.`}
+        description={`${stats.vendors} үйлдвэрлэгчийн ${stats.categories} ангиллын программ хангамжийг албан ёсны дистрибьюторын сувгаар нийлүүлнэ. Гадаад карт, валютын хүндрэлгүй — монгол нэхэмжлэх, монгол дэмжлэг.`}
       />
 
       <section className="container-wide">
@@ -83,8 +88,8 @@ export default async function SoftwarePage({
 
         <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
           {[
-            [String(CATALOG_STATS.vendors), "үйлдвэрлэгч"],
-            [String(CATALOG_STATS.categories), "бүтээгдэхүүний ангилал"],
+            [String(stats.vendors), "үйлдвэрлэгч"],
+            [String(stats.categories), "бүтээгдэхүүний ангилал"],
             ["24 цаг", "үнийн саналын хугацаа"],
             ["₮ + НӨАТ", "монгол нэхэмжлэх"],
           ].map(([n, l], i) => (
@@ -152,10 +157,10 @@ export default async function SoftwarePage({
                             : "bg-accent/10 text-accent"
                         )}
                       >
-                        <v.icon className="size-6" />
+                        <RegistryIcon name={v.icon} className="size-6" />
                       </div>
                       <span className="shrink-0 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[11px] text-muted-foreground">
-                        {vendorCoverage(v.slug)} ангилал
+                        {vendorCoverage(categories, v.slug)} ангилал
                       </span>
                     </div>
                     <div className="mt-5 flex items-center gap-2">
@@ -185,7 +190,7 @@ export default async function SoftwarePage({
             href="/software/catalog"
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent"
           >
-            {CATALOG_STATS.categories} ангилал бүгд <ArrowRight className="size-4" />
+            {stats.categories} ангилал бүгд <ArrowRight className="size-4" />
           </Link>
         </div>
         <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
@@ -203,7 +208,7 @@ export default async function SoftwarePage({
                       key={slug}
                       className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-0.5 text-[11px] text-muted-foreground"
                     >
-                      {softwareVendors.find((v) => v.slug === slug)?.name}
+                      {findVendor(vendors, slug)?.name}
                     </span>
                   ))}
                 </div>

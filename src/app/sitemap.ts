@@ -1,19 +1,27 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/site";
-import { services } from "@/data/services";
 import { industries } from "@/data/industries";
-import { softwareVendors, softwareCategories } from "@/data/software";
-import { getProjects, getCaseStudies, getPosts, getJobs } from "@/lib/content";
+
+import {
+  getProjects,
+  getCaseStudies,
+  getPosts,
+  getJobs,
+  getServices,
+  getSoftwareCatalogue,
+} from "@/lib/content";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteConfig.url;
   const now = new Date();
 
-  const [projects, caseStudies, posts, jobs] = await Promise.all([
+  const [projects, caseStudies, posts, jobs, services, catalogue] = await Promise.all([
     getProjects(),
     getCaseStudies(),
     getPosts(),
     getJobs(),
+    getServices(),
+    getSoftwareCatalogue(),
   ]);
 
   const staticRoutes = [
@@ -47,8 +55,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dynamicRoutes = [
     ...services.map((s) => `/services/${s.slug}`),
     ...industries.map((i) => `/industries/${i.slug}`),
-    ...softwareVendors.map((v) => `/software/${v.slug}`),
-    ...softwareCategories.map((c) => `/software/category/${c.slug}`),
+    ...catalogue.vendors.map((v) => `/software/${v.slug}`),
+    ...catalogue.categories.map((c) => `/software/category/${c.slug}`),
     ...projects.map((p) => `/portfolio/${p.slug}`),
     ...caseStudies.map((c) => `/case-studies/${c.slug}`),
     ...posts.map((p) => `/blog/${p.slug}`),

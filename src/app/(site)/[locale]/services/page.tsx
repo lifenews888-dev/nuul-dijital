@@ -1,12 +1,13 @@
 import { ArrowRight } from "lucide-react";
+import { RegistryIcon } from "@/components/shared/registry-icon";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { services } from "@/data/services";
+
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { ProcessSection } from "@/components/sections/process-section";
 import { Reveal } from "@/components/motion/reveal";
-import { getProcessSteps } from "@/lib/content";
+import { getProcessSteps, getServices } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +25,11 @@ export default async function ServicesPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [t, steps] = await Promise.all([getTranslations(), getProcessSteps()]);
+  const [t, steps, services] = await Promise.all([
+    getTranslations(),
+    getProcessSteps(),
+    getServices(),
+  ]);
   return (
     <>
       <PageHeader
@@ -51,7 +56,7 @@ export default async function ServicesPage({
                       : "bg-accent/10 text-accent"
                   )}
                 >
-                  <s.icon className="size-7" />
+                  <RegistryIcon name={s.icon} className="size-7" />
                 </div>
                 <h2 className="mt-6 text-2xl font-bold tracking-tight">{s.title}</h2>
                 <p className="mt-3 leading-relaxed text-muted-foreground">{s.description}</p>

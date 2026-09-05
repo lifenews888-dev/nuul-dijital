@@ -1,8 +1,9 @@
 import { setRequestLocale } from "next-intl/server";
+import { RegistryIcon } from "@/components/shared/registry-icon";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Check, ArrowRight, ArrowLeft } from "lucide-react";
-import { services, getService } from "@/data/services";
+import { getServices } from "@/lib/content";
 import { PageHeader } from "@/components/shared/page-header";
 import { CTASection } from "@/components/sections/cta-section";
 import { Button } from "@/components/ui/button";
@@ -10,13 +11,14 @@ import { Reveal } from "@/components/motion/reveal";
 import { buildMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const services = await getServices();
   return services.map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const service = getService(slug);
+  const service = (await getServices()).find((s) => s.slug === slug);
   if (!service) return buildMetadata({ title: "Олдсонгүй" });
   return buildMetadata({
     title: service.title,
@@ -32,10 +34,10 @@ export default async function ServiceDetailPage({
 }) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
-  const service = getService(slug);
+  const service = (await getServices()).find((s) => s.slug === slug);
   if (!service) notFound();
 
-  const others = services.filter((s) => s.slug !== slug).slice(0, 3);
+  const others = (await getServices()).filter((s) => s.slug !== slug).slice(0, 3);
 
   return (
     <>
@@ -94,7 +96,7 @@ export default async function ServiceDetailPage({
                       : "bg-accent/10 text-accent"
                   )}
                 >
-                  <service.icon className="size-7" />
+                  <RegistryIcon name={service.icon} className="size-7" />
                 </div>
                 <h3 className="mt-6 text-xl font-bold">Энэ үйлчилгээг сонирхож байна уу?</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
@@ -122,7 +124,7 @@ export default async function ServiceDetailPage({
                 href={`/services/${o.slug}`}
                 className="group rounded-2xl border border-white/10 bg-card p-5 transition-colors hover:border-white/20"
               >
-                <o.icon className="size-6 text-accent" />
+                <RegistryIcon name={o.icon} className="size-6 text-accent" />
                 <div className="mt-3 font-semibold">{o.title}</div>
                 <span className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground group-hover:text-accent">
                   Үзэх <ArrowRight className="size-3" />

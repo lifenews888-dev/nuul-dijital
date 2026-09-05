@@ -17,6 +17,7 @@ import {
   getStats,
   getValues,
   getProcessSteps,
+  getServices,
 } from "@/lib/content";
 
 export default async function HomePage({
@@ -26,12 +27,13 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [testimonials, allProjects, stats, values, steps] = await Promise.all([
+  const [testimonials, allProjects, stats, values, steps, services] = await Promise.all([
     getTestimonials(),
     getProjects(),
     getStats(),
     getValues(),
     getProcessSteps(),
+    getServices(),
   ]);
   const featured = allProjects.filter((p) => p.featured);
   const showcaseProjects = featured.length ? featured : allProjects.slice(0, 3);
@@ -42,11 +44,11 @@ export default async function HomePage({
       <section className="container-wide">
         <InfrastructureProducts />
       </section>
-      <ServicesSection />
+      <ServicesSection services={services} />
       <WhyNuul stats={stats} values={values} />
       <PortfolioShowcase projects={showcaseProjects} />
       <AISolutions />
-      <InstantEstimate />
+      <InstantEstimate services={services} />
       <TestimonialsSection items={testimonials} />
       <ProcessSection steps={steps} />
       <CTASection />

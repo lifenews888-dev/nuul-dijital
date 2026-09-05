@@ -1,14 +1,15 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { RegistryIcon } from "@/components/shared/registry-icon";
 import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
-import { services } from "@/data/services";
+import type { Service } from "@/data/services";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { cn } from "@/lib/utils";
 
-export function ServicesSection() {
+export function ServicesSection({ services }: { services: Service[] }) {
   const t = useTranslations("home.services");
   return (
     <section id="services" className="relative py-24 lg:py-32">
@@ -53,7 +54,7 @@ export function ServicesSection() {
                         : "bg-accent/10 text-accent"
                     )}
                   >
-                    <s.icon className="size-6" />
+                    <RegistryIcon name={s.icon} className="size-6" />
                   </div>
                   <Link
                     href={`/services/${s.slug}`}
