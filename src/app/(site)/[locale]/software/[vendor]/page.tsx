@@ -93,17 +93,23 @@ export default async function SoftwareVendorPage({
             {v.editions && (
               <>
                 <h2 className="mt-14 text-2xl font-bold tracking-tight">Лицензийн хувилбар</h2>
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                {/* One shared note rather than the same sentence repeated under
+                    each edition — until we carry real per-edition detail, saying
+                    it once reads as considered instead of padded. */}
+                <div className="mt-6 flex flex-wrap gap-2">
                   {v.editions.map((e) => (
-                    <div key={e} className="rounded-3xl border border-white/10 bg-card p-6">
-                      <h3 className="font-semibold">{e}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                        Эрхийн түвшин, хэрэглэгчийн тоо, нэмэлт боломжоор ялгаатай. Танай багт
-                        аль нь тохирохыг зөвлөнө.
-                      </p>
-                    </div>
+                    <span
+                      key={e}
+                      className="rounded-full border border-white/10 bg-card px-4 py-2 text-sm font-medium"
+                    >
+                      {e}
+                    </span>
                   ))}
                 </div>
+                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                  Хувилбарууд эрхийн түвшин, хэрэглэгчийн тоо, нэмэлт боломжоороо ялгаатай.
+                  Танай багт аль нь тохирохыг үнийн саналын хамт зөвлөнө.
+                </p>
               </>
             )}
 
