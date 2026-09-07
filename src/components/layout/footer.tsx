@@ -15,7 +15,7 @@ export async function Footer({ logoUrl }: { logoUrl?: string | null }) {
   };
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-ink">
-      <div className="absolute -top-40 left-1/2 h-80 w-[800px] -translate-x-1/2 rounded-full bg-accent/10 blur-[120px]" />
+      <div className="absolute -top-40 left-1/2 h-80 w-[800px] -translate-x-1/2 glow-accent opacity-50" />
       <div className="container-wide relative py-16 lg:py-20">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           <div className="flex flex-col gap-6">

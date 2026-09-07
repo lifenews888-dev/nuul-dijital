@@ -261,6 +261,40 @@
 }
 
 @layer utilities {
+  /*
+   * Ambient brand glow.
+   *
+   * These were solid circles under blur-[120px] to blur-[160px], on elements
+   * as large as 900x600. A blur that wide has to rasterise an enormous area
+   * through a very wide kernel, at the device pixel ratio -- on a phone that
+   * is by far the most expensive paint on the page, and it is what made the
+   * site hang as it opened. A radial gradient paints the same soft falloff
+   * directly, with no filter pass at all.
+   *
+   * The stops are tuned to sit close to what the blur produced: a bright
+   * centre, a long mid falloff, and nothing at the edge. Vary the strength
+   * with Tailwind's opacity utilities rather than adding more variants.
+   */
+  .glow-accent {
+    border-radius: 9999px;
+    background-image: radial-gradient(
+      circle at center,
+      rgba(37, 99, 235, 0.22) 0%,
+      rgba(37, 99, 235, 0.1) 38%,
+      transparent 72%
+    );
+  }
+
+  .glow-cyan {
+    border-radius: 9999px;
+    background-image: radial-gradient(
+      circle at center,
+      rgba(6, 182, 212, 0.18) 0%,
+      rgba(6, 182, 212, 0.08) 38%,
+      transparent 72%
+    );
+  }
+
   .noise {
     position: relative;
   }

@@ -14,7 +14,7 @@ export function WhyNuul({ values }: { values: Value[] }) {
   const t = useTranslations("home.whyNuul");
   return (
     <section className="relative overflow-hidden py-24 lg:py-32">
-      <div className="absolute right-0 top-1/4 h-96 w-96 rounded-full bg-accent/5 blur-[120px]" />
+      <div className="absolute right-0 top-1/4 h-96 w-96 glow-accent opacity-25" />
       <div className="container-wide">
         <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
           {/* Sticky statement */}

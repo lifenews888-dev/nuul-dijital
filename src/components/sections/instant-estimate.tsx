@@ -45,7 +45,7 @@ export function InstantEstimate({ services }: { services: Service[] }) {
 
   return (
     <section className="relative overflow-hidden py-24 lg:py-32">
-      <div className="absolute left-1/2 top-1/3 -z-10 h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-accent/10 blur-[160px]" />
+      <div className="absolute left-1/2 top-1/3 -z-10 h-[500px] w-[700px] -translate-x-1/2 glow-accent opacity-50" />
       <div className="container-wide">
         <SectionHeading
           align="center"

@@ -23,7 +23,7 @@ export function AISolutions() {
   return (
     <section className="relative overflow-hidden py-24 lg:py-32">
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-accent/[0.04] to-transparent" />
-      <div className="absolute left-1/2 top-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-[140px]" />
+      <div className="absolute left-1/2 top-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 glow-accent opacity-50" />
 
       <div className="container-wide">
         <div className="grid items-center gap-16 lg:grid-cols-2">
