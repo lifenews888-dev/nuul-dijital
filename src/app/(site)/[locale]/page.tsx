@@ -40,18 +40,29 @@ export default async function HomePage({
     <>
       <Hero stats={stats} />
       <TrustedBy />
-      <section className="container-wide">
-        <InfrastructureProducts />
-      </section>
+
+      {/* What we sell, in one block. These three were scattered down the page,
+          so the visitor was pitched a service, shown proof, then pitched again;
+          /services/ai-chatbots alone was linked three times from this page.
+          InfrastructureProducts renders its own <section>, so it is given the
+          container and the page's spacing rather than being wrapped in a second
+          one. */}
+      <InfrastructureProducts className="container-wide py-24 lg:py-32" />
       <ServicesSection services={services} />
+      <AISolutions />
+
+      {/* Then the argument, then the proof for it. */}
       <WhyNuul values={values} />
       <PortfolioShowcase projects={showcaseProjects} />
-      <AISolutions />
-      <InstantEstimate services={services} />
       <TestimonialsSection items={testimonials} />
+
+      {/* How the work runs, before what it costs: the estimate is easier to
+          accept once the visitor knows what they get for it. */}
       <ProcessSection steps={steps} />
+      <InstantEstimate services={services} />
+
       {/* ContactSection closes the page. CTASection sat here too, which asked
-          the visitor twice in a row — once to leave for /quote, then to fill in
+          the visitor twice in a row - once to leave for /quote, then to fill in
           the form right below it. */}
       <ContactSection />
     </>
