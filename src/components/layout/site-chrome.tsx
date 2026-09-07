@@ -7,6 +7,7 @@ import { HideOnAdmin } from "@/components/layout/hide-on-admin";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { PageTransition } from "@/components/motion/page-transition";
 import { Analytics } from "@/components/shared/analytics";
+import { ScrollProgress } from "@/components/shared/scroll-progress";
 import { AiAssistant } from "@/components/shared/ai-assistant";
 import { getLogoUrl } from "@/lib/settings";
 import { getServices } from "@/lib/content";
@@ -24,6 +25,7 @@ export async function SiteChrome({ children }: { children: React.ReactNode }) {
 
   return (
     <NextIntlClientProvider>
+      <ScrollProgress />
       <JsonLd data={organizationJsonLd()} />
       <MotionProvider>
         <Navbar logoUrl={logoUrl} services={services} />

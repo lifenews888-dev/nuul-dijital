@@ -117,6 +117,43 @@
     background: hsl(var(--card) / 0.97);
   }
 
+  /*
+   * Scroll progress — a hairline that fills as the page scrolls.
+   *
+   * Driven by the CSS scroll timeline, so it runs off the main thread and needs
+   * no scroll listener. `animation-timeline` is not Baseline yet (Firefox is
+   * the gap), so the bar is hidden by default and revealed only where the
+   * timeline actually works — a browser without it sees nothing rather than a
+   * bar frozen at zero.
+   */
+  .scroll-progress {
+    display: none;
+    transform-origin: 0 50%;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      display: block;
+      animation: scroll-progress linear;
+      animation-timeline: scroll(root block);
+    }
+  }
+
+  @keyframes scroll-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-progress {
+      display: none;
+    }
+  }
+
   /* Animated border glow on hover */
   .card-glow {
     @apply relative overflow-hidden transition-all duration-500;
