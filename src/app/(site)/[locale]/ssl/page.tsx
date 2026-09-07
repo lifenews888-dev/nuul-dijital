@@ -55,7 +55,7 @@ export default async function SslPage({
       featuresTitle={t("featuresTitle")}
       hostingNote={t("hostingNote")}
       waitlistTitle={ts("waitlist.title")}
-      waitlistSubtitle={t("waitlist.subtitleSsl")}
+      waitlistSubtitle={ts("waitlist.subtitleSsl")}
       primaryCta={{ href: `/hosting${journeyQuery}`, label: t("ctaHosting") }}
       secondaryCta={{ href: `/domains${journeyQuery}`, label: t("ctaDomains") }}
       locale={locale}

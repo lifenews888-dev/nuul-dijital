@@ -152,7 +152,15 @@ export default async function SoftwareVendorPage({
             </div>
 
             <div className="mt-5 flex flex-col gap-3">
-              <Button asChild variant="gradient">
+              {/* The label carries the vendor's name, and Button is nowrap by
+                  default, so a long one ("Admin by Request лицензийн үнийн
+                  санал") could not shrink and pushed the page sideways on a
+                  phone. Let it wrap and let the button grow to fit. */}
+              <Button
+                asChild
+                variant="gradient"
+                className="h-auto min-h-11 whitespace-normal py-2.5 text-center"
+              >
                 <Link href={`/software/request?vendor=${v.slug}`}>
                   {v.name} лицензийн үнийн санал <ArrowRight className="size-4" />
                 </Link>

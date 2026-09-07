@@ -79,7 +79,7 @@ export default async function ProjectDetailPage({
                   </a>
                 </Button>
                 {linkHost && (
-                  <p className="mt-2 text-center text-xs text-muted-foreground">{linkHost}</p>
+                  <p className="mt-2 break-words text-center text-xs text-muted-foreground">{linkHost}</p>
                 )}
               </div>
             )}
