@@ -42,6 +42,15 @@ export default async function ProjectDetailPage({
 
   const next = projects[(projects.findIndex((x) => x.slug === slug) + 1) % projects.length];
 
+  // Named under the outbound button. A malformed value must not take the whole
+  // page down, so an unparseable link simply shows no host.
+  let linkHost = "";
+  try {
+    linkHost = p.link ? new URL(p.link).hostname.replace(/^www\./, "") : "";
+  } catch {
+    linkHost = "";
+  }
+
   return (
     <>
       <PageHeader label={p.industry} title={p.name} description={p.description} />
@@ -58,6 +67,22 @@ export default async function ProjectDetailPage({
         <div className="grid gap-12 lg:grid-cols-[1fr_1.6fr]">
           {/* meta sidebar */}
           <div className="flex flex-col gap-8 lg:sticky lg:top-28 lg:self-start">
+            {/* Cards no longer jump straight to the client's site, so this is
+                where a visitor goes on to it: the sidebar's first and strongest
+                action, with the host named so they can see where it leads
+                before taking it. */}
+            {p.link && (
+              <div>
+                <Button asChild variant="gradient" size="lg" className="w-full">
+                  <a href={p.link} target="_blank" rel="noreferrer">
+                    Вэбсайт үзэх <ExternalLink className="size-4" />
+                  </a>
+                </Button>
+                {linkHost && (
+                  <p className="mt-2 text-center text-xs text-muted-foreground">{linkHost}</p>
+                )}
+              </div>
+            )}
             <div>
               <div className="text-xs uppercase tracking-wide text-muted-foreground">Салбар</div>
               <div className="mt-1 font-semibold">{p.industry}</div>
@@ -84,13 +109,6 @@ export default async function ProjectDetailPage({
                 ))}
               </div>
             </div>
-            {p.link && (
-              <Button asChild variant="outline">
-                <a href={p.link} target="_blank" rel="noreferrer">
-                  Вэбсайт үзэх <ExternalLink className="size-4" />
-                </a>
-              </Button>
-            )}
           </div>
 
           {/* content */}

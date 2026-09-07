@@ -4,32 +4,27 @@ import { Link } from "@/i18n/navigation";
 /**
  * Wrapper for a project card's clickable surface.
  *
- * When an admin fills in the project's "Вэб холбоос" (`link`) field, the card
- * points at that URL instead of the generated /portfolio/[slug] page; absolute
- * URLs open in a new tab. Projects without a link keep the detail page, so the
- * prerendered routes stay reachable and indexable.
+ * Cards always lead to the project's own page. They used to jump straight to
+ * the client's live site whenever an admin filled in "Вэб холбоос", which had
+ * two costs: every /portfolio/[slug] page was orphaned -- prerendered and
+ * listed in the sitemap, but with no link anywhere on the site pointing at it,
+ * since the showcase, the portfolio grid and the industry pages all render
+ * through here -- and the visitor was handed off to someone else's site before
+ * reading a word about the work.
+ *
+ * The live site is still one click away, from a button on the project page.
  */
 export function ProjectCardLink({
   project,
   className,
   children,
 }: {
-  project: { slug: string; link?: string };
+  project: { slug: string };
   className?: string;
   children: ReactNode;
 }) {
-  const href = project.link?.trim();
-
-  if (href && /^https?:\/\//i.test(href)) {
-    return (
-      <a href={href} target="_blank" rel="noreferrer" className={className}>
-        {children}
-      </a>
-    );
-  }
-
   return (
-    <Link href={href || `/portfolio/${project.slug}`} className={className}>
+    <Link href={`/portfolio/${project.slug}`} className={className}>
       {children}
     </Link>
   );

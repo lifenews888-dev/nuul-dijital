@@ -48,7 +48,7 @@ export function ProjectForm({ project }: { project?: Project }) {
           name="link"
           label="Вэб холбоос"
           defaultValue={project?.link ?? ""}
-          placeholder="https://example.mn — оруулбал карт дотоод хуудсын оронд энэ хаяг руу чиглэнэ"
+          placeholder="https://example.mn — төслийн хуудсан дээр «Вэбсайт үзэх» товч болж харагдана"
         />
         <TextAreaField
           name="technologies"
