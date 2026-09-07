@@ -18,7 +18,7 @@ const nextConfig = {
     // arbitrary images through this domain and bill the transformations to
     // this project.
     //
-    // These four are every host the optimizer is actually asked for. The
+    // These three are every host the optimizer is actually asked for. The
     // technology logos on the "trusted by" strip come from cdn.simpleicons.org
     // but are plain <img> tags -- they are SVG, so they are served as-is and
     // never reach the optimizer, and listing them here would widen the
@@ -34,8 +34,6 @@ const nextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       // Live screenshots standing in for project imagery.
       { protocol: "https", hostname: "api.microlink.io" },
-      // Placeholder faces on the testimonials. Temporary.
-      { protocol: "https", hostname: "i.pravatar.cc" },
     ],
   },
   experimental: {
