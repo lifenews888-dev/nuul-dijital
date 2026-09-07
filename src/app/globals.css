@@ -154,6 +154,90 @@
     }
   }
 
+  /*
+   * Ambient aurora that drifts with the scroll position.
+   *
+   * Same technique as .scroll-progress: a CSS scroll timeline, so it needs no
+   * scroll listener and stays off the main thread. It is hidden by default and
+   * only revealed where the timeline actually works, so an unsupporting browser
+   * gets a plain background rather than a layer frozen at frame one.
+   *
+   * Deliberately desktop-only. The blobs are very large and heavily blurred;
+   * compositing them costs real time on the low-end phones this site had to be
+   * fixed for, and no phone screen is wide enough for the drift to read anyway.
+   *
+   * Only transform and opacity are animated. Scaling a blurred layer forces the
+   * blur to re-rasterise every frame, which is exactly the kind of work this is
+   * meant to avoid.
+   */
+  .scroll-aurora {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+      .scroll-aurora {
+        display: block;
+      }
+
+      .scroll-aurora::before,
+      .scroll-aurora::after {
+        content: "";
+        position: absolute;
+        border-radius: 9999px;
+        filter: blur(120px);
+        animation-duration: auto;
+        animation-timing-function: linear;
+        animation-timeline: scroll(root block);
+      }
+
+      .scroll-aurora::before {
+        top: -12%;
+        left: -6%;
+        width: 42vw;
+        height: 42vw;
+        background: hsl(221 83% 53% / 0.13);
+        animation-name: aurora-drift-a;
+      }
+
+      .scroll-aurora::after {
+        top: 38%;
+        right: -10%;
+        width: 38vw;
+        height: 38vw;
+        background: hsl(190 90% 50% / 0.1);
+        animation-name: aurora-drift-b;
+      }
+    }
+  }
+
+  @keyframes aurora-drift-a {
+    from {
+      transform: translate3d(0, 0, 0);
+      opacity: 0.95;
+    }
+    to {
+      transform: translate3d(10vw, 42vh, 0);
+      opacity: 0.4;
+    }
+  }
+
+  @keyframes aurora-drift-b {
+    from {
+      transform: translate3d(0, 0, 0);
+      opacity: 0.35;
+    }
+    to {
+      transform: translate3d(-12vw, -38vh, 0);
+      opacity: 0.95;
+    }
+  }
+
   /* Animated border glow on hover */
   .card-glow {
     @apply relative overflow-hidden transition-all duration-500;
