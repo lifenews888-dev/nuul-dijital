@@ -157,7 +157,7 @@ export function AiAssistant() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.96 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed bottom-6 right-6 z-50 flex h-[560px] max-h-[80vh] w-[calc(100vw-3rem)] max-w-[380px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-card shadow-2xl"
+            className="fixed bottom-6 right-6 z-50 flex h-[560px] max-h-[80svh] w-[calc(100vw-3rem)] max-w-[380px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-card shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-accent/10 to-accent-cyan/10 p-4">

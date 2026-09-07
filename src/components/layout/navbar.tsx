@@ -49,6 +49,40 @@ export function Navbar({
     setOpenGroup(null);
   }, [pathname]);
 
+  // Escape closes the mobile panel. It had no keyboard dismissal at all.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  // Hold the page still while the panel is open, so a scroll gesture over it
+  // does not drag the page underneath.
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
+  // The panel is lg:hidden, so widening the window to the desktop layout would
+  // hide it while leaving it "open" -- with the scroll lock above, that would
+  // freeze the page with no way to release it. Close it on the breakpoint.
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const sync = () => {
+      if (desktop.matches) setOpen(false);
+    };
+    sync();
+    desktop.addEventListener("change", sync);
+    return () => desktop.removeEventListener("change", sync);
+  }, []);
+
   // The /admin area renders its own chrome.
   if (rawPathname?.startsWith("/admin")) return null;
 
@@ -83,7 +117,7 @@ export function Navbar({
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
           // `relative` anchors the mega-menu panels to the full bar width.
-          "relative flex w-full max-w-[1280px] items-center justify-between rounded-2xl px-4 py-3 transition-all duration-500 sm:px-6",
+          "relative z-50 flex w-full max-w-[1280px] items-center justify-between rounded-2xl px-4 py-3 transition-all duration-500 sm:px-6",
           // A dropped panel needs the bar solid too, otherwise the two float
           // separately over the hero.
           scrolled || menuOpen
@@ -117,13 +151,29 @@ export function Navbar({
         </div>
       </motion.nav>
 
+      {/* Tapping anywhere off the panel closes it. Previously the only way out
+          was the X, which is a long reach on a tall phone. */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="backdrop"
+            aria-hidden="true"
+            onClick={() => setOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-10 bg-ink/60 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {open && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute inset-x-4 top-20 z-40 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl surface-overlay p-4 shadow-2xl shadow-black/50 lg:hidden"
+            className="absolute inset-x-4 top-20 z-40 max-h-[calc(100svh-6rem)] overflow-y-auto rounded-2xl surface-overlay p-4 shadow-2xl shadow-black/50 lg:hidden"
           >
             <div className="flex flex-col gap-1">
               <Link
