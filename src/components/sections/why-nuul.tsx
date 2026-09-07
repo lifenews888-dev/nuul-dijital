@@ -3,10 +3,14 @@
 import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 import { Stagger, StaggerItem } from "@/components/motion/reveal";
-import { Counter } from "@/components/motion/counter";
-import type { Stat, Value } from "@/data/company";
+import type { Value } from "@/data/company";
 
-export function WhyNuul({ stats, values }: { stats: Stat[]; values: Value[] }) {
+/**
+ * The stats live in the hero, one screen above; repeating them here put the
+ * same four numbers on the page twice. This section carries the argument and
+ * the values instead.
+ */
+export function WhyNuul({ values }: { values: Value[] }) {
   const t = useTranslations("home.whyNuul");
   return (
     <section className="relative overflow-hidden py-24 lg:py-32">
@@ -28,19 +32,6 @@ export function WhyNuul({ stats, values }: { stats: Stat[]; values: Value[] }) {
             <p className="mt-6 max-w-md text-lg leading-relaxed text-muted-foreground">
               {t("description")}
             </p>
-
-            <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/5">
-              {stats.map((s) => (
-                <div key={s.label} className="bg-card p-6">
-                  <Counter
-                    to={s.value}
-                    suffix={s.suffix}
-                    className="text-3xl font-bold text-foreground"
-                  />
-                  <div className="mt-1 text-sm text-muted-foreground">{s.label}</div>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Differentiators */}

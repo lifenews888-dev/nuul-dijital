@@ -9,7 +9,6 @@ import { AISolutions } from "@/components/sections/ai-solutions";
 import { InstantEstimate } from "@/components/sections/instant-estimate";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { ProcessSection } from "@/components/sections/process-section";
-import { CTASection } from "@/components/sections/cta-section";
 import { ContactSection } from "@/components/sections/contact-section";
 import {
   getTestimonials,
@@ -45,13 +44,15 @@ export default async function HomePage({
         <InfrastructureProducts />
       </section>
       <ServicesSection services={services} />
-      <WhyNuul stats={stats} values={values} />
+      <WhyNuul values={values} />
       <PortfolioShowcase projects={showcaseProjects} />
       <AISolutions />
       <InstantEstimate services={services} />
       <TestimonialsSection items={testimonials} />
       <ProcessSection steps={steps} />
-      <CTASection />
+      {/* ContactSection closes the page. CTASection sat here too, which asked
+          the visitor twice in a row — once to leave for /quote, then to fill in
+          the form right below it. */}
       <ContactSection />
     </>
   );
