@@ -93,7 +93,11 @@ export function PortfolioShowcase({ projects }: { projects: Project[] }) {
                       </div>
                       <h3
                         className={cn(
-                          "mt-3 font-bold tracking-tight",
+                          // Clamped because the name is admin-entered: a long
+                          // one ("Eseller.mn - Mongolyn negdsen tsahim zah")
+                          // otherwise runs to four or five lines in a narrow
+                          // cell and crowds out the results below it.
+                          "mt-3 font-bold tracking-tight line-clamp-2",
                           wide ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl",
                         )}
                       >
