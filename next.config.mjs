@@ -18,15 +18,17 @@ const nextConfig = {
     // arbitrary images through this domain and bill the transformations to
     // this project.
     //
-    // These five are every host actually serving an image on the public site.
+    // These four are every host the optimizer is actually asked for. The
+    // technology logos on the "trusted by" strip come from cdn.simpleicons.org
+    // but are plain <img> tags -- they are SVG, so they are served as-is and
+    // never reach the optimizer, and listing them here would widen the
+    // allowlist for nothing.
     // Uploads through the CMS land in blob storage, so a new host is only
     // needed when an admin pastes a URL from somewhere else -- add it here
     // when that happens.
     remotePatterns: [
       // CMS uploads.
       { protocol: "https", hostname: "**.public.blob.vercel-storage.com" },
-      // Technology logos in the "trusted by" strip.
-      { protocol: "https", hostname: "cdn.simpleicons.org" },
       // Stock photography: team, case-study covers. To be replaced with real
       // photography -- see the content work, not a reason to keep this open.
       { protocol: "https", hostname: "images.unsplash.com" },
