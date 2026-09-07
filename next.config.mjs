@@ -10,10 +10,31 @@ const nextConfig = {
   outputFileTracingRoot: process.cwd(),
   images: {
     formats: ["image/avif", "image/webp"],
-    // Admins paste image URLs from many sources in the CMS (team avatars,
-    // testimonial photos, project/post covers), so allow any HTTPS host.
-    // The image optimizer is only reached for URLs an authenticated admin set.
-    remotePatterns: [{ protocol: "https", hostname: "**" }],
+    // Hostnames are listed rather than wildcarded to "**".
+    //
+    // The optimizer is NOT only reached for URLs an admin set, which is what
+    // the wildcard assumed: /_next/image?url=... is a public GET endpoint and
+    // does not check who supplied the URL. With "**" anyone could push
+    // arbitrary images through this domain and bill the transformations to
+    // this project.
+    //
+    // These five are every host actually serving an image on the public site.
+    // Uploads through the CMS land in blob storage, so a new host is only
+    // needed when an admin pastes a URL from somewhere else -- add it here
+    // when that happens.
+    remotePatterns: [
+      // CMS uploads.
+      { protocol: "https", hostname: "**.public.blob.vercel-storage.com" },
+      // Technology logos in the "trusted by" strip.
+      { protocol: "https", hostname: "cdn.simpleicons.org" },
+      // Stock photography: team, case-study covers. To be replaced with real
+      // photography -- see the content work, not a reason to keep this open.
+      { protocol: "https", hostname: "images.unsplash.com" },
+      // Live screenshots standing in for project imagery.
+      { protocol: "https", hostname: "api.microlink.io" },
+      // Placeholder faces on the testimonials. Temporary.
+      { protocol: "https", hostname: "i.pravatar.cc" },
+    ],
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
