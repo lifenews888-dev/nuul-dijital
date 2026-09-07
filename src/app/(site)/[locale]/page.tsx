@@ -6,9 +6,11 @@ import { ServicesSection } from "@/components/sections/services-section";
 import { WhyNuul } from "@/components/sections/why-nuul";
 import { PortfolioShowcase } from "@/components/sections/portfolio-showcase";
 import { AISolutions } from "@/components/sections/ai-solutions";
+import { IndustriesTabs } from "@/components/sections/industries-tabs";
 import { InstantEstimate } from "@/components/sections/instant-estimate";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { ProcessSection } from "@/components/sections/process-section";
+import { FaqSection } from "@/components/sections/faq-section";
 import { ContactSection } from "@/components/sections/contact-section";
 import {
   getTestimonials,
@@ -51,6 +53,10 @@ export default async function HomePage({
       <ServicesSection services={services} />
       <AISolutions />
 
+      {/* Who the offer is for, before the argument for choosing us. Also the
+          only place on this page that links the seven industry pages. */}
+      <IndustriesTabs />
+
       {/* Then the argument, then the proof for it. */}
       <WhyNuul values={values} />
       <PortfolioShowcase projects={showcaseProjects} />
@@ -60,6 +66,10 @@ export default async function HomePage({
           accept once the visitor knows what they get for it. */}
       <ProcessSection steps={steps} />
       <InstantEstimate services={services} />
+
+      {/* Objections answered last, immediately before the ask. The JSON-LD is
+          left to /contact so three pages do not all claim to be the FAQ. */}
+      <FaqSection emitJsonLd={false} />
 
       {/* ContactSection closes the page. CTASection sat here too, which asked
           the visitor twice in a row - once to leave for /quote, then to fill in

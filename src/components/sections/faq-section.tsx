@@ -6,26 +6,33 @@ import { FaqAccordion } from "./faq-accordion";
 
 /**
  * Public FAQ section. Reads admin-managed FAQs (DB) with a curated static
- * fallback, renders an accessible accordion, and emits FAQPage JSON-LD so the
- * answers can surface as rich results in search.
+ * fallback and renders an accessible accordion.
+ *
+ * The FAQPage JSON-LD is optional because the same eight questions appear on
+ * more than one page, and only the page that is genuinely about them should
+ * claim to be an FAQPage. Google stopped showing FAQ rich results in May 2026,
+ * so the markup is no longer there for snippets -- it stays because Bing and
+ * the answer engines still read it.
  */
-export async function FaqSection() {
+export async function FaqSection({ emitJsonLd = true }: { emitJsonLd?: boolean } = {}) {
   const [faqs, t] = await Promise.all([getFaqs(), getTranslations("faq")]);
   if (!faqs.length) return null;
 
   return (
     <section className="py-24 lg:py-32">
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faqs.map((f) => ({
-            "@type": "Question",
-            name: f.question,
-            acceptedAnswer: { "@type": "Answer", text: f.answer },
-          })),
-        }}
-      />
+      {emitJsonLd && (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map((f) => ({
+              "@type": "Question",
+              name: f.question,
+              acceptedAnswer: { "@type": "Answer", text: f.answer },
+            })),
+          }}
+        />
+      )}
       <div className="container-wide">
         <SectionHeading
           align="center"
