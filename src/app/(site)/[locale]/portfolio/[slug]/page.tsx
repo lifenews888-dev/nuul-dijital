@@ -9,7 +9,7 @@ import { CTASection } from "@/components/sections/cta-section";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/motion/reveal";
-import { VideoEmbed } from "@/components/shared/video-embed";
+import { MediaShowcase } from "@/components/shared/media-showcase";
 import { buildMetadata } from "@/lib/seo";
 
 export async function generateStaticParams() {
@@ -48,8 +48,8 @@ export default async function ProjectDetailPage({
 
       <section className="container-wide pb-12">
         <Reveal>
-          <div className="relative aspect-[16/9] overflow-hidden rounded-3xl border border-white/10">
-            <Image src={p.image} alt={p.name} fill priority sizes="100vw" className="object-cover" />
+          <div className="relative aspect-[16/9] overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
+            <Image src={p.image} alt={p.name} fill priority sizes="100vw" className="object-contain" />
           </div>
         </Reveal>
       </section>
@@ -109,30 +109,14 @@ export default async function ProjectDetailPage({
               </div>
             </Reveal>
 
-            {p.videoUrl && (
+            {(p.videoUrl || p.gallery.length > 0) && (
               <Reveal>
-                <VideoEmbed url={p.videoUrl} title={`${p.name} — видео танилцуулга`} />
-              </Reveal>
-            )}
-
-            {p.gallery.length > 0 && (
-              <Reveal>
-                <div className="flex flex-col gap-6">
-                  {p.gallery.map((g, i) => (
-                    <div
-                      key={i}
-                      className="relative aspect-[16/9] overflow-hidden rounded-3xl border border-white/10"
-                    >
-                      <Image
-                        src={g}
-                        alt={`${p.name} ${i + 1}`}
-                        fill
-                        sizes="100vw"
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
+                <MediaShowcase
+                  gallery={p.gallery}
+                  videoUrl={p.videoUrl}
+                  title={p.name}
+                  className="flex flex-col gap-6"
+                />
               </Reveal>
             )}
           </div>

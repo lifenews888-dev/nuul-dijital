@@ -9,7 +9,7 @@ import { CTASection } from "@/components/sections/cta-section";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/motion/reveal";
-import { VideoEmbed } from "@/components/shared/video-embed";
+import { MediaShowcase } from "@/components/shared/media-showcase";
 import { buildMetadata } from "@/lib/seo";
 
 export async function generateStaticParams() {
@@ -45,8 +45,8 @@ export default async function CaseStudyDetailPage({
 
       <section className="container-wide pb-12">
         <Reveal>
-          <div className="relative aspect-[16/9] overflow-hidden rounded-3xl border border-white/10">
-            <Image src={c.cover} alt={c.title} fill priority sizes="100vw" className="object-cover" />
+          <div className="relative aspect-[16/9] overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
+            <Image src={c.cover} alt={c.title} fill priority sizes="100vw" className="object-contain" />
           </div>
         </Reveal>
         <div className="mt-6 flex flex-wrap gap-2">
@@ -58,32 +58,14 @@ export default async function CaseStudyDetailPage({
           <Badge>Хугацаа: {c.duration}</Badge>
         </div>
 
-        {c.videoUrl && (
+        {(c.videoUrl || (c.gallery && c.gallery.length > 0)) && (
           <Reveal>
-            <div className="mt-10">
-              <VideoEmbed url={c.videoUrl} title={`${c.title} — видео танилцуулга`} />
-            </div>
-          </Reveal>
-        )}
-
-        {c.gallery && c.gallery.length > 0 && (
-          <Reveal>
-            <div className="mt-10 grid gap-5 sm:grid-cols-2">
-              {c.gallery.map((g, i) => (
-                <div
-                  key={i}
-                  className="relative aspect-[16/10] overflow-hidden rounded-3xl border border-white/10"
-                >
-                  <Image
-                    src={g}
-                    alt={`${c.title} ${i + 1}`}
-                    fill
-                    sizes="(max-width: 640px) 100vw, 50vw"
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+            <MediaShowcase
+              gallery={c.gallery}
+              videoUrl={c.videoUrl}
+              title={c.title}
+              className="mt-10 flex flex-col gap-5"
+            />
           </Reveal>
         )}
       </section>
