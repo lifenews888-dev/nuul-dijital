@@ -1,9 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Pencil } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireUser, safe } from "@/lib/admin";
 import { deleteTeamMember } from "@/app/(admin)/admin/actions";
+import { Avatar } from "@/components/shared/avatar";
 import { AdminHeader, EmptyState, TableShell } from "@/components/admin/ui";
 import { DeleteButton } from "@/components/admin/delete-button";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +28,7 @@ export default async function AdminTeamPage() {
             <tr key={m.id} className="hover:bg-white/[0.02]">
               <td className="px-4 py-3">
                 <div className="flex items-center gap-3">
-                  <Image src={m.avatar} alt={m.name} width={36} height={36} className="size-9 rounded-full object-cover" />
+                  <Avatar src={m.avatar} name={m.name} sizes="36px" className="size-9 shrink-0 rounded-full text-xs" />
                   <span className="font-medium">{m.name}</span>
                 </div>
               </td>

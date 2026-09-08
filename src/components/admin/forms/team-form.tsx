@@ -24,7 +24,12 @@ export function TeamForm({ member }: { member?: TeamMember }) {
           <TextField name="name" label="Нэр" defaultValue={member?.name} required />
           <TextField name="role" label="Албан тушаал" defaultValue={member?.role} required />
         </div>
-        <ImageField name="avatar" label="Зураг" defaultValue={member?.avatar} required hint="JPG, PNG — 4MB хүртэл" />
+        <ImageField
+          name="avatar"
+          label="Зураг"
+          defaultValue={member?.avatar}
+          hint="JPG, PNG — 4MB хүртэл. Хоосон бол нэрний товьёг харагдана."
+        />
         <TextAreaField name="bio" label="Намтар" defaultValue={member?.bio ?? ""} rows={3} />
         <SocialLinksField
           name="socials"

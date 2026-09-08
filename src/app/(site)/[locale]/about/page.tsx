@@ -1,10 +1,10 @@
-import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHeader } from "@/components/shared/page-header";
 import { SocialLinks } from "@/components/shared/social-links";
 import { CTASection } from "@/components/sections/cta-section";
 import { Counter } from "@/components/motion/counter";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
+import { Avatar } from "@/components/shared/avatar";
 import { getTeam, getStats, getValues } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 
@@ -96,15 +96,13 @@ export default async function AboutPage({
           {team.map((m) => (
             <StaggerItem key={m.name}>
               <div className="group text-center">
-                <div className="relative mx-auto aspect-square overflow-hidden rounded-3xl border border-white/10">
-                  <Image
-                    src={m.avatar}
-                    alt={m.name}
-                    fill
-                    sizes="200px"
-                    className="object-cover grayscale transition-all duration-500 group-hover:grayscale-0"
-                  />
-                </div>
+                <Avatar
+                  src={m.avatar}
+                  name={m.name}
+                  sizes="200px"
+                  className="mx-auto aspect-square rounded-3xl border border-white/10 text-3xl"
+                  imageClassName="grayscale transition-all duration-500 group-hover:grayscale-0"
+                />
                 <div className="mt-4 font-semibold">{m.name}</div>
                 <div className="text-xs text-muted-foreground">{m.role}</div>
                 <SocialLinks links={m.socials} name={m.name} />

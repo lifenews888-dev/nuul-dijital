@@ -1,49 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { testimonials as staticTestimonials } from "@/data/testimonials";
+import { Avatar } from "@/components/shared/avatar";
 import { SectionHeading } from "@/components/shared/section-heading";
 
 type Item = { quote: string; author: string; role: string; company: string; rating: number; avatar: string };
-
-/**
- * Hosts that hand out a stock face rather than a photo of the person named.
- *
- * All four testimonials were signed with a real Mongolian name and illustrated
- * with one of these, which is worse than showing no photograph at all: anyone
- * who recognises the URL sees the endorsement is dressed up. Treat them as
- * "no photo" and fall back to the initials, so the quote still has a visual
- * anchor and nothing on the page pretends to be a person.
- *
- * A real photograph set later in the CMS renders normally.
- */
-const PLACEHOLDER_AVATAR_HOSTS = ["pravatar.cc", "i.pravatar.cc", "placekitten.com"];
-
-function isPhotograph(url: string | undefined): url is string {
-  if (!url) return false;
-  try {
-    return !PLACEHOLDER_AVATAR_HOSTS.includes(new URL(url).hostname);
-  } catch {
-    // Not a URL we can read; treat it as no photo rather than render a broken one.
-    return false;
-  }
-}
-
-/** "Б. Энхбаяр" -> "БЭ". Falls back to one letter for a single-word name. */
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .map((part) => part.replace(/[^\p{L}]/gu, ""))
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]!)
-    .join("")
-    .toUpperCase();
-}
 
 export function TestimonialsSection({ items }: { items?: Item[] }) {
   const tx = useTranslations("home.testimonials");
@@ -84,22 +49,12 @@ export function TestimonialsSection({ items }: { items?: Item[] }) {
                 “{t.quote}”
               </p>
               <div className="mt-8 flex items-center justify-center gap-4">
-                {isPhotograph(t.avatar) ? (
-                  <Image
-                    src={t.avatar}
-                    alt={t.author}
-                    width={56}
-                    height={56}
-                    className="size-14 rounded-full object-cover ring-2 ring-accent/30"
-                  />
-                ) : (
-                  <div
-                    aria-hidden="true"
-                    className="flex size-14 shrink-0 items-center justify-center rounded-full bg-accent/10 text-lg font-semibold tracking-wide text-accent ring-2 ring-accent/30"
-                  >
-                    {initials(t.author)}
-                  </div>
-                )}
+                <Avatar
+                  src={t.avatar}
+                  name={t.author}
+                  sizes="56px"
+                  className="size-14 shrink-0 rounded-full text-lg ring-2 ring-accent/30"
+                />
                 <div className="text-left">
                   <div className="font-semibold">{t.author}</div>
                   <div className="text-sm text-muted-foreground">

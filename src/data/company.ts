@@ -71,12 +71,12 @@ export const values: Value[] = [
 ];
 
 export const team = [
-  { name: "Б. Тэмүүжин", role: "Үүсгэн байгуулагч / CEO", avatar: "https://i.pravatar.cc/240?img=15" },
-  { name: "Э. Анударь", role: "Бүтээлч захирал", avatar: "https://i.pravatar.cc/240?img=32" },
-  { name: "Ч. Батбаяр", role: "Технологийн захирал", avatar: "https://i.pravatar.cc/240?img=51" },
-  { name: "О. Сарангэрэл", role: "Тэргүүлэх дизайнер", avatar: "https://i.pravatar.cc/240?img=24" },
-  { name: "Б. Мөнхзул", role: "AI инженер", avatar: "https://i.pravatar.cc/240?img=60" },
-  { name: "Т. Нямбаяр", role: "Төслийн менежер", avatar: "https://i.pravatar.cc/240?img=11" },
+  { name: "Б. Тэмүүжин", role: "Үүсгэн байгуулагч / CEO", avatar: "" },
+  { name: "Э. Анударь", role: "Бүтээлч захирал", avatar: "" },
+  { name: "Ч. Батбаяр", role: "Технологийн захирал", avatar: "" },
+  { name: "О. Сарангэрэл", role: "Тэргүүлэх дизайнер", avatar: "" },
+  { name: "Б. Мөнхзул", role: "AI инженер", avatar: "" },
+  { name: "Т. Нямбаяр", role: "Төслийн менежер", avatar: "" },
 ];
 
 export const clients = [
