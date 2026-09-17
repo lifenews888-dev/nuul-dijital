@@ -521,6 +521,38 @@ export async function deleteLead(formData: FormData) {
   revalidatePath("/admin/leads");
 }
 
+// Software licence enquiries arrive through /software/request. They were
+// written to the database and mailed out, but the mail is skipped when
+// RESEND_API_KEY is unset and nothing on the site could read the table, so
+// until now an enquiry had nowhere to land. These reuse the "leads"
+// permission because that is what the enquiry is.
+export async function setSoftwareQuoteStatus(formData: FormData) {
+  await requirePermission("leads", "update");
+  const id = str(formData, "id");
+  const status = str(formData, "status");
+  await db.softwareQuote.update({ where: { id }, data: { status: status as never } });
+  await logActivity({
+    action: "UPDATE",
+    entity: "SoftwareQuote",
+    entityId: id,
+    summary: `Лицензийн хүсэлт төлөв: ${status}`,
+  });
+  revalidatePath("/admin/software-quotes");
+}
+
+export async function deleteSoftwareQuote(formData: FormData) {
+  await requirePermission("leads", "delete");
+  const id = str(formData, "id");
+  await db.softwareQuote.delete({ where: { id } });
+  await logActivity({
+    action: "DELETE",
+    entity: "SoftwareQuote",
+    entityId: id,
+    summary: "Лицензийн хүсэлт устгасан",
+  });
+  revalidatePath("/admin/software-quotes");
+}
+
 export async function toggleContactRead(formData: FormData) {
   await requirePermission("leads", "update");
   await db.contactMessage.update({
