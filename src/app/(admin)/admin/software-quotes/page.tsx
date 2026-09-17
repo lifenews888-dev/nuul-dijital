@@ -81,11 +81,19 @@ export default async function AdminSoftwareQuotesPage() {
               </td>
 
               <td className="max-w-sm px-4 py-3">
-                {q.vendor && (
-                  <Badge variant="accent" className="mb-1.5">
-                    {q.vendor}
-                  </Badge>
-                )}
+                <div className="mb-1.5 flex flex-wrap gap-1.5">
+                  {q.vendor && <Badge variant="accent">{q.vendor}</Badge>}
+                  {q.purchaseType && (
+                    <Badge>
+                      {{ NEW: "Шинэ", RENEWAL: "Сунгалт", BOTH: "Шинэ + сунгалт" }[
+                        q.purchaseType
+                      ] ?? q.purchaseType}
+                    </Badge>
+                  )}
+                  {/* A tender has a deadline and needs sealed paperwork, so it
+                      should be visible without opening the row. */}
+                  {q.procurement === "TENDER" && <Badge variant="accent">Тендер</Badge>}
+                </div>
                 <div className="text-sm">{q.products}</div>
                 {(q.seats || q.term) && (
                   <div className="mt-1 text-sm text-muted-foreground">

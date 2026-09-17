@@ -1030,6 +1030,16 @@ model SoftwareQuote {
   seats       Int?
   term        String?
   message     String?    @db.Text
+  /** NEW | RENEWAL | BOTH — a renewal needs the existing licence, a new purchase does not. */
+  purchaseType    String?
+  /** Serial or contract numbers for the licences being renewed. */
+  existingLicense String?    @db.Text
+  /** Job title: procurement and IT need different replies. */
+  position        String?
+  /** When they need it by — procurement runs to deadlines. */
+  neededBy        String?
+  /** DIRECT | TENDER | RESEARCH — a tender needs documents a direct sale does not. */
+  procurement     String?
   status      LeadStatus @default(NEW)
   createdAt   DateTime   @default(now())
 

@@ -36,6 +36,11 @@ export async function POST(req: Request) {
           seats: d.seats,
           term: d.term,
           message: d.message,
+          purchaseType: d.purchaseType,
+          existingLicense: d.existingLicense,
+          position: d.position,
+          neededBy: d.neededBy,
+          procurement: d.procurement,
         },
       })
     );
@@ -55,6 +60,11 @@ export async function POST(req: Request) {
           ${row("Бүтээгдэхүүн", d.products)}
           ${row("Хэрэглэгчийн тоо", d.seats ? String(d.seats) : undefined)}
           ${row("Хугацаа", d.term)}
+          ${row("Худалдан авалт", d.purchaseType)}
+          ${row("Одоогийн лиценз", d.existingLicense)}
+          ${row("Албан тушаал", d.position)}
+          ${row("Хэзээ", d.neededBy)}
+          ${row("Хэлбэр", d.procurement)}
           ${row("Нэмэлт", d.message)}
         </table>`,
     });

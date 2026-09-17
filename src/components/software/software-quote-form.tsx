@@ -26,6 +26,9 @@ export function SoftwareQuoteForm({
   vendors: SoftwareVendor[];
 }) {
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
+  // Licence numbers are only meaningful for a renewal, so the field appears
+  // when they say it is one rather than sitting there confusing new buyers.
+  const [purchaseType, setPurchaseType] = useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -96,14 +99,20 @@ export function SoftwareQuoteForm({
           <Input id="contactName" name="contactName" required placeholder="Овог нэр" />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="phone">Утас *</Label>
-          <Input id="phone" name="phone" required placeholder="+976 " />
+          <Label htmlFor="position">Албан тушаал</Label>
+          <Input id="position" name="position" placeholder="Худалдан авалтын менежер" />
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="email">И-мэйл *</Label>
-        <Input id="email" name="email" type="email" required placeholder="name@company.mn" />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="phone">Утас *</Label>
+          <Input id="phone" name="phone" required placeholder="+976 " />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="email">И-мэйл *</Label>
+          <Input id="email" name="email" type="email" required placeholder="name@company.mn" />
+        </div>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-3">
@@ -133,6 +142,43 @@ export function SoftwareQuoteForm({
         </div>
       </div>
 
+      <div className="grid gap-5 sm:grid-cols-3">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="purchaseType">Худалдан авалт</Label>
+          <select
+            id="purchaseType"
+            name="purchaseType"
+            value={purchaseType}
+            onChange={(e) => setPurchaseType(e.target.value)}
+            className={SELECT_CLASS}
+          >
+            <option value="">Сонгох…</option>
+            <option value="NEW">Шинээр авах</option>
+            <option value="RENEWAL">Сунгах</option>
+            <option value="BOTH">Хоёулаа</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="neededBy">Хэзээ шаардлагатай</Label>
+          <select id="neededBy" name="neededBy" defaultValue="" className={SELECT_CLASS}>
+            <option value="">Сонгох…</option>
+            <option value="Яаралтай">Яаралтай</option>
+            <option value="2 долоо хоногт">2 долоо хоногт</option>
+            <option value="1 сарын дотор">1 сарын дотор</option>
+            <option value="Төлөвлөгөөт">Төлөвлөгөөт</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="procurement">Хэлбэр</Label>
+          <select id="procurement" name="procurement" defaultValue="" className={SELECT_CLASS}>
+            <option value="">Сонгох…</option>
+            <option value="DIRECT">Шууд худалдан авалт</option>
+            <option value="TENDER">Тендер</option>
+            <option value="RESEARCH">Үнийн судалгаа</option>
+          </select>
+        </div>
+      </div>
+
       <div className="flex flex-col gap-2">
         <Label htmlFor="products">Ямар программ хэрэгтэй вэ? *</Label>
         <Textarea
@@ -144,6 +190,18 @@ export function SoftwareQuoteForm({
           placeholder="Жишээ: Photoshop, Illustrator — 5 дизайнерт; Acrobat Pro — 3 хүнд"
         />
       </div>
+
+      {(purchaseType === "RENEWAL" || purchaseType === "BOTH") && (
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="existingLicense">Одоогийн лицензийн дугаар</Label>
+          <Textarea
+            id="existingLicense"
+            name="existingLicense"
+            rows={2}
+            placeholder="Сериал / гэрээний дугаар — сунгалтад шаардлагатай"
+          />
+        </div>
+      )}
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="message">Нэмэлт тайлбар</Label>

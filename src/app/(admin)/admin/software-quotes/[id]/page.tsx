@@ -29,6 +29,18 @@ const STATUS = [
   { value: "LOST", label: "Алдсан" },
 ];
 
+// The intake stores the machine value; these are what a person reads.
+const PURCHASE: Record<string, string> = {
+  NEW: "Шинээр авах",
+  RENEWAL: "Сунгах",
+  BOTH: "Шинэ + сунгалт",
+};
+const PROCUREMENT: Record<string, string> = {
+  DIRECT: "Шууд худалдан авалт",
+  TENDER: "Тендер",
+  RESEARCH: "Үнийн судалгаа",
+};
+
 function Field({ label, value }: { label: string; value?: string | null }) {
   if (!value) return null;
   return (
@@ -64,6 +76,7 @@ export default async function SoftwareQuoteDetailPage({
 
   const draft = [
     `Танай "${q.company}" байгууллагаас ирүүлсэн ${q.vendor ?? "программ хангамжийн"} лицензийн хүсэлтэд баярлалаа.`,
+    ...(q.purchaseType ? [``, `Худалдан авалтын төрөл: ${PURCHASE[q.purchaseType] ?? q.purchaseType}`] : []),
     ``,
     `Хүсэлтийн дагуу дараах үнийн саналыг хүргүүлж байна:`,
     ``,
@@ -103,6 +116,7 @@ export default async function SoftwareQuoteDetailPage({
           <Field label="Байгууллага" value={q.company} />
           <Field label="ТТД" value={q.regNumber} />
           <Field label="Холбоо барих" value={q.contactName} />
+          <Field label="Албан тушаал" value={q.position} />
           <div>
             <div className="text-xs uppercase tracking-wide text-muted-foreground">Имэйл</div>
             <a
@@ -131,6 +145,10 @@ export default async function SoftwareQuoteDetailPage({
           <Field label="Бүтээгдэхүүн" value={q.products} />
           <Field label="Хэрэглэгчийн тоо" value={q.seats ? String(q.seats) : null} />
           <Field label="Хугацаа" value={q.term} />
+          <Field label="Худалдан авалт" value={q.purchaseType ? PURCHASE[q.purchaseType] : null} />
+          <Field label="Одоогийн лицензийн дугаар" value={q.existingLicense} />
+          <Field label="Хэзээ шаардлагатай" value={q.neededBy} />
+          <Field label="Хэлбэр" value={q.procurement ? PROCUREMENT[q.procurement] : null} />
           <Field label="Нэмэлт тайлбар" value={q.message} />
         </div>
 
@@ -151,6 +169,20 @@ export default async function SoftwareQuoteDetailPage({
               </span>
             </div>
           </div>
+
+          {q.procurement === "TENDER" && (
+            <div className="flex items-start gap-3 rounded-xl border border-accent/30 bg-accent/10 p-4 text-sm">
+              <AlertCircle className="mt-0.5 size-4 shrink-0 text-accent" />
+              <div>
+                <div className="font-medium text-accent">Тендерийн хүсэлт</div>
+                <p className="mt-1 text-muted-foreground">
+                  Тендерт оруулах үнийн саналд ихэвчлэн тамга, гарын үсэг, компанийн
+                  гэрчилгээ шаардагддаг. Энэ имэйлийг илгээхээс гадна албан бичгээр
+                  баталгаажуулах эсэхийг нягтлаарай.
+                </p>
+              </div>
+            </div>
+          )}
 
           {!mailConfigured && (
             <div className="flex items-start gap-3 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm">
