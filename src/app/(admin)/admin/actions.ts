@@ -553,6 +553,73 @@ export async function deleteSoftwareQuote(formData: FormData) {
   revalidatePath("/admin/software-quotes");
 }
 
+/**
+ * Emails the admin's reply to whoever sent a licence enquiry.
+ *
+ * Refuses rather than pretends when mail is not configured. sendEmail logs and
+ * returns { skipped: true } without a RESEND_API_KEY, which is sensible for a
+ * background notification but wrong for a button an admin presses on purpose:
+ * silently doing nothing is what left the airport enquiry unanswered in the
+ * first place. The page disables the button in that state; this is the guard
+ * behind it.
+ */
+export async function sendSoftwareQuoteReply(formData: FormData) {
+  await requirePermission("leads", "update");
+  const { sendEmail, escapeHtml } = await import("@/lib/mail");
+  const { siteConfig } = await import("@/lib/site");
+
+  const id = str(formData, "id");
+  const subject = str(formData, "subject");
+  const body = str(formData, "body");
+
+  const q = await db.softwareQuote.findUnique({ where: { id } });
+  if (!q) return;
+
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error(
+      "Имэйл тохируулаагүй байна (RESEND_API_KEY). Хариу илгээгдээгүй."
+    );
+  }
+
+  await sendEmail({
+    to: q.email,
+    replyTo: siteConfig.email,
+    subject,
+    html: `
+      <div style="font-family:sans-serif;max-width:560px">
+        <h2 style="color:#2563EB;margin:0 0 4px">${siteConfig.name}</h2>
+        <p style="color:#666;margin:0 0 16px">${siteConfig.address} · ${siteConfig.phone}</p>
+        <p>Сайн байна уу, ${escapeHtml(q.contactName)}.</p>
+        <div style="white-space:pre-line">${escapeHtml(body)}</div>
+        <hr style="border:none;border-top:1px solid #eee;margin:24px 0" />
+        <p style="color:#666;font-size:13px;margin:0 0 4px"><strong>Таны илгээсэн хүсэлт:</strong></p>
+        <p style="color:#666;font-size:13px;white-space:pre-line;margin:0">${escapeHtml(
+          [
+            q.company,
+            q.vendor ? `Үйлдвэрлэгч: ${q.vendor}` : null,
+            q.products,
+            q.seats ? `${q.seats} хэрэглэгч` : null,
+            q.term,
+          ]
+            .filter(Boolean)
+            .join("\n")
+        )}</p>
+        <p style="color:#666;margin-top:24px">Хүндэтгэсэн,<br/>${siteConfig.name}</p>
+      </div>`,
+  });
+
+  await db.softwareQuote.update({ where: { id }, data: { status: "CONTACTED" } });
+  await logActivity({
+    action: "UPDATE",
+    entity: "SoftwareQuote",
+    entityId: id,
+    summary: `Лицензийн хариу илгээсэн → ${q.email}`,
+  });
+  revalidatePath(`/admin/software-quotes/${id}`);
+  revalidatePath("/admin/software-quotes");
+}
+
+
 export async function toggleContactRead(formData: FormData) {
   await requirePermission("leads", "update");
   await db.contactMessage.update({

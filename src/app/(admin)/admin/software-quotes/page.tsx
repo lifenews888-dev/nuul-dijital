@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { db } from "@/lib/db";
 import { requireUser, safe } from "@/lib/admin";
 import {
@@ -50,7 +51,12 @@ export default async function AdminSoftwareQuotesPage() {
           {quotes.map((q) => (
             <tr key={q.id} className="align-top hover:bg-white/[0.02]">
               <td className="px-4 py-3">
-                <div className="font-medium">{q.company}</div>
+                <Link
+                  href={`/admin/software-quotes/${q.id}`}
+                  className="font-medium hover:text-accent hover:underline"
+                >
+                  {q.company}
+                </Link>
                 {q.regNumber && (
                   <div className="text-sm text-muted-foreground">ТТД: {q.regNumber}</div>
                 )}
