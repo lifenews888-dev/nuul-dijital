@@ -567,6 +567,8 @@ export async function sendSoftwareQuoteReply(formData: FormData) {
   await requirePermission("leads", "update");
   const { sendEmail, escapeHtml } = await import("@/lib/mail");
   const { siteConfig } = await import("@/lib/site");
+  const { getCompanyProfile } = await import("@/lib/company-profile");
+  const { getBankSettings, isBankConfigured } = await import("@/lib/domains/bank-settings");
 
   const id = str(formData, "id");
   const subject = str(formData, "subject");
@@ -576,35 +578,84 @@ export async function sendSoftwareQuoteReply(formData: FormData) {
   if (!q) return;
 
   if (!process.env.RESEND_API_KEY) {
-    throw new Error(
-      "Имэйл тохируулаагүй байна (RESEND_API_KEY). Хариу илгээгдээгүй."
-    );
+    throw new Error("Имэйл тохируулаагүй байна (RESEND_API_KEY). Хариу илгээгдээгүй.");
   }
+
+  const [company, bank] = await Promise.all([getCompanyProfile(), getBankSettings()]);
+
+  const now = new Date();
+  const until = new Date(now.getTime() + company.quoteValidDays * 86_400_000);
+  const day = (d: Date) => d.toISOString().slice(0, 10);
+  // Short, stable and quotable back at us over the phone.
+  const ref = `NUUL-SW-${q.id.slice(-6).toUpperCase()}`;
+
+  const e = escapeHtml;
+  const line = (label: string, value?: string | null) =>
+    value ? `<tr><td style="padding:2px 12px 2px 0;color:#666">${label}</td><td style="padding:2px 0">${e(value)}</td></tr>` : "";
+
+  // Only printed when an admin has actually filled the account in: the bank
+  // helper ships placeholder digits as a fallback, and a wrong account number
+  // on a quotation is worse than none.
+  const bankBlock = isBankConfigured(bank)
+    ? `<h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#666;margin:24px 0 8px">Төлбөрийн данс</h3>
+       <table style="font-size:14px;border-collapse:collapse">
+         ${line("Банк", bank.bankName)}
+         ${line("Данс", bank.bankAccountNumber)}
+         ${line("Хүлээн авагч", bank.bankAccountName)}
+       </table>`
+    : "";
+
+  const identity = [
+    company.legalName || siteConfig.name,
+    company.regNumber ? `ТТД: ${company.regNumber}` : null,
+    company.vatNumber ? `НӨАТ: ${company.vatNumber}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   await sendEmail({
     to: q.email,
     replyTo: siteConfig.email,
     subject,
     html: `
-      <div style="font-family:sans-serif;max-width:560px">
-        <h2 style="color:#2563EB;margin:0 0 4px">${siteConfig.name}</h2>
-        <p style="color:#666;margin:0 0 16px">${siteConfig.address} · ${siteConfig.phone}</p>
-        <p>Сайн байна уу, ${escapeHtml(q.contactName)}.</p>
-        <div style="white-space:pre-line">${escapeHtml(body)}</div>
-        <hr style="border:none;border-top:1px solid #eee;margin:24px 0" />
-        <p style="color:#666;font-size:13px;margin:0 0 4px"><strong>Таны илгээсэн хүсэлт:</strong></p>
-        <p style="color:#666;font-size:13px;white-space:pre-line;margin:0">${escapeHtml(
-          [
-            q.company,
-            q.vendor ? `Үйлдвэрлэгч: ${q.vendor}` : null,
-            q.products,
-            q.seats ? `${q.seats} хэрэглэгч` : null,
-            q.term,
-          ]
-            .filter(Boolean)
-            .join("\n")
-        )}</p>
-        <p style="color:#666;margin-top:24px">Хүндэтгэсэн,<br/>${siteConfig.name}</p>
+      <div style="font-family:sans-serif;max-width:640px;color:#111">
+        <h2 style="color:#2563EB;margin:0 0 2px">${siteConfig.name}</h2>
+        <p style="color:#666;margin:0 0 2px;font-size:13px">${e(identity)}</p>
+        <p style="color:#666;margin:0 0 20px;font-size:13px">${siteConfig.address} · ${siteConfig.phone} · ${siteConfig.email}</p>
+
+        <table style="font-size:14px;border-collapse:collapse;margin-bottom:20px">
+          ${line("Үнийн санал №", ref)}
+          ${line("Огноо", day(now))}
+          ${line("Хүчинтэй", `${day(until)} хүртэл`)}
+          ${line("Хүлээн авагч", q.company)}
+          ${line("Хариуцсан", q.contactName)}
+        </table>
+
+        <div style="white-space:pre-line;font-size:15px;line-height:1.6">${e(body)}</div>
+
+        <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#666;margin:24px 0 8px">Таны илгээсэн хүсэлт</h3>
+        <table style="font-size:14px;border-collapse:collapse">
+          ${line("Үйлдвэрлэгч", q.vendor)}
+          ${line("Бүтээгдэхүүн", q.products)}
+          ${line("Хэрэглэгчийн тоо", q.seats ? String(q.seats) : null)}
+          ${line("Хугацаа", q.term)}
+          ${line("Нэмэлт", q.message)}
+        </table>
+
+        <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#666;margin:24px 0 8px">Нөхцөл</h3>
+        <ul style="font-size:14px;line-height:1.7;padding-left:18px;margin:0">
+          <li>Лицензийг албан ёсны дистрибьюторын сувгаар нийлүүлнэ.</li>
+          <li>Гэрээ байгуулж, НӨАТ-ын нэхэмжлэх олгоно. Төлбөр төгрөгөөр.</li>
+          <li>Лицензийн гэрчилгээ, идэвхжүүлэлтийн мэдээллийг хүлээлгэн өгнө.</li>
+          <li>Дурдсан бүтээгдэхүүний нэр, барааны тэмдэг нь эрх эзэмшигчийн өмч юм.</li>
+        </ul>
+
+        ${bankBlock}
+
+        <p style="color:#666;margin-top:28px;font-size:14px">
+          Асуух зүйл байвал энэ имэйлд хариулах эсвэл ${siteConfig.phone} дугаараар холбогдоорой.<br/><br/>
+          Хүндэтгэсэн,<br/>${company.legalName || siteConfig.name}
+        </p>
       </div>`,
   });
 
@@ -613,7 +664,7 @@ export async function sendSoftwareQuoteReply(formData: FormData) {
     action: "UPDATE",
     entity: "SoftwareQuote",
     entityId: id,
-    summary: `Лицензийн хариу илгээсэн → ${q.email}`,
+    summary: `Үнийн санал ${ref} илгээсэн → ${q.email}`,
   });
   revalidatePath(`/admin/software-quotes/${id}`);
   revalidatePath("/admin/software-quotes");
@@ -802,6 +853,36 @@ export async function saveBankSettings(formData: FormData) {
   });
   revalidatePath("/admin/settings");
 }
+
+/**
+ * Legal identity printed on quotations. Buyers verify this before they read
+ * the price, so it is admin-editable rather than compiled in.
+ */
+export async function saveCompanyProfile(formData: FormData) {
+  await requirePermission("settings", "update");
+  const fields = [
+    "companyLegalName",
+    "companyRegNumber",
+    "companyVatNumber",
+    "quoteValidDays",
+  ] as const;
+  for (const key of fields) {
+    const value = str(formData, key);
+    await db.siteSetting.upsert({
+      where: { key },
+      update: { value },
+      create: { key, value },
+    });
+  }
+  revalidateTag(SETTINGS_TAG);
+  await logActivity({
+    action: "UPDATE",
+    entity: "SiteSetting",
+    summary: "Компанийн хуулийн мэдээлэл шинэчилсэн",
+  });
+  revalidatePath("/admin/settings");
+}
+
 
 /** Remove the stored Vercel token (falls back to the env var if any). */
 export async function clearVercelToken() {

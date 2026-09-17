@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { siteConfig } from "@/lib/site";
+import { getCompanyProfile, isProfileComplete } from "@/lib/company-profile";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +52,15 @@ export default async function SoftwareQuoteDetailPage({
   // Read at render so the page can say plainly whether pressing send will do
   // anything, instead of letting an admin find out by getting no reply.
   const mailConfigured = Boolean(process.env.RESEND_API_KEY);
+
+  // A corporate buyer checks who is quoting before what it costs, so surface a
+  // missing legal identity here rather than letting it go out incomplete.
+  const company = await getCompanyProfile();
+  const profileComplete = isProfileComplete(company);
+  const ref = `NUUL-SW-${q.id.slice(-6).toUpperCase()}`;
+  const validUntil = new Date(Date.now() + company.quoteValidDays * 86_400_000)
+    .toISOString()
+    .slice(0, 10);
 
   const draft = [
     `Танай "${q.company}" байгууллагаас ирүүлсэн ${q.vendor ?? "программ хангамжийн"} лицензийн хүсэлтэд баярлалаа.`,
@@ -132,6 +142,14 @@ export default async function SoftwareQuoteDetailPage({
               {q.email} хаяг руу {siteConfig.name} нэрээр илгээгдэнэ. Хариу нь{" "}
               {siteConfig.email} руу ирнэ.
             </p>
+            <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted-foreground">
+              <span>
+                Үнийн санал №<span className="font-medium text-foreground">{ref}</span>
+              </span>
+              <span>
+                Хүчинтэй: <span className="font-medium text-foreground">{validUntil}</span> хүртэл
+              </span>
+            </div>
           </div>
 
           {!mailConfigured && (
@@ -143,6 +161,23 @@ export default async function SoftwareQuoteDetailPage({
                   <code>RESEND_API_KEY</code> болон <code>CONTACT_FROM_EMAIL</code> орчны
                   хувьсагчийг тохируулах хүртэл энэ товч ажиллахгүй. Одоохондоо дээрх имэйл
                   хаяг дээр дарж өөрийн шуудангаар хариулна уу.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {!profileComplete && (
+            <div className="flex items-start gap-3 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm">
+              <AlertCircle className="mt-0.5 size-4 shrink-0 text-warning" />
+              <div>
+                <div className="font-medium text-warning">Компанийн хуулийн мэдээлэл дутуу</div>
+                <p className="mt-1 text-muted-foreground">
+                  Албан ёсны нэр, ТТД байхгүй бол үнийн саналын толгойд харагдахгүй.
+                  Байгууллагын худалдан авагч үүнийг шалгадаг —{" "}
+                  <Link href="/admin/settings" className="text-accent hover:underline">
+                    Тохиргоо
+                  </Link>{" "}
+                  хэсгээс нөхөөрэй.
                 </p>
               </div>
             </div>
@@ -171,8 +206,9 @@ export default async function SoftwareQuoteDetailPage({
           </form>
 
           <p className="text-xs text-muted-foreground">
-            Илгээсний дараа төлөв «Холбогдсон» болж, үйл ажиллагааны бүртгэлд тэмдэглэгдэнэ.
-            Хүсэлтийн эх мэдээлэл захидлын доор хавсаргагдана.
+            Захидалд компанийн хуулийн мэдээлэл, үнийн саналын дугаар, хүчинтэй хугацаа,
+            нийлүүлэлтийн нөхцөл, төлбөрийн данс автоматаар нэмэгдэнэ. Илгээсний дараа төлөв
+            «Холбогдсон» болж, үйл ажиллагааны бүртгэлд тэмдэглэгдэнэ.
           </p>
         </div>
       </div>
