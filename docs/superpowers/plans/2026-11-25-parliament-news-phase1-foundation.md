@@ -775,3 +775,23 @@ git commit -m "feat(db): seed parlament tenant, categories, settings and super a
 1-р шат дуусахад `apps/parliament-news` build болж, `parlament.localhost:3001` дээр tenant танигдаж, tenant тусгаарлалт DB тестээр батлагдаж, эрхийн модуль тесттэй, parlament tenant-ийн өгөгдөл DB-д байна. Дараа нь **2-р шат: нийтийн сайт + SEO** (`/news/<slug>`, `NewsSlugRedirect`-ийн 301, нүүр, ангилал, хайлт, sitemap/RSS/OG) өөрийн төлөвлөгөөтэй болно.
 
 Энэ шатанд **ороогүй** зүйлс (зориуд): Tiptap редактор, медиа байршуулалт, CMS-ийн дэлгэцүүд, 3D номын тавиур, сошиал нийтлэл, 2FA, Vercel project тохиргоо, цаг агаар/ханшийн гадаад API дуудлага.
+
+---
+
+## Хойшхи тэмдэглэл (2026-11-25, гүйцэтгэсний дараа)
+
+Энэ төлөвлөгөө гүйцэтгэгдсэн. Дараа нь хоёр шийдвэр гарч, код нь түүнээс
+хойш өөрчлөгдсөн — доорх даалгаврууд түүхэн тэмдэглэл болж үлдэнэ:
+
+1. **Тусдаа өгөгдлийн сан.** Task 2–4-ийн `pn_` моделиуд `packages/db`-ээс
+   `packages/db-news` рүү гарч, өөрийн datasource (`NEWS_DATABASE_URL`) ба
+   өөрийн редакцын `User` хүснэгттэй болсон. Task 10-ийн seed мөн тийш зөөгдсөн.
+2. **Нэг сайт.** Task 7-ийн домэйноор tenant таних хэсэг (`parseHost`,
+   `pickTenantHost`, `tenantHostHeader`, `x-tenant-host`) хасагдаж, `lib/tenant.ts`
+   нь `NEWS_TENANT_SLUG` (default `parlament`) гэсэн нэг tenant-ыг уншдаг болсон.
+   `lib/host.ts` → `lib/routes.ts` (зөвхөн `/studio`-ийн замын дүрэм). Схем,
+   `forTenant`-ийн шүүлт, composite FK хэвээр — хоёр дахь сайт нэмэх нь нэг
+   файлын өөрчлөлт.
+
+Одоогийн эрх бүхий тодорхойлолт нь дизайн бичиг:
+`docs/superpowers/specs/2026-11-25-parliament-news-platform-design.md`.

@@ -48,10 +48,12 @@
       хориотой (түүхий SQL нь tenant шүүлтээс мултарна).
 - [ ] Шинэ `pn_` модель схемд нэмсэн бол `lib/tenant-db.ts`-ийн
       `TENANT_MODELS`-д БАС нэмсэн (жагсаалтад байхгүй модель шүүлтгүй үлдэнэ).
-- [ ] Нийтийн хуудас кэшлэхээсээ ӨМНӨ tenant-ыг замын параметр болгосон
-      (2-р шатны 1-р даалгавар, `/_t/<slug>/...` rewrite). Tenant уншихгүй,
-      зөвхөн `revalidate` тавьсан хуудас нь замаар кэшлэгдэж, Next нь Host-оор
-      салгадаггүй — нэг байгууллагын HTML нөгөөд үйлчилнэ.
+- [ ] `NEWS_TENANT_SLUG` зөв (эсвэл тохируулаагүй → `parlament`), тэр slug-тай
+      `Tenant` мөр seed-ээр үүссэн. Нэг сайт тул домэйноор tenant хайхгүй.
+- [ ] Хожим хоёр дахь сайт нэмэх шийдвэр гарвал, нийтийн хуудас кэшлэхээсээ
+      ӨМНӨ tenant-ыг замын параметр болгоно (`/_t/<slug>/...` rewrite): Next нь
+      Full Route Cache-ийг Host-оор салгадаггүй тул нэг сайтын HTML нөгөөд
+      үйлчилж болно.
 
 ## 4. Vercel
 
@@ -66,8 +68,9 @@
 - [ ] Env хувьсагчид Vercel дээр тавигдсан: `NEWS_DATABASE_URL`,
       `NEWS_DIRECT_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`,
       `BLOB_READ_WRITE_TOKEN`.
-- [ ] `parlamentnews.mn` ба `www.parlamentnews.mn` домэйн project-д холбогдсон,
-      мөн `Tenant.domains`-д бичигдсэн (middleware host-оор tenant-ыг олдог).
+- [ ] `parlamentnews.mn` ба `www.parlamentnews.mn` домэйн project-д холбогдсон.
+      (`Tenant.domains` нь лавлагаа болж схемд байгаа — одоо tenant хайхад
+      хэрэглэгддэггүй.)
 
 ## 5. Нээлтийн өмнө
 

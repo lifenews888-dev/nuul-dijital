@@ -4,8 +4,7 @@ import type { Session } from "next-auth";
 import { prisma } from "@nuul/db-news";
 import type { NewsRole } from "@nuul/db-news";
 import { authOptions } from "./auth";
-import { getTenantByHost, TENANT_HEADER } from "./tenant";
-import { pickTenantHost } from "./host";
+import { getTenant } from "./tenant";
 import { forTenant } from "./tenant-db";
 import type { TenantClient } from "./tenant-db";
 
@@ -34,15 +33,8 @@ export async function getNewsRole(
   return member && member.active ? member.role : null;
 }
 
-export async function createContext(req: Request): Promise<Ctx> {
-  // Бодит Host-оос: клиентийн x-tenant-host-д production-д итгэхгүй
-  const host = pickTenantHost({
-    host: req.headers.get("host"),
-    override: req.headers.get(TENANT_HEADER),
-    allowOverride: process.env.NODE_ENV !== "production",
-  });
-
-  const tenant = await getTenantByHost(host);
+export async function createContext(): Promise<Ctx> {
+  const tenant = await getTenant();
   const session = await getServerSession(authOptions);
 
   const role =

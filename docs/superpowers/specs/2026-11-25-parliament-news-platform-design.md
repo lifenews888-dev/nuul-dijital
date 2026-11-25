@@ -24,7 +24,7 @@
 ## 2. Goals / Non-goals / Anti-goals
 
 **Goals**
-- Multi-tenant **бэлэн** өгөгдлийн сан: контентын хүснэгт бүрт `tenantId`, домэйноор tenant таних
+- Multi-tenant **бэлэн** өгөгдлийн сан: контентын хүснэгт бүрт `tenantId`, бүх query автоматаар шүүгдэх
 - Нийтийн сайт: SSR, `/news/<slug>`, sitemap, RSS, Open Graph — SEO бүрэн
 - Редакцын систем: 10 эрх, `draft → review → approved → published` урсгал, тайлбартай буцаалт
 - `site-v2`-ийн дизайн, модулиудыг (номын тавиур, хуулийн төслийн 5 шат, ирц, стори, баннер) хадгалах
@@ -35,6 +35,9 @@
 - AI засвар, дуугаар бичих — 2-р шат (`claude.use('sample'/'dictation')`-ийн орлуулга)
 - Өөрийн сервер дээр видео хадгалах — YouTube embed
 - Tenant өөрөө бүртгүүлэх self-serve онбординг — tenant-ыг гараар үүсгэнэ
+- **Олон байгууллагыг зэрэг үйлчлэх** — одоо нэг сайт (`parlament`). Схем, шүүлт,
+  composite FK бэлэн байгаа тул хоёр дахь сайт нэмэх нь нэг файлын өөрчлөлт
+  (`lib/tenant.ts` host-аар хайдаг болох), гэхдээ домэйноор таних нь v1-д байхгүй
 
 **Anti-goals (техникийн хувьд ажиллаад ч бүтэлгүйтэл гэж үзэх)**
 - `apps/web` (nuul.mn, 53 хуудас) эвдрэх, build хугарах
@@ -76,7 +79,8 @@ apps/parliament-news/              @nuul/news — Next.js 14 App Router
   app/(site)/                      нийтийн сайт (SSR + ISR)
   app/(studio)/studio/             редакцын систем, нэвтрэлтийн цаана
   app/api/                         trpc, revalidate, rss
-  middleware.ts                    hostname → tenant, studio-д auth
+  middleware.ts                    зөвхөн /studio-ийн нэвтрэлтийн хаалга
+  lib/routes.ts                    /studio-ийн замын дүрэм
   lib/tenant.ts                    tenant resolve + cache
   lib/permissions.ts               10 эрхийн модуль (серверт шалгана)
   server/routers/                  news, category, settings, media, team, comment, bill, agenda
@@ -92,10 +96,19 @@ packages/db/prisma/schema.prisma   nuul.mn-ийнх — ХӨНДӨГДӨХГҮЙ
 
 ### 5.2 Tenant таних
 
-`Tenant { id, slug, name, domains[], brand, settings }`. `middleware.ts` host-оор
-tenant-ыг олж `x-tenant-id` header-т тавина (edge дээр кэштэй). Dev дээр
-`?tenant=parlament` эсвэл `parlament.localhost:3000`. tRPC context `tenantId`-г
-автоматаар inject хийнэ — router-ууд `ctx.tenantId`-гүй query бичихгүй.
+`Tenant { id, slug, name, domains[], brand, settings }`. Одоо **нэг сайт** тул
+домэйноор хайхгүй: `lib/tenant.ts` нь `NEWS_TENANT_SLUG` (default `parlament`)
+гэсэн нэг tenant-ыг `unstable_cache`-тай уншина. `headers()` дуудахгүй учраас
+нийтийн хуудас статикаар кэшлэгдэж, нийтлэхэд `revalidateTag("pn-tenant")`-аар
+шинэчлэгдэнэ.
+
+tRPC context нь `forTenant(tenant.id)`-ээр хаалттай `db`-г өгнө — router-ууд
+`ctx.db`-гүй контентын query бичихгүй.
+
+Хоёр дахь сайт нэмэх шаардлага гарвал: `lib/tenant.ts`-ийг host-аар хайдаг
+болгоно (`Tenant.domains` аль хэдийн схемд байна). Тэр үед хуудасны кэш
+Host-оор салахгүй гэдгийг анхаарч, tenant-ыг замын параметр болгоно
+(`/_t/<slug>/...` rewrite) — өгөгдлийн сан, шүүлт нь дахин бүтээх шаардлагагүй.
 
 ### 5.3 Өгөгдлийн сан (тусдаа Postgres, `pn_` хүснэгтийн нэртэй)
 
@@ -157,9 +170,8 @@ tenant-ыг олж `x-tenant-id` header-т тавина (edge дээр кэшт�
 ## 6. Хэрэгжүүлэх дараалал
 
 1. **Схем + нэвтрэлт/эрх** — Prisma моделиуд, migration, tenant middleware, эрхийн модуль, seed (parlament tenant + 8 ангилал + эрхүүд)
-2. **Нийтийн сайт + SEO** — ЭХНИЙ даалгавар нь tenant-ыг замын параметр болгох
-   middleware rewrite (`/_t/<slug>/...`), tenant тус бүрийн кэш салж байгааг тестээр
-   батлах. Үүний дараа `/news/<slug>`, нүүр, ангилал, хайлт, sitemap/RSS/OG
+2. **Нийтийн сайт + SEO** — `/news/<slug>`, нүүр, ангилал, хайлт, sitemap/RSS/OG.
+   Нэг tenant тул кэшийн тусгай бэлтгэл шаардахгүй: хуудас статик/ISR байж чадна
 3. **Редакцын систем** — урсгал, Tiptap редактор, медиа байршуулалт, тохиргоо, баг ба эрх
 4. **Модулиуд** — хуулийн төсөл, хуваарь/ирц/ШУУД, баннер, стори, ханш
 5. **Сошиал нийтлэл + мэдэгдэл** — queue, Meta/YouTube/Telegram

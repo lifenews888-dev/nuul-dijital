@@ -1,62 +1,41 @@
 import { unstable_cache } from "next/cache";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { prisma } from "@nuul/db-news";
 import type { Tenant } from "@nuul/db-news";
-import { parseHost, pickTenantHost } from "./host";
-
-export { parseHost, pickTenantHost };
-export type { ParsedHost } from "./host";
-
-/** middleware зөвхөн өөрөө тавина — клиентээс ирсэн ийм header-т итгэхгүй */
-export const TENANT_HEADER = "x-tenant-host";
 
 /**
- * Production-д tenant-ыг бодит Host-оос олно, x-tenant-host-ыг зөвхөн dev-д
- * зөвшөөрнө. Ингэснээр middleware хамраагүй зам ч (эсвэл matcher буруу байсан
- * ч) хуурамч header-ээр өөр tenant уншигдахгүй.
+ * Нэг сайтын тохиргоо.
+ *
+ * Схем нь олон tenant-д бэлэн хэвээр (хүснэгт бүрт tenantId, forTenant-ийн
+ * шүүлт, composite FK), гэхдээ домэйноор tenant хайхаа больж env-д тохируулсан
+ * нэг tenant-ыг уншина. Ингэснээр headers() дуудахгүй тул нийтийн хуудас
+ * статикаар кэшлэгдэж, revalidateTag-аар шинэчлэгдэж чадна.
+ *
+ * Хоёр дахь сайт нэмэх бол зөвхөн энэ файл host-аар хайдаг болно —
+ * өгөгдлийн сан аль хэдийн тэгэхэд бэлэн.
  */
-const ALLOW_HOST_OVERRIDE = process.env.NODE_ENV !== "production";
+export const DEFAULT_TENANT_SLUG = "parlament";
 
-function loadTenant(value: string, kind: "domain" | "subdomain"): Promise<Tenant | null> {
+export function tenantSlug(
+  env: Record<string, string | undefined> = process.env,
+): string {
+  const value = env.NEWS_TENANT_SLUG;
+  return value && value.trim() ? value.trim().toLowerCase() : DEFAULT_TENANT_SLUG;
+}
+
+export function getTenant(): Promise<Tenant | null> {
+  const slug = tenantSlug();
+
   return unstable_cache(
-    async () =>
-      prisma.tenant.findFirst({
-        where:
-          kind === "domain"
-            ? { active: true, domains: { has: value } }
-            : { active: true, slug: value },
-      }),
-    ["pn-tenant", kind, value],
+    () => prisma.tenant.findFirst({ where: { slug, active: true } }),
+    ["pn-tenant", slug],
     { revalidate: 300, tags: ["pn-tenant"] },
   )();
 }
 
-export async function getTenantByHost(host: string | null): Promise<Tenant | null> {
-  const { kind, value } = parseHost(host);
-  if (kind === "unknown" || !value) return null;
-  return loadTenant(value, kind);
-}
-
-/** Server component-д: tenant олдохгүй бол 404 */
-/**
- * Server component-д: tenant олдохгүй бол 404.
- *
- * ISR сануулга: энэ функц headers()-ийг дууддаг тул хуудас динамик болно.
- * Tenant-ыг уншихгүй, зөвхөн revalidate тавьсан хуудас нь Full Route Cache-д
- * ЗАМААР кэшлэгдэх ба Next нь Host-оор салгадаггүй, нэг tenant-ийн HTML
- * нөгөөд үйлчилж болно. 2-р шатанд кэш хэрэгтэй бол tenant-ыг замын параметр
- * болгож (middleware rewrite: /_t/<slug>/...) кэшийн түлхүүрт оруулна.
- */
+/** Server component-д: tenant seed хийгдээгүй бол 404 */
 export async function requireTenant(): Promise<Tenant> {
-  const h = headers();
-  const host = pickTenantHost({
-    host: h.get("host"),
-    override: h.get(TENANT_HEADER),
-    allowOverride: ALLOW_HOST_OVERRIDE,
-  });
-
-  const tenant = await getTenantByHost(host);
+  const tenant = await getTenant();
   if (!tenant) notFound();
   return tenant;
 }
