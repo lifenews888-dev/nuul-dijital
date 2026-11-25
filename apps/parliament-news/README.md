@@ -9,6 +9,55 @@
 `prototype/index.html` нь хөтөч дээр шууд нээгддэг, бүх зүйл нэг файлд багтсан загвар.
 Бодит системийг үүнийг үндэслэн Claude Code-оор хөгжүүлнэ.
 
+## Хөгжүүлэлт эхлүүлэх
+
+Бодит Next.js апп энэ хавтсанд ажиллаж байна (1-р шат: схем, эрх, tenant тусгаарлалт).
+
+### 1. Өгөгдлийн сан (локал)
+
+Parliament News нь nuul.mn-ээс **тусдаа** сан хэрэглэнэ.
+
+```bash
+cd ../../packages/db-news
+docker compose up -d          # Postgres 16, 127.0.0.1:5447
+pnpm db:push                  # схемийг санд суулгах
+ADMIN_EMAIL=you@example.mn pnpm db:seed
+```
+
+Seed нь `parlament` tenant, 8 ангилал, тохиргоо, супер админ үүсгэнэ.
+`ADMIN_PASSWORD` өгөөгүй бол санамсаргүй нууц үгийг терминалд НЭГ удаа хэвлэнэ —
+тэндээсээ хуулж ав, дахиж харагдахгүй.
+
+Монорепогийн эхний `.env`-д:
+
+```
+NEWS_DATABASE_URL="postgresql://parlament:parlament_local_dev@127.0.0.1:5447/parlamentnews"
+NEWS_DIRECT_URL="postgresql://parlament:parlament_local_dev@127.0.0.1:5447/parlamentnews"
+```
+
+Next нь `.env`-ийг зөвхөн аппын хавтаснаас хайдаг тул монорепогийн эхний
+`.env`-ийг `next.config.js` зориуд уншина (`lib/env.test.ts` түүнийг хамгаална).
+
+### 2. Апп
+
+```bash
+pnpm dev                      # http://localhost:3001
+curl localhost:3001/api/trpc/health    # {"result":{"data":{"ok":true}}}
+```
+
+### 3. Тест
+
+```bash
+pnpm test        # цэвэр функцууд (DB шаардахгүй)
+pnpm test:db     # tenant тусгаарлалт — ажиллаж байгаа DB шаардна
+pnpm lint        # $queryRaw/$executeRaw хориотой
+```
+
+Нээлтээс өмнө: `DEPLOY-CHECKLIST.md`.
+
+---
+
+
 ## Файлууд
 - `prototype/index.html` — нүүр сайт + редакцын систем (HTML/CSS/JS нэг файлд, лого суулгасан)
 - `prototype/assets/logo.jpg` — эх лого (800×800, цэнхэр дэвсгэртэй)

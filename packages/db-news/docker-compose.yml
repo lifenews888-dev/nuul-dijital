@@ -1,0 +1,34 @@
+# Parliament News — локал хөгжүүлэлтийн Postgres.
+#
+# Зөвхөн хөгжүүлэлтэд. Production нь тусдаа Supabase project
+# (DEPLOY-CHECKLIST.md-ийн 1-р хэсэг).
+#
+#   docker compose up -d        сан өргөх
+#   docker compose down         зогсоох (өгөгдөл үлдэнэ)
+#   docker compose down -v      өгөгдлийг БҮРЭН устгах
+#
+# Дараа нь .env-д:
+#   NEWS_DATABASE_URL="postgresql://parlament:parlament_local_dev@127.0.0.1:5447/parlamentnews"
+#   NEWS_DIRECT_URL="postgresql://parlament:parlament_local_dev@127.0.0.1:5447/parlamentnews"
+services:
+  db:
+    image: postgres:16
+    container_name: parlamentnews-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: parlament
+      POSTGRES_PASSWORD: parlament_local_dev
+      POSTGRES_DB: parlamentnews
+    # Зөвхөн localhost — сүлжээнд нээгдэхгүй
+    ports:
+      - "127.0.0.1:5447:5432"
+    volumes:
+      - parlamentnews-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U parlament -d parlamentnews"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  parlamentnews-pgdata:

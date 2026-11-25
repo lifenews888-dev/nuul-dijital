@@ -44,6 +44,9 @@
 - [ ] **`pnpm --filter @nuul/news test:db` ногоон.** Энэ бол нэг байгууллагын
       мэдээ нөгөөд харагдахгүй гэдгийн гол баталгаа. DB хүрэхгүй үед
       ажиллуулах боломжгүй тул нээлтээс өмнө ЗААВАЛ нэг удаа ажиллуулна.
+      (2026-11-25: локал Postgres 16 дээр 3/3 ногоон. `scopeWhere`-ээс tenant
+      шүүлтийг зориуд хассан мутаци нь 3 тестийн 2-ыг улаан болгосон тул
+      тестүүд хоосон ногоон биш, бодит баталгаа гэдэг нь батлагдсан.)
 - [ ] `pnpm --filter @nuul/news lint` ногоон — `$queryRaw`/`$executeRaw`
       хориотой (түүхий SQL нь tenant шүүлтээс мултарна).
 - [ ] Шинэ `pn_` модель схемд нэмсэн бол `lib/tenant-db.ts`-ийн
@@ -68,6 +71,10 @@
 - [ ] Env хувьсагчид Vercel дээр тавигдсан: `NEWS_DATABASE_URL`,
       `NEWS_DIRECT_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`,
       `BLOB_READ_WRITE_TOKEN`.
+      Vercel дээр `.env` файл байхгүй — env нь dashboard-аас ирнэ.
+      `next.config.js` нь `override: false`-тэй уншдаг тул dashboard-ийн
+      утгыг дарж бичихгүй. Аль нэг нь тавигдаагүй бол апп 500 буцаана
+      (`/api/trpc/health`-ээр deploy-ийн дараа ШУУД шалга).
 - [ ] `parlamentnews.mn` ба `www.parlamentnews.mn` домэйн project-д холбогдсон.
       (`Tenant.domains` нь лавлагаа болж схемд байгаа — одоо tenant хайхад
       хэрэглэгддэггүй.)
