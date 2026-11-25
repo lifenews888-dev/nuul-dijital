@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start -p 3001",
     "lint": "next lint",
-    "test": "vitest run",
-    "test:unit": "vitest run lib"
+    "test": "vitest run --exclude \"**/*.db.test.ts\"",
+    "test:unit": "vitest run lib --exclude \"**/*.db.test.ts\"",
+    "test:db": "vitest run lib/tenant-db.db.test.ts"
   },
   "dependencies": {
     "@nuul/db": "workspace:*",
