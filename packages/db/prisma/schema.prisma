@@ -41,6 +41,7 @@ model User {
   referredBy       ResellerClient[]  @relation("ReferredClient")
   serviceQuotes    ServiceQuote[]
   blogPosts        BlogPost[]
+  newsMemberships  TenantMember[]
 
   @@map("users")
 }
@@ -813,4 +814,55 @@ enum HostingStatus {
   ACTIVE
   SUSPENDED
   DELETED
+}
+
+// ===================== PARLIAMENT NEWS =====================
+// Multi-tenant мэдээний платформ. Бүх хүснэгт pn_ префикстэй.
+// Эх сурвалж: apps/parliament-news/site-v2 (Claude artifact загвар)
+
+model Tenant {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  domains     String[]
+  logoUrl     String?
+  brandColor  String   @default("#1d3fe3")
+  accentColor String   @default("#f26a1b")
+  locale      String   @default("mn")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members TenantMember[]
+
+  @@map("pn_tenants")
+}
+
+model TenantMember {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      NewsRole
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, userId])
+  @@index([userId])
+  @@map("pn_tenant_members")
+}
+
+/// Редакцын 10 эрх — site-v2/admin.html:844-854
+enum NewsRole {
+  SUPER
+  CHIEF
+  REVIEWER
+  REPORTER
+  MEDIA
+  LEGAL
+  SOCIAL
+  LIVE
+  CONTRIBUTOR
+  ANALYST
 }
