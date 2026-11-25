@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** `apps/parliament-news` апп, multi-tenant Prisma схем, tenantId-г автоматаар шүүдэг давхарга, домэйноор tenant таних, 10 редакцын эрхийн серверийн модуль, Gerel News-ийн seed — дээр нь нийтийн сайт ба CMS бичих суурь.
+**Goal:** `apps/parliament-news` апп, multi-tenant Prisma схем, tenantId-г автоматаар шүүдэг давхарга, домэйноор tenant таних, 10 редакцын эрхийн серверийн модуль, parlament tenant-ийн seed — дээр нь нийтийн сайт ба CMS бичих суурь.
 
 **Architecture:** Монорепод шинэ Next.js 14 App Router апп (`@nuul/news`), `packages/db`-ийн нэг Prisma схемийг хуваалцана (шинэ моделиуд `pn_*` хүснэгтэнд). `middleware.ts` (Edge) зөвхөн host-ыг хэлбэржүүлнэ, tenant-ыг Node runtime дээр DB-ээс кэштэй хайна. Контентын query бүр Prisma client extension-оор `tenantId`-гаар автоматаар шүүгдэнэ. Эрх `TenantMember`-т, зөвшөөрлийг сервер шалгана.
 
@@ -10,7 +10,7 @@
 
 **Spec:** [docs/superpowers/specs/2026-11-25-parliament-news-platform-design.md](../specs/2026-11-25-parliament-news-platform-design.md)
 
-**Хамрах хүрээ:** Дизайн бичгийн §6-ийн **1-р шат** зөвхөн. 2–6-р шат (нийтийн сайт+SEO, CMS, парламентын модулиуд, сошиал, хамгаалалт) тус бүр өөрийн төлөвлөгөөтэй болно. Энэ шат дуусахад: апп build болж, tenant танигдаж, тусгаарлалт DB тестээр батлагдаж, эрх шалгагдаж, Gerel News-ийн өгөгдөл DB-д сууна.
+**Хамрах хүрээ:** Дизайн бичгийн §6-ийн **1-р шат** зөвхөн. 2–6-р шат (нийтийн сайт+SEO, CMS, парламентын модулиуд, сошиал, хамгаалалт) тус бүр өөрийн төлөвлөгөөтэй болно. Энэ шат дуусахад: апп build болж, tenant танигдаж, тусгаарлалт DB тестээр батлагдаж, эрх шалгагдаж, parlament tenant-ийн өгөгдөл DB-д сууна.
 
 ## Global Constraints
 
@@ -721,7 +721,7 @@ git commit -m "feat(news): zod-validated tenant settings for header, footer, wea
 
 ---
 
-### Task 10: Seed — Gerel News tenant ба анхны супер админ
+### Task 10: Seed — parlament tenant ба анхны супер админ
 
 **Files:**
 - Create: `packages/db/prisma/seed-news.ts`
@@ -765,13 +765,13 @@ Expected: бүгд PASS — `apps/web` эвдрээгүйг батална.
 
 ```bash
 git add packages/db/prisma/seed-news.ts packages/db/package.json
-git commit -m "feat(db): seed Gerel News tenant, categories, settings and super admin"
+git commit -m "feat(db): seed parlament tenant, categories, settings and super admin"
 ```
 
 ---
 
 ## Дараах шат
 
-1-р шат дуусахад `apps/parliament-news` build болж, `parlament.localhost:3001` дээр tenant танигдаж, tenant тусгаарлалт DB тестээр батлагдаж, эрхийн модуль тесттэй, Gerel News-ийн өгөгдөл DB-д байна. Дараа нь **2-р шат: нийтийн сайт + SEO** (`/news/<slug>`, `NewsSlugRedirect`-ийн 301, нүүр, ангилал, хайлт, sitemap/RSS/OG) өөрийн төлөвлөгөөтэй болно.
+1-р шат дуусахад `apps/parliament-news` build болж, `parlament.localhost:3001` дээр tenant танигдаж, tenant тусгаарлалт DB тестээр батлагдаж, эрхийн модуль тесттэй, parlament tenant-ийн өгөгдөл DB-д байна. Дараа нь **2-р шат: нийтийн сайт + SEO** (`/news/<slug>`, `NewsSlugRedirect`-ийн 301, нүүр, ангилал, хайлт, sitemap/RSS/OG) өөрийн төлөвлөгөөтэй болно.
 
 Энэ шатанд **ороогүй** зүйлс (зориуд): Tiptap редактор, медиа байршуулалт, CMS-ийн дэлгэцүүд, 3D номын тавиур, сошиал нийтлэл, 2FA, Vercel project тохиргоо, цаг агаар/ханшийн гадаад API дуудлага.

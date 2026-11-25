@@ -1,5 +1,5 @@
 /**
- * Parliament News — Gerel News tenant-ийн анхны өгөгдөл.
+ * Parliament News — parlament tenant-ийн анхны өгөгдөл.
  *
  * Ажиллуулах:  ADMIN_EMAIL=... pnpm db:seed
  * Сонголттой:  ADMIN_PASSWORD=...  (байхгүй бол санамсаргүй нэгийг зохиож,
