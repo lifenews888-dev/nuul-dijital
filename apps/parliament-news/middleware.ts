@@ -1,0 +1,45 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { parseHost } from "./lib/host";
+
+/**
+ * Edge дээр ажиллана — Prisma дуудахгүй. Хоёр ажил:
+ * 1. host-ыг хэлбэржүүлж x-tenant-host болгон дамжуулах
+ * 2. /studio-д нэвтрэлт шалгах
+ * tenant-ыг DB-ээс хайх, эрх шалгах нь Node runtime дээр (lib/tenant, lib/trpc).
+ */
+const TENANT_HEADER = "x-tenant-host";
+
+export async function middleware(request: NextRequest) {
+  const forwarded = new Headers(request.headers);
+  const { value } = parseHost(request.headers.get("host"));
+
+  // Клиент өөрөө x-tenant-host илгээж өөр tenant уншихыг хориглоно
+  if (value) {
+    forwarded.set(TENANT_HEADER, value);
+  } else {
+    forwarded.delete(TENANT_HEADER);
+  }
+
+  const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith("/studio") && !pathname.startsWith("/studio/signin")) {
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+
+    if (!token) {
+      const signInUrl = new URL("/studio/signin", request.url);
+      signInUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+  }
+
+  return NextResponse.next({ request: { headers: forwarded } });
+}
+
+export const config = {
+  matcher: ["/((?!_next|favicon|.*\..*).*)"],
+};
