@@ -843,6 +843,13 @@ model Tenant {
   comments      NewsComment[]
   activity      NewsActivity[]
   settings      TenantSetting[]
+  bills         Bill[]
+  agenda        Agenda[]
+  live          LiveState?
+  banners       Banner[]
+  tickerAds     TickerAd[]
+  adRates       AdRate[]
+  fxRates       FxRate[]
 
   @@map("pn_tenants")
 }
@@ -921,6 +928,7 @@ model NewsPost {
   media         NewsMedia[]
   comments      NewsComment[]
   slugRedirects NewsSlugRedirect[]
+  bill          Bill?
 
   @@unique([tenantId, slug])
   @@index([tenantId, status, publishedAt])
@@ -1016,4 +1024,128 @@ model TenantSetting {
 
   @@unique([tenantId, key])
   @@map("pn_settings")
+}
+
+model Bill {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  postId    String?  @unique
+  post      NewsPost? @relation(fields: [postId], references: [id], onDelete: SetNull)
+  title     String   @db.VarChar(200)
+  stage     Int      @default(0)
+  votesYes  Int      @default(0)
+  votesNo   Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stages BillStage[]
+
+  @@index([tenantId, stage])
+  @@map("pn_bills")
+}
+
+model BillStage {
+  id      String    @id @default(cuid())
+  billId  String
+  bill    Bill      @relation(fields: [billId], references: [id], onDelete: Cascade)
+  index   Int
+  date    DateTime? @db.Date
+  note    String?   @db.VarChar(1500)
+  sources String[]
+
+  @@unique([billId, index])
+  @@map("pn_bill_stages")
+}
+
+model Agenda {
+  id       String   @id @default(cuid())
+  tenantId String
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  date     DateTime @db.Date
+  time     String   @db.VarChar(8)
+  text     String   @db.VarChar(120)
+  order    Int      @default(0)
+
+  @@index([tenantId, date])
+  @@map("pn_agenda")
+}
+
+model LiveState {
+  id             String   @id @default(cuid())
+  tenantId       String   @unique
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  attendance     Int      @default(0)
+  sessionStatus  String   @default("Хуралдаж байна")
+  tickerOn       Boolean  @default(true)
+  liveOn         Boolean  @default(false)
+  liveTitle      String?  @db.VarChar(80)
+  liveUrl        String?
+  breakingOn     Boolean  @default(false)
+  breakingText   String?  @db.VarChar(140)
+  breakingPostId String?
+  updatedAt      DateTime @updatedAt
+  updatedById    String?
+
+  @@map("pn_live")
+}
+
+model Banner {
+  id        String    @id @default(cuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  imageUrl  String
+  linkUrl   String?
+  title     String?   @db.VarChar(80)
+  placement String    @default("both")
+  startsOn  DateTime? @db.Date
+  endsOn    DateTime? @db.Date
+  paid      Boolean   @default(true)
+  amount    Int       @default(0)
+  order     Int       @default(0)
+
+  @@index([tenantId, placement])
+  @@map("pn_banners")
+}
+
+model TickerAd {
+  id       String  @id @default(cuid())
+  tenantId String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  text     String  @db.VarChar(120)
+  url      String?
+  active   Boolean @default(true)
+  order    Int     @default(0)
+
+  @@index([tenantId])
+  @@map("pn_ticker_ads")
+}
+
+model AdRate {
+  id       String  @id @default(cuid())
+  tenantId String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  place    String  @db.VarChar(60)
+  size     String? @db.VarChar(40)
+  unit     String  @default("week")
+  price    Int     @default(0)
+  note     String? @db.VarChar(120)
+  order    Int     @default(0)
+
+  @@index([tenantId])
+  @@map("pn_ad_rates")
+}
+
+model FxRate {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  code      String   @db.VarChar(8)
+  value     Decimal  @db.Decimal(14, 4)
+  change    Decimal  @default(0) @db.Decimal(10, 4)
+  order     Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, code])
+  @@map("pn_fx_rates")
 }
