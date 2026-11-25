@@ -5,6 +5,7 @@ import { prisma } from "@nuul/db";
 import type { NewsRole } from "@nuul/db";
 import { authOptions } from "./auth";
 import { getTenantByHost, TENANT_HEADER } from "./tenant";
+import { pickTenantHost } from "./host";
 import { forTenant } from "./tenant-db";
 import type { TenantClient } from "./tenant-db";
 
@@ -34,7 +35,14 @@ export async function getNewsRole(
 }
 
 export async function createContext(req: Request): Promise<Ctx> {
-  const tenant = await getTenantByHost(req.headers.get(TENANT_HEADER));
+  // Бодит Host-оос: клиентийн x-tenant-host-д production-д итгэхгүй
+  const host = pickTenantHost({
+    host: req.headers.get("host"),
+    override: req.headers.get(TENANT_HEADER),
+    allowOverride: process.env.NODE_ENV !== "production",
+  });
+
+  const tenant = await getTenantByHost(host);
   const session = await getServerSession(authOptions);
 
   const role =

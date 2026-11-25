@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { TENANT_MODELS, forTenant, tenantData } from "./tenant-db";
+import { TENANT_MODELS, forTenant, tenantData, scopeWhere } from "./tenant-db";
 
 const A = "tenant-a";
 const B = "tenant-b";
@@ -9,9 +9,11 @@ describe("TENANT_MODELS", () => {
     expect(TENANT_MODELS).toContain("NewsPost");
     expect(TENANT_MODELS).toContain("TenantSetting");
     expect(TENANT_MODELS).toContain("FxRate");
-    expect(TENANT_MODELS).not.toContain("BillStage");
+    expect(TENANT_MODELS).toContain("TenantMember");
+    expect(TENANT_MODELS).toContain("BillStage");
     expect(TENANT_MODELS).not.toContain("User");
     expect(TENANT_MODELS).not.toContain("Website");
+    expect(TENANT_MODELS).not.toContain("Tenant");
   });
 });
 
@@ -44,5 +46,29 @@ describe("tenantData", () => {
   it("өгөгдлийг хөндөхгүй, зөвхөн төрлийг нь нөхнө", () => {
     const input = { key: "header", value: 1 };
     expect(tenantData(input)).toBe(input);
+  });
+});
+
+describe("scopeWhere", () => {
+  it("tenantId-г where-т нэмнэ", () => {
+    expect(scopeWhere("NewsPost", { slug: "tosov" }, "t1")).toEqual({
+      slug: "tosov",
+      tenantId: "t1",
+    });
+    expect(scopeWhere("NewsPost", undefined, "t1")).toEqual({ tenantId: "t1" });
+  });
+
+  it("хөндөх шаардлагагүй модельд where-ийг хэвээр үлдээнэ", () => {
+    expect(scopeWhere("User", { id: "u1" }, "t1")).toEqual({ id: "u1" });
+  });
+});
+
+describe("createManyAndReturn", () => {
+  it("өөр tenant-ийн мөр үүсгэхийг татгалзана", async () => {
+    await expect(
+      forTenant("tenant-a").newsPost.createManyAndReturn({
+        data: [{ tenantId: "tenant-b", slug: "x", title: "Хог", date: new Date() }],
+      }),
+    ).rejects.toThrow(/tenantId/);
   });
 });

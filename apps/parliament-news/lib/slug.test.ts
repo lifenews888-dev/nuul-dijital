@@ -35,6 +35,28 @@ describe("nextSlug", () => {
     expect(nextSlug({ title: "Шинэ гарчиг", currentSlug: "khuuchin", publishedAt: new Date("2027-01-02"), taken: [] }))
       .toBe("khuuchin");
   });
+  it("PUBLISHED төлөвтэй бол publishedAt байхгүй ч хөдлөхгүй", () => {
+    expect(
+      nextSlug({
+        title: "Шинэ гарчиг",
+        currentSlug: "khuuchin",
+        publishedAt: null,
+        status: "PUBLISHED",
+        taken: [],
+      }),
+    ).toBe("khuuchin");
+  });
+  it("ноорог төлөвтэй бол гарчгаас дахин тооцно", () => {
+    expect(
+      nextSlug({
+        title: "Шинэ гарчиг",
+        currentSlug: "khuuchin",
+        publishedAt: null,
+        status: "DRAFT",
+        taken: [],
+      }),
+    ).toBe("shine-garchig");
+  });
   it("давхардлыг tenant дотор шийднэ", () => {
     expect(nextSlug({ title: "Төсөв", currentSlug: null, publishedAt: null, taken: ["tosov"] }))
       .toBe("tosov-2");

@@ -1,3 +1,5 @@
+import type { NewsStatus } from "@nuul/db";
+
 /**
  * Монгол кирилл гарчгийг латин slug болгох.
  * ө→o, ү→u (ö/ü биш) — дизайн бичгийн Global Constraints.
@@ -32,6 +34,11 @@ export function toSlug(title: string): string {
   return s || FALLBACK;
 }
 
+/**
+ * taken = ТУХАЙН TENANT-ийн эзэмшсэн бүх slug: мэдээний slug-ууд ба
+ * NewsSlugRedirect.fromSlug-ууд хамтдаа. redirect-үүдийг оруулахгүй бол шинэ
+ * мэдээ хуучин 301-ийн хаягийг эзэмдэж, хуваалцсан линк өөр мэдээ рүү хөтөлнө.
+ */
 export function uniqueSlug(base: string, taken: string[]): string {
   if (!taken.includes(base)) return base;
 
@@ -48,11 +55,14 @@ export function nextSlug(input: {
   title: string;
   currentSlug: string | null;
   publishedAt: Date | null;
+  status?: NewsStatus;
   taken: string[];
 }): string {
-  const { title, currentSlug, publishedAt, taken } = input;
+  const { title, currentSlug, publishedAt, status, taken } = input;
 
-  if (publishedAt) return currentSlug ?? toSlug(title);
+  // publishedAt БОЛОН status хоёулаа шалгагдана: publishedAt тавилгүй PUBLISHED
+  // болгосон мэдээний хаяг гарчиг засахад хөдөлж, 301-гүй 404 болохоос сэргийлнэ
+  if (publishedAt !== null || status === "PUBLISHED") return currentSlug ?? toSlug(title);
 
   const base = toSlug(title);
   if (base === currentSlug) return base;

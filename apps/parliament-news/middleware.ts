@@ -40,6 +40,15 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next({ request: { headers: forwarded } });
 }
 
+/**
+ * Зөвхөн Next-ийн дотоод файлыг хасна. Цэгтэй замыг хасаж болохгүй:
+ * tRPC-ийн nested procedure (/api/trpc/news.list) ба нийтийн feed
+ * (/rss.xml, /sitemap.xml) цэгтэй байдаг.
+ *
+ * ЭНЭ ЛИТЕРАЛ байх ёстой. Next нь config-ийг build үед статикаар уншдаг тул
+ * import хийсэн тогтмолыг танихгүй, бүх замыг хамрах default руу унана.
+ * lib/host.test.ts нь энэ утгыг шууд уншиж шалгадаг.
+ */
 export const config = {
-  matcher: ["/((?!_next|favicon|.*\..*).*)"],
+  matcher: ["/((?!_next/).*)"],
 };

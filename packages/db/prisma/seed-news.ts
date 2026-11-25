@@ -109,7 +109,6 @@ async function main() {
         email: adminEmail,
         name: "Супер админ",
         password: await bcrypt.hash(password, 10),
-        role: "ADMIN",
       },
     });
 

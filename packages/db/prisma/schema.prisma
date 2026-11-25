@@ -903,7 +903,7 @@ model NewsPost {
   body        String?      @db.Text
   date        DateTime     @db.Date
   categoryId  String?
-  category    NewsCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  category    NewsCategory? @relation(fields: [tenantId, categoryId], references: [tenantId, id], onDelete: SetNull)
   subcategory String?      @db.VarChar(40)
   reporter    String?      @db.VarChar(60)
   sources     String[]
@@ -931,6 +931,7 @@ model NewsPost {
   bill          Bill?
 
   @@unique([tenantId, slug])
+  @@unique([tenantId, id])
   @@index([tenantId, status, publishedAt])
   @@index([tenantId, categoryId])
   @@map("pn_posts")
@@ -941,7 +942,7 @@ model NewsMedia {
   tenantId String
   tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   postId   String
-  post     NewsPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post     NewsPost @relation(fields: [tenantId, postId], references: [tenantId, id], onDelete: Cascade)
   kind     String   @default("image")
   url      String
   caption  String?  @db.VarChar(200)
@@ -958,7 +959,7 @@ model NewsCategory {
   slug     String
   name     String  @db.VarChar(40)
   parentId String?
-  parent   NewsCategory?  @relation("NewsCategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  parent   NewsCategory?  @relation("NewsCategoryTree", fields: [tenantId, parentId], references: [tenantId, id], onDelete: SetNull)
   children NewsCategory[] @relation("NewsCategoryTree")
   inMenu   Boolean @default(false)
   order    Int     @default(0)
@@ -966,6 +967,7 @@ model NewsCategory {
   posts NewsPost[]
 
   @@unique([tenantId, slug])
+  @@unique([tenantId, id])
   @@index([tenantId, parentId])
   @@map("pn_categories")
 }
@@ -976,7 +978,7 @@ model NewsSlugRedirect {
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   fromSlug  String
   postId    String
-  post      NewsPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      NewsPost @relation(fields: [tenantId, postId], references: [tenantId, id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   @@unique([tenantId, fromSlug])
@@ -988,7 +990,7 @@ model NewsComment {
   tenantId   String
   tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   postId     String
-  post       NewsPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post       NewsPost @relation(fields: [tenantId, postId], references: [tenantId, id], onDelete: Cascade)
   userId     String?
   user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   authorName String   @db.VarChar(60)
@@ -1031,7 +1033,7 @@ model Bill {
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   postId    String?  @unique
-  post      NewsPost? @relation(fields: [postId], references: [id], onDelete: SetNull)
+  post      NewsPost? @relation(fields: [tenantId, postId], references: [tenantId, id], onDelete: SetNull)
   title     String   @db.VarChar(200)
   stage     Int      @default(0)
   votesYes  Int      @default(0)
@@ -1041,20 +1043,24 @@ model Bill {
 
   stages BillStage[]
 
+  @@unique([tenantId, id])
+  @@unique([tenantId, postId])
   @@index([tenantId, stage])
   @@map("pn_bills")
 }
 
 model BillStage {
-  id      String    @id @default(cuid())
-  billId  String
-  bill    Bill      @relation(fields: [billId], references: [id], onDelete: Cascade)
-  index   Int
-  date    DateTime? @db.Date
-  note    String?   @db.VarChar(1500)
-  sources String[]
+  id       String    @id @default(cuid())
+  tenantId String
+  billId   String
+  bill     Bill      @relation(fields: [tenantId, billId], references: [tenantId, id], onDelete: Cascade)
+  index    Int
+  date     DateTime? @db.Date
+  note     String?   @db.VarChar(1500)
+  sources  String[]
 
   @@unique([billId, index])
+  @@index([tenantId])
   @@map("pn_bill_stages")
 }
 

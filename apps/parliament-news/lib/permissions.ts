@@ -126,6 +126,38 @@ export function editableSections(role: NewsRole | null): Section[] {
   return role === null ? [] : [...SECTIONS[role]];
 }
 
+/**
+ * Эрх + мэдээний төлөв + эзэмшлээр засах хэсгүүд: site-v2/admin.html:877-881
+ * (secsFor). Router-ууд editableSections-ийн оронд ҮҮНИЙГ хэрэглэнэ, эрх
+ * дангаараа сэтгүүлчид бусдын эсвэл аль хэдийн хянагдаж буй мэдээг засах
+ * эрх өгчихнө.
+ */
+export function editableSectionsFor(
+  role: NewsRole | null,
+  post: { authorId: string | null; status: NewsStatus; isNew?: boolean },
+  userId: string,
+): Section[] {
+  if (role === null) return [];
+
+  const base = editableSections(role);
+  const isNew = post.isNew === true;
+  const own = isNew || post.authorId === userId;
+
+  if (role === "REPORTER" || role === "CONTRIBUTOR") {
+    return own && OWN_EDIT_STATUSES.includes(post.status) ? base : [];
+  }
+
+  if (role === "REVIEWER") {
+    return isNew || post.status === "REVIEW" || post.status === "APPROVED" ? base : [];
+  }
+
+  if (role === "MEDIA") {
+    return post.status === "PUBLISHED" ? [] : base;
+  }
+
+  return base;
+}
+
 export function visibleStatuses(role: NewsRole | null): NewsStatus[] {
   return role === null ? [] : [...STATUSES[role]];
 }
