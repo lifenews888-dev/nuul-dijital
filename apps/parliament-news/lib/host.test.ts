@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseHost, pickTenantHost, needsStudioAuth } from "./host";
+import { parseHost, pickTenantHost, needsStudioAuth, tenantHostHeader } from "./host";
 import { config } from "../middleware";
 
 describe("parseHost", () => {
@@ -87,5 +87,27 @@ describe("needsStudioAuth", () => {
     expect(needsStudioAuth("/")).toBe(false);
     expect(needsStudioAuth("/news/tosov")).toBe(false);
     expect(needsStudioAuth("/studiox")).toBe(false);
+  });
+});
+
+describe("tenantHostHeader", () => {
+  it("бодит host-ыг дамжуулна, parse хийхгүй", () => {
+    expect(tenantHostHeader("Parlament.LocalHost:3005")).toBe("parlament.localhost:3005");
+    expect(tenantHostHeader("parlamentnews.mn")).toBe("parlamentnews.mn");
+    expect(tenantHostHeader(null)).toBeNull();
+    expect(tenantHostHeader("  ")).toBeNull();
+  });
+
+  it("header-ийг дахин parse хийхэд ижил tenant гарах байх", () => {
+    // middleware parse хийсэн утга тавивал ("parlament") Node тал нь
+    // түүнииг unknown гэж үзнэ — tenant хэзээ ч олдохгүй
+    expect(parseHost(tenantHostHeader("parlament.localhost:3005"))).toEqual({
+      kind: "subdomain",
+      value: "parlament",
+    });
+    expect(parseHost(tenantHostHeader("www.parlamentnews.mn:443"))).toEqual({
+      kind: "domain",
+      value: "parlamentnews.mn",
+    });
   });
 });

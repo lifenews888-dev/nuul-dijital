@@ -49,6 +49,18 @@ export function needsStudioAuth(pathname: string): boolean {
   return !STUDIO_PUBLIC.some((base) => isUnder(pathname, base));
 }
 
+/**
+ * middleware x-tenant-host-д дамжуулах утга: ЯГ бодит host, parse хийхгүй.
+ *
+ * Хэрэв parse хийсэн утга (жишээ нь "parlament") тавибал Node тал түүнийг
+ * дахин parse хийхэд цэггүй тул unknown болж, tenant хэзээ ч олдохгүй.
+ */
+export function tenantHostHeader(rawHost: string | null | undefined): string | null {
+  if (!rawHost) return null;
+  const h = rawHost.trim().toLowerCase();
+  return h || null;
+}
+
 export function parseHost(host: string | null | undefined): ParsedHost {
   if (!host) return UNKNOWN;
 

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { needsStudioAuth, parseHost } from "./lib/host";
+import { needsStudioAuth, tenantHostHeader } from "./lib/host";
 
 /**
  * Edge дээр ажиллана — Prisma дуудахгүй. Хоёр ажил:
- * 1. host-ыг хэлбэржүүлж x-tenant-host болгон дамжуулах
+ * 1. бодит host-ыг x-tenant-host болгон дамжуулах (parse нь Node талд)
  * 2. /studio-д нэвтрэлт шалгах
  * tenant-ыг DB-ээс хайх, эрх шалгах нь Node runtime дээр (lib/tenant, lib/trpc).
  */
@@ -13,7 +13,7 @@ const TENANT_HEADER = "x-tenant-host";
 
 export async function middleware(request: NextRequest) {
   const forwarded = new Headers(request.headers);
-  const { value } = parseHost(request.headers.get("host"));
+  const value = tenantHostHeader(request.headers.get("host"));
 
   // Клиент өөрөө x-tenant-host илгээж өөр tenant уншихыг хориглоно
   if (value) {
