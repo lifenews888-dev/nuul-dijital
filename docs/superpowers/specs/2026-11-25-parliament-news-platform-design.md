@@ -1,0 +1,169 @@
+# Parliament News — өргөтгөх боломжтой платформ (дизайн бичиг)
+
+Огноо: 2026-11-25 · Нээлт: 2027-01-01 · Байршил: `apps/parliament-news`
+
+Хэнд: Нүүл Дижиталын шийдвэр гаргагч ба энэ төслийг хөгжүүлэх инженер.
+
+## 1. Зорилго ба яагаад
+
+`site-v2/` дэх Claude artifact загварыг (index.html 187KB + admin.html 220KB) бодит,
+өргөтгөх боломжтой вэб платформ болгох. Эхний хэрэглэгч бол Gerel News —
+`parlamentnews.mn` домэйн дээр УИХ-ын мэдээний сайт ба редакцын систем.
+
+Яагаад одоо: 2027-01-01-нд нээх ёстой. Яагаад платформ: Nuul.mn бол SaaS багц —
+«мэдээний сайт + CMS + эрх + баннерын бүртгэл» гэсэн бүтээгдэхүүнийг дараа нь
+аймгийн хэвлэл, яам, байгууллагын мэдээний сайтуудад зарах боломжтой.
+
+Амжилтын шалгуур:
+- Gerel News-ийн редакц 2027-01-01-нд өөрсдөө мэдээ нийтэлж байх
+- Мэдээ бүр өөрийн URL-тэй, Facebook-т хуваалцахад зураг, гарчиг зөв гарах
+- Хоёр дахь байгууллагыг нэмэхэд код бичихгүйгээр, зөвхөн tenant үүсгэхэд болох
+
+## 2. Goals / Non-goals / Anti-goals
+
+**Goals**
+- Multi-tenant **бэлэн** өгөгдлийн сан: контентын хүснэгт бүрт `tenantId`, домэйноор tenant таних
+- Нийтийн сайт: SSR, `/news/<slug>`, sitemap, RSS, Open Graph — SEO бүрэн
+- Редакцын систем: 10 эрх, `draft → review → approved → published` урсгал, тайлбартай буцаалт
+- `site-v2`-ийн дизайн, модулиудыг (номын тавиур, хуулийн төслийн 5 шат, ирц, стори, баннер) хадгалах
+- `@nuul/db`, `@nuul/ui`-г дахин ашиглах — шинэ дэд бүтэц үүсгэхгүй
+
+**Non-goals (v1-д биш)**
+- Сошиал руу автоматаар нийтлэх (Meta/YouTube/TikTok API) — 2-р шат, UI-д байр нь үлдэнэ
+- AI засвар, дуугаар бичих — 2-р шат (`claude.use('sample'/'dictation')`-ийн орлуулга)
+- Өөрийн сервер дээр видео хадгалах — YouTube embed
+- Tenant өөрөө бүртгүүлэх self-serve онбординг — tenant-ыг гараар үүсгэнэ
+
+**Anti-goals (техникийн хувьд ажиллаад ч бүтэлгүйтэл гэж үзэх)**
+- `apps/web` (nuul.mn, 53 хуудас) эвдрэх, build хугарах
+- Artifact-ийн JS-ийг хуулж зөөх → засах боломжгүй 400KB файл дахин үүсэх
+- Нэг хуудасны SPA болж, мэдээ тус бүрийн URL байхгүй болох
+- Tenant-уудын өгөгдөл хоорондоо харагдах (query-д `tenantId` мартагдах)
+
+## 3. Хязгаарлалт
+
+- Монорепо: pnpm + turbo, Next.js 14 App Router, Prisma 5, NextAuth 4, Postgres, Vercel
+- Root `vercel.json` одоо зөвхөн `apps/web`-ийг build хийдэг → хоёр дахь Vercel project хэрэгтэй
+- Хэрэглэгчийн интерфэйс бүхэлдээ монгол хэл, кирилл гарчгаас латин slug хөрвүүлэх шаардлагатай
+- Нээлт хүртэл ~5 долоо хоног
+
+## 4. Авч үзсэн хувилбарууд
+
+| | Хувилбар | Үнэлгээ |
+|---|---|---|
+| A | **Шинэ апп `apps/parliament-news`, нэг Postgres, `packages/db`-г хуваалцана** | ✅ Сонгосон |
+| B | `apps/web` дотор route group болгож, hostname-аар rewrite | nuul.mn-ийн 53 хуудас, dashboard-тай нэг codebase болж зангирна. Нэг деплой — мэдээний сайтын асуудал SaaS-ийг унагана |
+| C | Шинэ апп + тусдаа өгөгдлийн сан | Нэвтрэлт, `User` хүснэгт, blob хоёр дахин. 5 долоо хоногт үнэтэй. Эзэмшлийг бүрэн салгах шаардлага гарвал дараа нь шилжих зам нээлттэй |
+
+**A-г сонгосон шалтгаан:** мэдээний бүтээгдэхүүн SaaS сайтаасаа тусдаа деплойлогдож,
+тусдаа унаж, тусдаа масштаблана. Гэхдээ `User`/NextAuth/Prisma client/Vercel Blob-ыг
+дахин бичихгүй. Multi-tenancy нь «нэг апп, олон домэйн» хэлбэрээр A дотор яг таарна.
+
+## 5. Архитектур
+
+### 5.1 Апп
+
+```
+apps/parliament-news/              @nuul/news — Next.js 14 App Router
+  app/(site)/                      нийтийн сайт (SSR + ISR)
+  app/(studio)/studio/             редакцын систем, нэвтрэлтийн цаана
+  app/api/                         trpc, revalidate, rss
+  middleware.ts                    hostname → tenant, studio-д auth
+  lib/tenant.ts                    tenant resolve + cache
+  lib/permissions.ts               10 эрхийн модуль (серверт шалгана)
+  server/routers/                  news, category, settings, media, team, comment, bill, agenda
+packages/db/prisma/schema.prisma   pn_* моделиуд нэмэгдэнэ
+```
+
+`site-v2/`, `prototype/` хэвээр үлдэж, дизайн ба өгөгдлийн бүтцийн эх сурвалж болно.
+
+### 5.2 Tenant таних
+
+`Tenant { id, slug, name, domains[], brand, settings }`. `middleware.ts` host-оор
+tenant-ыг олж `x-tenant-id` header-т тавина (edge дээр кэштэй). Dev дээр
+`?tenant=parlament` эсвэл `parlament.localhost:3000`. tRPC context `tenantId`-г
+автоматаар inject хийнэ — router-ууд `ctx.tenantId`-гүй query бичихгүй.
+
+### 5.3 Өгөгдлийн сан (шинэ моделиуд, `pn_` хүснэгтийн нэртэй)
+
+| Модель | Тайлбар |
+|---|---|
+| `Tenant` | байгууллага: домэйн, брэнд (лого, өнгө), тохиргоо |
+| `TenantMember` | `userId` + `tenantId` + **редакцын эрх** (10 эрх). nuul.mn-ийн `UserRole` хөндөгдөхгүй |
+| `NewsPost` | artifact-ийн `news` doc: `title, lead, body, kicker, date, category, subcategory, reporter, source, motif, look, theme, featured, story, storyUntil, tags[], status, scheduledAt, slug` |
+| `NewsMedia` | зураг/видео + `caption`, дараалал (artifact-ийн `imgs[]`/`caps[]`) |
+| `NewsCategory` | tenant бүрийн ангилал, дараалал |
+| `Bill` + `BillStage` | хуулийн төслийн 5 шат, санал хураалт (`s, y, n, steps[{d,x,att}]`) |
+| `Agenda` | өнөөдрийн хуралдааны хуваарь |
+| `LiveState` | ирц (0–126), хуралдааны төлөв, ШУУД/ЯАРАЛТАЙ мөр |
+| `Banner`, `TickerAd` | баннер ба гүйдэг мөрийн зар |
+| `Comment` | уншигчийн сэтгэгдэл (artifact-ийн `cm/<uid>` → хэвийн хүснэгт) |
+| `ActivityLog` | `create/save/submit/approve/return/publish/unpublish/status` |
+| `TenantSetting` | `site/settings` doc → tenant бүрийн key-value |
+
+Дүрэм: контентын модель бүрт `tenantId`, `@@index([tenantId, ...])`, slug-д
+`@@unique([tenantId, slug])`.
+
+### 5.4 Эрх (artifact-аас хэвээр)
+
+`super, chief, reviewer, reporter, media, legal, social, live, contributor, analyst`
+— 10 эрх, тэдгээрийн засах хэсгүүд (`SECS`) ба үйлдлийн зөвшөөрөл (`canDel`, `canNew`)
+нь `site-v2/admin.html:844-886`-д тодорхойлогдсон. Үүнийг серверийн зөвшөөрлийн
+модуль болгон хөрвүүлнэ — UI-д нуух нь хамгаалалт биш, tRPC procedure бүр шалгана.
+
+### 5.5 Claude artifact үйлчилгээний орлуулга
+
+| Artifact | Орлуулга |
+|---|---|
+| `claude.use('db')` + `onSnapshot` | Prisma + tRPC. Бодит цагийн шинэчлэлт: `revalidateTag` + 30 сек polling (v1); SSE дараа нь |
+| `claude.use('user')` | NextAuth (credentials + hash). Редактор/админд 2FA — 2-р шат |
+| `claude.use('assets')` | Vercel Blob (`@vercel/blob` аль хэдийн `apps/web`-д байна) |
+| `claude.use('downloads')` (RSS) | `/rss.xml` route handler |
+| `claude.use('tts')`, `dictation` | Web Speech API (хөтөч), v1-д сонголттой |
+| `claude.use('sample')` (AI засвар) | Серверийн route + Claude API, түлхүүр нуугдана — 2-р шат |
+
+### 5.6 Нийтийн сайтын хуудаснууд
+
+`/` · `/news/<slug>` · `/c/<category>` · `/tag/<tag>` · `/live` · `/video` ·
+`/search` · `/bill/<id>` · `/story/<id>` · `/rss.xml` · `/sitemap.xml` · `/robots.txt`
+
+Мэдээ бүрт `generateMetadata` + `opengraph-image`. ISR, нийтлэхэд `revalidateTag`.
+
+**3D номын тавиур:** SSR-д мэдээний HTML жагсаалт гарч, тавиур нь client component
+болж hydrate хийнэ. Ингэснээр SEO болон JS унтарсан үед агуулга харагдана.
+
+## 6. Хэрэгжүүлэх дараалал
+
+1. **Схем + нэвтрэлт/эрх** — Prisma моделиуд, migration, tenant middleware, эрхийн модуль, seed (Gerel News tenant + 8 ангилал + эрхүүд)
+2. **Нийтийн сайт + SEO** — `/news/<slug>`, нүүр, ангилал, хайлт, sitemap/RSS/OG
+3. **Редакцын систем** — урсгал, Tiptap редактор, медиа байршуулалт, тохиргоо, баг ба эрх
+4. **Модулиуд** — хуулийн төсөл, хуваарь/ирц/ШУУД, баннер, стори, ханш
+5. **Сошиал нийтлэл + мэдэгдэл** — queue, Meta/YouTube/Telegram
+6. **Хамгаалалт ба нээлт** — rate limit, нөөц хуулбар, ачааллын тест, Cloudflare
+
+## 7. Деплой
+
+Хоёр дахь Vercel project: Root Directory = репогийн эх, build нь `prisma generate` +
+`next build apps/parliament-news`, домэйн `parlamentnews.mn`. `apps/web`-ийн одоогийн
+деплой хөндөгдөхгүй.
+
+## 8. Эрсдэл ба шийдэх асуултууд
+
+**Бизнес (хөгжүүлэлтээс гадна, нээлтээс өмнө шийдэх)**
+- **Эзэмшил:** Gerel News-тэй «платформ нь Нүүл Дижиталынх, өгөгдөл нь Gerel News-ийнх»
+  гэдгийг бичгээр тохирох. Эс бөгөөс multi-tenant бүтэц асуудал үүсгэнэ
+- Hosting, Cloudflare, Vercel-ийн зардлыг хэн хариуцах
+- Брэндийн өнгө: `STATUS.md` `#0A22E0`, `README` `#1d3fe3`, УИХ-ын хөх `#0041A5` —
+  **зөрчилтэй, нэгийг сонгох**
+- Ангиллын эцсийн жагсаалт (одоо `DEFC`-ийн 8 ангилал seed болно)
+- Анхны редакцын хэрэглэгчид ба эрх
+
+**Техникийн эрсдэл**
+- Нэг DB-д хамтдаа байх нь хожим эзэмшлийг салгахад migration шаардана (хувилбар C-ийн зам нээлттэй)
+- Кирилл гарчгийн латин slug — давхардлыг `-2` суффиксээр
+- 400KB artifact дизайныг дахин бичих цаг нь хамгийн том тооцоолох эрсдэл
+
+## 9. Хөгжүүлэгчид үлдэх шийдвэрүүд
+
+Файлын бүтэц, компонентын хуваалт, Tailwind токен, тестийн нэр, медиа хэмжээ,
+кэшийн нарийн тохиргоо, Prisma талбарын төрлийн дэлгэрэнгүй.

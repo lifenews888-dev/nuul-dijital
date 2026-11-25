@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Парламент Мэдээ</title>
+<link rel="icon" href="logo.png">
+<link rel="alternate" type="application/rss+xml" title="Parliament News — RSS" href="https://parlamentnews.mn/rss.xml">
+<link rel="artifact-thumbnail" href="thumb.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Noto+Serif:ital,wght@0,400;1,400&family=PT+Serif:wght@700&family=Noto+Sans+Mongolian&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm, official, editorial — a state broadcaster's archive
+   IDEA: a curved shelf of news "cassettes" from the session year; the active story turns to face you
+   PICTURE: the 3D arc itself, each cover a screen-print poster (hemicycle of 126 seats, columns, bars)
+   COLOUR and TYPE: paper ground, flag cobalt + flag red, ink; Inter Tight + Noto Serif, Mongol bichig halftone
+   LAYOUT: single fixed screen — bar, shelf, caption, timeline of months, footer; detail sheet grows from the cover */
+:root{color-scheme:light;--paper:#ECE8E0;--sheet:#F3F0EA;--ink:#141414;--muted:#6D6A63;--cob:#0A22E0;--red:#E86522;--rule:rgba(20,20,20,.9);--ease:cubic-bezier(.2,.8,.2,1);--H:min(42vh,30vw);--cy:41%;--hh:40vh}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark;--paper:#0E1426;--sheet:#131B31;--ink:#ECE8E0;--muted:#9AA1B6;--cob:#9AAAFF;--red:#FF8A4C;--rule:rgba(236,232,224,.75)}@media(prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--paper:#0E1426;--sheet:#131B31;--ink:#ECE8E0;--muted:#9AA1B6;--cob:#9AAAFF;--red:#FF8A4C;--rule:rgba(236,232,224,.75)}}
+*{box-sizing:border-box;min-width:0}
+html{min-height:100%;scroll-behavior:smooth}body{min-height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 "Inter Tight",system-ui,sans-serif;overflow-x:hidden;user-select:none;-webkit-font-smoothing:antialiased}
+@media(pointer:fine){body,a,button{cursor:none}}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0}
+button:focus-visible,a:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.grain{position:fixed;inset:0;z-index:40;pointer-events:none;mix-blend-mode:multiply;opacity:.6;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .42 0 0 0 0 .38 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E")}
+:root[data-theme=dark] .grain{mix-blend-mode:screen;opacity:.25}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .grain{mix-blend-mode:screen;opacity:.25}}
+.lbl{font:600 11px/1 "Inter Tight",sans-serif;letter-spacing:.06em}
+.top{position:fixed;left:0;right:0;top:0;height:76px;padding:0 36px;display:flex;align-items:center;justify-content:space-between;color:var(--cob);z-index:58;transition:background .3s,height .3s,box-shadow .3s}
+.brand{display:flex;align-items:center;gap:16px}.brand i{width:40px;height:1px;background:currentColor}
+.logo{display:block;height:30px;width:auto}.logo.w{display:none}
+:root[data-theme=dark] .logo.d{display:none}:root[data-theme=dark] .logo.w{display:block}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .logo.d{display:none}:root:not([data-theme=light]) .logo.w{display:block}}
+.nav{display:flex;align-items:center;gap:30px}
+.live{display:inline-flex;align-items:center;gap:7px;color:var(--red)}.live::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.burger{width:26px;height:12px;display:grid;align-content:space-between}.burger i{height:1.5px;background:currentColor}
+.kan{position:fixed;z-index:1;writing-mode:vertical-lr;font:400 min(19vh,12.5vw)/1.02 "Noto Sans Mongolian",sans-serif;color:transparent;background:radial-gradient(circle at 50% 50%,rgba(5,29,237,.42) 0 36%,transparent 40%) 0 0/3px 3px,rgba(5,29,237,.10);-webkit-background-clip:text;background-clip:text;pointer-events:none}
+.kan.l{left:2.4vw;top:12vh}.kan.r{right:2.4vw;top:9vh}
+.palace{--pw:min(112vw,calc(var(--H)*3.4));color:light-dark(#1C2A5A,#AAB7FF);position:fixed;left:50%;transform:translateX(-50%);width:var(--pw);top:calc(var(--cy) + var(--H)*.5 - var(--pw)*.3243);z-index:1;color:var(--cob);opacity:.9;pointer-events:none;overflow:visible}
+.palace .t1{fill:color-mix(in srgb,var(--cob) 16%,var(--paper))}.palace .t2{fill:color-mix(in srgb,var(--red) 24%,var(--paper))}.palace .t3{fill:var(--paper)}.palace .wo1{fill:var(--red);opacity:.7}
+.palace .pc{fill:var(--paper)}.palace g g .pc{fill:color-mix(in srgb,var(--cob) 8%,var(--paper))}.palace .fl{fill:var(--red);stroke:none}
+.city{position:fixed;left:0;right:0;top:calc(var(--cy) - var(--H)/2 - 50px);height:calc(var(--H) + 100px);perspective:1400px;perspective-origin:50% 50%;z-index:1;pointer-events:none;color:light-dark(#1C2A5A,#AAB7FF);opacity:.6}
+.cityw{position:fixed;inset:0;z-index:1;pointer-events:none;-webkit-mask-image:linear-gradient(transparent calc(var(--hh)*.6),#000 var(--hh));mask-image:linear-gradient(transparent calc(var(--hh)*.6),#000 var(--hh))}
+.cityflat{display:none}
+.cst{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}.cst svg{position:absolute;display:block;overflow:hidden;backface-visibility:hidden}
+.tick{position:fixed;top:76px;left:36px;right:36px;height:30px;display:flex;align-items:center;gap:14px;border-block:1px solid color-mix(in srgb,var(--cob) 35%,transparent);z-index:50;color:var(--cob);background:color-mix(in srgb,var(--paper) 85%,transparent)}
+.tick b{color:var(--paper);background:var(--red);padding:5px 8px;flex:none}
+.tw{overflow:hidden;flex:1;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.tr{display:inline-flex;gap:48px;white-space:nowrap;font:500 13px/30px "Inter Tight";animation:tick 70s linear infinite}.tick:hover .tr{animation-play-state:paused}
+.tr span::before{content:"■";color:var(--red);font-size:8px;margin-right:10px;vertical-align:2px}
+@keyframes tick{to{transform:translateX(-50%)}}
+.wg{position:fixed;bottom:122px;z-index:16;color:var(--cob);width:250px;padding:14px 16px;background:color-mix(in srgb,var(--paper) 94%,transparent);border:1px solid color-mix(in srgb,var(--cob) 22%,transparent);box-shadow:0 12px 30px -18px rgba(20,16,10,.35)}
+.wl{left:36px}.wr{right:36px;text-align:left}
+.wg svg{width:100%;display:block;margin-bottom:6px}
+.wk{color:var(--muted);margin-bottom:6px}
+.big{font:700 30px/1 "Inter Tight";letter-spacing:-.02em;margin-bottom:6px}.big small{font:500 13px "Inter Tight";color:var(--muted)}
+.on{display:inline-flex;align-items:center;gap:7px;color:var(--red)}.on::before,.mstat::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.6s infinite}
+.ag{list-style:none;margin:0;padding:0;display:grid;gap:8px;border-left:1px solid color-mix(in srgb,var(--cob) 40%,transparent);padding-left:12px}
+.ag li{display:grid;grid-template-columns:44px 1fr;gap:8px;font-size:13px;line-height:1.3;color:var(--ink)}.ag time{font-weight:700;color:var(--cob)}
+.smp{font-size:11px;color:var(--muted);margin-top:8px}
+.mstat{display:none}
+.trk{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:2px 0}
+.trk button{background:none;border:0;padding:0;cursor:pointer;min-height:44px}
+.trk button{position:relative;font:600 10.5px/1.2 "Inter Tight";font-style:normal;color:#9a968c;padding-top:16px;text-align:left}
+.trk button::before{content:"";position:absolute;top:4px;left:0;width:9px;height:9px;border-radius:50%;border:1.5px solid currentColor;background:#F7F2E7;z-index:1}
+.trk button::after{content:"";position:absolute;top:8px;left:9px;right:0;height:1.5px;background:currentColor;opacity:.5}.trk button:last-child::after{display:none}
+.trk button.dn{color:var(--cob)}.trk button.dn::before{background:var(--cob)}.trk button.cu{color:var(--red)}.trk button.cu::before{background:var(--red);border-color:var(--red);box-shadow:0 0 0 4px color-mix(in srgb,var(--red) 22%,transparent)}
+.trk button.sel{text-decoration:underline;text-underline-offset:3px}
+.stgp{margin-top:4px;padding:12px 14px;background:rgba(10,34,224,.06);border-left:3px solid #0A22E0;font-size:14px;line-height:1.5}
+.stgp .sh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:4px}.stgp .sh span{color:#6D6A63;font-size:12px}.stgp p{margin:0;white-space:pre-line;color:#333}
+.amd{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:10px}.amd video{width:100%;grid-column:1/-1;border-radius:4px;background:#000;max-height:260px}
+.amb{border:0;padding:0;background:none;cursor:zoom-in;aspect-ratio:4/3;overflow:hidden;border-radius:4px}.amb img{width:100%;height:100%;object-fit:cover;display:block}
+.alk{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:4px}.alk a{color:#0A22E0;font:600 14px/1.4 "Inter Tight";text-decoration:underline;text-underline-offset:3px;word-break:break-word}
+.anw{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.anb{border:1px solid rgba(10,34,224,.35);background:rgba(10,34,224,.06);color:#0A22E0;border-radius:16px;padding:7px 12px;font:600 13px/1.3 "Inter Tight";text-align:left;cursor:pointer}
+.srch3{font:700 11px/1 "Inter Tight";letter-spacing:.06em;color:#6D6A63;margin-top:6px;padding-top:12px;border-top:1px solid #ddd2bb}
+.vt{display:grid;gap:6px;font-size:13px}.vb{display:flex;height:10px;border-radius:2px;overflow:hidden;background:#e1d8c4}.vb span:first-child{background:var(--cob)}.vb span:nth-child(2){background:var(--red)}
+.vl{display:flex;gap:14px;flex-wrap:wrap;color:#6D6A63}.vl b{color:#141414}
+.stg{display:inline-block;margin-left:8px;padding:2px 7px;border:1px solid var(--red);color:var(--red);font:600 11px/1.3 "Inter Tight"}
+@media(max-width:1180px){.wg{display:none}}
+.cl{font:400 15px/1.45 "Noto Serif",Georgia,serif;color:var(--muted);max-width:560px}.m.cl>span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fcap{font:italic 13px/1.4 "Noto Serif",serif;color:#6D6A63;margin:10px 0 0;text-align:center}
+.bkt{position:absolute;inset:12% 12% 10% 14%;display:grid;align-content:start;gap:10px;z-index:2}.bkt small{font:600 9px "Inter Tight";letter-spacing:.08em;opacity:.8}.bkt p{margin:0;font:400 clamp(9px,1.5vh,13px)/1.45 "Noto Serif",serif}
+.bkt i{position:absolute;bottom:0;left:0;width:40%;height:9%;opacity:.8;background:repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 3px,currentColor 3px 4px,transparent 4px 7px)}
+.flagw{position:fixed;left:-6px;top:136px;width:330px;height:165px;z-index:12;pointer-events:none;transform:rotate(-3deg);transform-origin:0 50%}
+.flag{position:absolute;inset:0;display:flex;filter:drop-shadow(0 14px 16px rgba(20,16,10,.25));transform-origin:0 50%;animation:unfurl 1.6s cubic-bezier(.3,.7,.2,1) .3s both}
+.flag span{flex:1;height:100%;position:relative;background-image:url(flag.svg);background-repeat:no-repeat;animation:wave 2s ease-in-out infinite}
+.flag span::after{content:"";position:absolute;inset:0;background:#000;opacity:0;animation:sh 2s ease-in-out infinite;animation-delay:inherit}
+.flag span::before{content:"";position:absolute;inset:0;background:#fff;opacity:0;z-index:1;animation:hl 2s ease-in-out infinite;animation-delay:inherit}
+@keyframes wave{0%,100%{transform:translateY(calc(var(--a)*-1px))}50%{transform:translateY(calc(var(--a)*1px))}}
+@keyframes sh{0%,100%{opacity:.02}50%{opacity:.26}}@keyframes hl{0%,100%{opacity:.14}50%{opacity:0}}
+@keyframes unfurl{from{transform:scaleX(.08) skewY(8deg);opacity:0}to{transform:none;opacity:1}}
+@media(max-width:1179px) and (min-width:768px){.flagw{display:none}}
+@media(prefers-reduced-motion:reduce){.flag,.flag span,.flag span::after,.flag span::before{animation:none}}
+.hero{position:fixed;left:0;right:0;top:0;height:var(--hh);z-index:1;pointer-events:none;background:url(img/flag.jpg) center 42%/cover;-webkit-mask-image:linear-gradient(#000 50%,transparent);mask-image:linear-gradient(#000 50%,transparent)}
+.top{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.35)}.top .live{color:#fff}.top .logo.d{display:none!important}.top .logo.w{display:block!important;filter:drop-shadow(0 1px 6px rgba(0,0,0,.35))}
+.floor{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--cy) + var(--H)*.47);width:min(96vw,calc(var(--H)*3.6));height:calc(var(--H)*.26);background:radial-gradient(50% 50% at 50% 40%,rgba(40,32,20,.30),rgba(40,32,20,.10) 55%,transparent 72%);z-index:2;pointer-events:none}
+.shelf{position:fixed;left:0;right:0;top:calc(var(--cy) - var(--H)/2 - 50px);height:calc(var(--H) + 100px);perspective:1400px;perspective-origin:50% 50%;z-index:10;touch-action:pan-y}
+.stage{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.tape{position:absolute;width:0;height:0;transform-style:preserve-3d}
+.f{position:absolute;height:calc(var(--H)*var(--hk,1));top:calc(var(--H)/2 - var(--H)*var(--hk,1));backface-visibility:hidden;border-radius:2px;overflow:hidden}
+.f::after{content:"";position:absolute;inset:0;background:#000;opacity:var(--shade,0);pointer-events:none;z-index:3}
+.sp{display:flex;flex-direction:column;align-items:center;padding:6px 0 8px;gap:9px;border-radius:3px;background:linear-gradient(90deg,rgba(0,0,0,.4),rgba(255,255,255,.17) 26%,rgba(255,255,255,.04) 55%,rgba(0,0,0,.34)),repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,rgba(0,0,0,.06) 0 1px,transparent 1px 2px),var(--bg);box-shadow:inset 0 2px 0 rgba(255,255,255,.14),inset 0 -2px 0 rgba(0,0,0,.28)}
+.gb{width:100%;height:7px;flex:none;border-block:1px solid #caa752;opacity:.9}.th1 .gb{border-color:currentColor}
+.plate{width:78%;flex:none;padding:5px 2px;background:rgba(0,0,0,.3);border:1px solid #caa752;color:#f1dc98;font:600 8px/1.15 "Inter Tight";text-align:center;overflow-wrap:anywhere;box-shadow:inset 0 0 4px rgba(0,0,0,.4)}
+.plate s{display:block;text-decoration:none;font-weight:800;letter-spacing:.08em;margin-bottom:3px;opacity:.85}
+.th1 .plate{background:#0A22E0;color:#F3F0EA;border-color:#0A22E0}
+.sp .bd{width:62%;aspect-ratio:1;border-radius:50%;flex:none}
+.sp b{writing-mode:vertical-rl;font:700 clamp(11px,1.5vh,15px)/1.1 "PT Serif",Georgia,serif;flex:1;overflow:hidden;letter-spacing:.02em}
+.sp:not(.th1) b{background:linear-gradient(90deg,#a8822f,#f7e7a6 40%,#c9a24a 60%,#f3dc8c 80%,#a8822f);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sp em{font:700 9px/1.25 "PT Serif",serif;text-align:center;font-style:normal;opacity:.85}
+.sp .mk{width:42%;flex:none}
+.cv{box-shadow:0 34px 60px -30px rgba(20,16,10,.6);border-radius:2px 4px 4px 2px}.cv svg{display:block;width:100%;height:100%}
+.cv::before,.bk::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background:linear-gradient(90deg,rgba(0,0,0,.42) 0,rgba(0,0,0,.1) 2%,rgba(255,255,255,.24) 3.2%,rgba(0,0,0,.08) 5%,transparent 8%),linear-gradient(125deg,rgba(255,255,255,.16),transparent 35%,transparent 70%,rgba(0,0,0,.16)),repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px);box-shadow:inset 0 0 0 1px rgba(0,0,0,.2),inset -3px 0 5px rgba(0,0,0,.18)}
+.bk{background:var(--bg);border-radius:4px 2px 2px 4px}
+.fe{margin-top:3px;height:calc(var(--H)*var(--hk,1) - 6px);border-radius:1px;background:linear-gradient(90deg,rgba(0,0,0,.2),transparent 22%,transparent 78%,rgba(0,0,0,.2)),repeating-linear-gradient(90deg,#f3ead6 0 1px,#d6c9ae 1px 2px)}
+.play{position:fixed;width:42px;height:42px;border-radius:50%;border:1px solid var(--cob);background:color-mix(in srgb,var(--paper) 80%,transparent);z-index:20;display:grid;place-items:center;transform:translate(-50%,-50%) scale(0)}
+.play::after{content:"";border-left:12px solid var(--cob);border-top:7px solid transparent;border-bottom:7px solid transparent;margin-left:3px}
+.cap{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--cy) + var(--H)/2 + 3.4vh);display:grid;justify-items:center;gap:8px;z-index:15;text-align:center;width:min(86vw,700px)}
+.m{overflow:hidden;width:100%;display:grid}.m>span{grid-area:1/1;display:block}
+.ct{font-weight:600;font-size:clamp(22px,2.6vw,36px);line-height:1.12;letter-spacing:-.015em;color:var(--cob);text-wrap:balance}
+.cs{color:var(--cob)}.cs .lbl{font-size:11px;letter-spacing:.08em}
+.rl{width:18px;height:1px;background:var(--cob)}
+.cy{font:500 13px/1.2 "Inter Tight";letter-spacing:.04em}
+.arr{position:fixed;top:calc(var(--cy) + var(--H)/2 + 4.2vh);width:44px;height:44px;display:grid;place-items:center;color:var(--cob);z-index:16;transform:translateX(-50%)}
+.arr.p{left:calc(50% - min(26vw,400px))}.arr.n{left:calc(50% + min(26vw,400px))}
+.tl{position:fixed;left:36px;right:36px;bottom:64px;height:40px;z-index:15;color:var(--cob)}
+.tl .ln{position:absolute;left:0;right:0;top:12px;height:1px;background:currentColor;opacity:.75}
+.tk{position:absolute;top:12px;width:1px;background:currentColor}
+.ty{position:absolute;top:28px;font:500 11px/1 "Inter Tight";transform:translateX(-50%);white-space:nowrap}
+.ty.first{transform:none}.ty.last{transform:translateX(-100%)}
+.ev{position:absolute;top:8px;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;border:1px solid currentColor;background:var(--paper)}
+.dot{position:absolute;top:7.5px;width:11px;height:11px;margin-left:-5.5px;border-radius:50%;background:var(--red)}
+.tl .hit{position:absolute;inset:-8px 0}
+.foot{position:fixed;left:36px;right:36px;bottom:22px;display:flex;justify-content:space-between;color:var(--cob);z-index:15;gap:16px}
+.foot small{font:500 11px/1.3 "Inter Tight";color:var(--muted);text-align:center}.foot small a{text-decoration:underline}
+.cur{position:fixed;left:0;top:0;width:58px;height:58px;margin:-29px 0 0 -29px;z-index:100;pointer-events:none;display:none}
+@media(pointer:fine){.cur{display:block}}
+.cur .rg{position:absolute;inset:0;border:1.5px solid var(--ink);border-radius:50%;transition:transform .5s var(--ease),background .4s,border-color .4s}
+.cur .dt{position:absolute;left:26px;top:26px;width:6px;height:6px;border-radius:50%;background:var(--ink);transition:transform .4s var(--ease)}
+.cur .tx{position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:#fff;font:600 10px/1.2 "Inter Tight";transform:scale(0);transition:transform .45s var(--ease)}
+.cur.open .rg{transform:scale(1.75);background:var(--cob);border-color:var(--cob)}.cur.open .dt{transform:scale(0)}.cur.open .tx{transform:scale(1)}
+.cur.spine .rg{transform:scale(.72)}.cur.btn .rg{transform:scale(.55)}.cur.btn .dt{transform:scale(0)}
+.detail{position:fixed;inset:0;background:var(--paper);z-index:60;display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr);place-items:center;padding:84px 4vw 36px;overflow:auto;user-select:text}
+.spread{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);width:min(1240px,100%);height:100%;max-height:840px;filter:drop-shadow(0 30px 40px rgba(20,16,10,.35));--cob:#0A22E0;--muted:#6D6A63;--ink:#141414;color:#141414}
+.pg{position:relative;min-height:0;padding:58px 7% 52px 9%;overflow:auto;display:grid;align-content:safe center}
+.pg.L{border-radius:8px 2px 2px 8px;background:linear-gradient(90deg,#F7F2E7 82%,#E4D9C2);box-shadow:-1px 1px 0 #ddd2bb,-3px 2px 0 #efe7d4,-4px 3px 0 #d6cab0,-6px 4px 0 #ece3cf,-7px 5px 0 #cfc2a6}
+.pg.R{overflow:hidden;border-radius:2px 8px 8px 2px;padding:40px 6%;place-items:center;background:linear-gradient(270deg,#F7F2E7 82%,#E4D9C2);box-shadow:1px 1px 0 #ddd2bb,3px 2px 0 #efe7d4,4px 3px 0 #d6cab0,6px 4px 0 #ece3cf,7px 5px 0 #cfc2a6}
+.pg::before{content:"";position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .35 0 0 0 0 .25 0 0 0 .12 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+.pg.L::after,.pg.R::after{content:"";position:absolute;top:0;bottom:0;width:14%;pointer-events:none}
+.pg.L::after{right:0;background:linear-gradient(270deg,rgba(60,45,20,.28),transparent)}.pg.R::after{left:0;background:linear-gradient(90deg,rgba(60,45,20,.28),transparent)}
+.rh{position:absolute;top:22px;left:9%;color:#6D6A63}.pn{position:absolute;bottom:20px;font:400 13px/1 "Noto Serif",serif;color:#6D6A63}.L .pn{left:9%}.R .pn{right:7%}
+.detail[hidden]{display:none}
+.close{position:absolute;left:36px;top:28px;height:30px;padding:0 12px;border:1px solid var(--rule);display:inline-flex;align-items:center}
+.dbrand{position:absolute;right:36px;top:38px;color:var(--cob)}
+.dl{align-self:center;max-width:540px;display:grid;gap:18px}
+.dl .m>span{will-change:transform}
+.dcat{color:var(--red)}
+.dt1{font-weight:700;font-size:clamp(32px,3.6vw,52px);line-height:1.05;letter-spacing:-.025em;color:var(--cob);text-wrap:balance;margin:0}
+.dmeta{color:var(--muted);font-size:14px}
+.dlede{font:400 18px/1.55 "Noto Serif",Georgia,serif;margin:0;max-width:44ch}
+.dbody{font:400 16px/1.6 "Noto Serif",Georgia,serif;margin:0;max-width:48ch;color:var(--muted);white-space:pre-line}
+.dcred{font:italic 15px/1.4 "Noto Serif",serif;color:var(--muted)}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+.bt{height:44px;padding:0 18px;border:1px solid var(--cob);color:var(--cob);display:inline-flex;align-items:center;gap:8px}
+.bt.solid{background:var(--cob);color:#fff}.bt[hidden]{display:none}
+.note{font-size:13px;color:var(--muted);max-width:52ch}.note a,.src{color:var(--cob);text-decoration:underline}
+.dr{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;min-height:0}.media{position:relative;flex:0 0 auto;height:62vh;max-height:calc(100% - 80px);max-width:100%;aspect-ratio:474/900;border-radius:6px;overflow:hidden;background:#0b0f1e;box-shadow:0 18px 36px -18px rgba(0,0,0,.55);transition:aspect-ratio .3s}
+.media[data-ar=tall]{aspect-ratio:3/4}.media[data-ar=sq]{aspect-ratio:1/1}
+.media[data-ar=wide]{aspect-ratio:4/3;height:auto;width:100%}
+.media.rev{animation:mrev 1.1s cubic-bezier(.76,0,.18,1) .45s both}
+@keyframes mrev{from{clip-path:circle(0% at 30% 40%)}to{clip-path:circle(150% at 30% 40%)}}
+@media(prefers-reduced-motion:reduce){.media.rev{animation:none}}
+.s0{position:absolute;inset:0;display:grid;place-items:center}
+.slide .bgb{position:absolute;inset:-30px;background-size:cover;background-position:center;filter:blur(22px) brightness(.55) saturate(1.1);transform:scale(1.08)}
+.slide img.fg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:1}
+.s0 svg{width:100%;height:100%}
+.slides{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.slides::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;height:100%;scroll-snap-align:start;position:relative;background:#0b0f1e;overflow:hidden}
+.slide svg,.slide img,.slide video{display:block;width:100%;height:100%;object-fit:cover}.slide video{object-fit:contain}
+.slide .vt2{position:absolute;left:10px;top:10px;background:#E86522;color:#fff;font:700 11px/1 "Inter Tight";padding:6px 8px;pointer-events:none}
+.ga{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(247,242,231,.94);color:#0A22E0;border:1px solid rgba(10,34,224,.3);font:400 26px/1 "Inter Tight";z-index:2;box-shadow:0 6px 14px -8px rgba(0,0,0,.4)}
+.ga.p{left:10px}.ga.n{right:10px}.ga[hidden],.gnav[hidden]{display:none}
+.ga{width:38px!important;height:38px!important;background:rgba(10,14,30,.45)!important;color:#fff!important;border:0!important;font-size:22px!important;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .2s}
+.media:hover .ga,.ga:focus-visible{opacity:1}
+@media(hover:none),(max-width:767px){.ga{display:none!important}}
+.gnav{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:12px;font:600 12px "Inter Tight";color:#6D6A63}
+.dots{display:flex;gap:2px}.dots button{width:22px;height:22px;display:grid;place-items:center}.dots button::before{content:"";width:8px;height:8px;border-radius:50%;background:#cfc6b2}.dots button.on::before{background:#0A22E0}.dots button.v::before{content:"";width:0;height:0;border-radius:0;background:none;border-left:8px solid #cfc6b2;border-top:5px solid transparent;border-bottom:5px solid transparent}.dots button.v.on::before{border-left-color:#E86522}
+.gx{position:absolute;right:8px;top:8px;z-index:3;height:34px;padding:0 10px;border-radius:17px;background:rgba(10,14,30,.72);color:#fff;font:600 12px "Inter Tight"}
+.slides{cursor:zoom-in}
+.lb{position:fixed;inset:0;z-index:90;background:rgba(6,8,16,.96);color:#fff}.lb[hidden]{display:none}
+.lbs{position:absolute;inset:0 0 84px;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.lbs::-webkit-scrollbar{display:none}
+.lbi{flex:0 0 100%;scroll-snap-align:start;display:grid;place-items:center;padding:64px 5vw 8px;min-width:0;min-height:0}
+.lbi img{max-width:100%;max-height:calc(100vh - 160px);object-fit:contain;display:block}
+.lbi svg{height:calc(100vh - 160px);max-width:100%;aspect-ratio:474/900;display:block}
+.lbi video{width:min(100%,calc((100vh - 170px)*16/9));max-height:calc(100vh - 160px);background:#000;display:block}
+.lbx{position:absolute;top:14px;right:16px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:20px;z-index:2}
+.lba{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:30px;z-index:2}.lba.p{left:16px}.lba.n{right:16px}.lba[hidden]{display:none}
+.lbc{position:absolute;left:0;right:0;bottom:0;height:84px;display:grid;place-content:center;text-align:center;gap:4px;padding:0 16px}
+#lbk{font:600 12px "Inter Tight";letter-spacing:.06em;color:#aab}#lbcap{margin:0;font:italic 15px/1.4 "Noto Serif",serif;color:#eee}
+@media(max-width:767px){.lba{display:none!important}.lbi{padding:64px 0 8px}}
+.menu{position:fixed;inset:0;z-index:80;background:var(--paper);overflow:auto;padding:22px max(5vw,16px) 48px;color:var(--ink);user-select:text}
+.menu[hidden]{display:none}
+.mh{display:flex;justify-content:space-between;align-items:center;max-width:1120px;margin:0 auto 18px;gap:16px}
+.mx{height:44px;padding:0 16px;border:1px solid var(--rule)}
+.mi{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:56px}
+.srch{width:100%;height:58px;font:500 20px "Inter Tight";padding:0 4px;border:0;border-bottom:2px solid var(--cob);background:transparent;color:var(--ink);outline:none;border-radius:0}
+.srch::placeholder{color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 6px}
+.chip{min-height:38px;padding:0 14px;border:1px solid color-mix(in srgb,var(--cob) 45%,transparent);color:var(--cob);font:600 13px "Inter Tight"}.chip.on{background:var(--cob);color:#fff;border-color:var(--cob)}
+.rc{font-size:13px;color:var(--muted);margin:10px 0 4px}
+.ri{display:grid;grid-template-columns:46px minmax(0,1fr);gap:16px;padding:16px 0;border-top:1px solid color-mix(in srgb,var(--ink) 14%,transparent);text-align:left;width:100%}
+.ri>i{width:46px;height:64px;border-radius:2px;display:grid;place-items:center;color:#fff;font-style:normal;font-size:14px;box-shadow:inset 6px 0 0 rgba(0,0,0,.25)}
+.ri small{color:var(--muted);font-size:13px}.ri b{display:block;font:600 18px/1.25 "Inter Tight";color:var(--cob);margin:2px 0 4px}.ri p{margin:0;font:15px/1.45 "Noto Serif",serif;color:var(--muted)}
+.empty{color:var(--muted);padding:20px 0}
+.about h3{font:600 12px/1 "Inter Tight";letter-spacing:.06em;color:var(--red);margin:22px 0 6px}.about p{margin:0;font:400 17px/1.45 "Noto Serif",serif}
+.about h2{font:700 24px/1.15 "Inter Tight";color:var(--cob);margin:0 0 4px}
+.mlinks{margin-top:26px;display:grid}.mlinks a{padding:12px 0;border-top:1px solid color-mix(in srgb,var(--ink) 14%,transparent);font-weight:600;color:var(--cob)}
+.burger{padding:16px 0;margin:-16px 0;box-sizing:content-box}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;font-size:14px;z-index:70;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.on{opacity:1}
+@media(max-width:767px){
+.logo{height:24px}
+:root{--H:min(70vw,40svh);--cy:43%;--hh:30vh}
+.mstat{color:#fff!important;text-shadow:0 1px 6px rgba(0,0,0,.45)}
+.top{height:60px;padding:0 16px}.nav a:not(.live){display:none}.brand{gap:10px}.brand i{width:22px}.brand span{display:none}
+.cityw,.play,.tick{display:none}
+.m.ct>span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.cl{font-size:14px}.cap{gap:6px}
+.flagw{left:-4px;top:94px;width:140px;height:70px}
+.mstat{display:flex;position:fixed;top:64px;left:0;right:0;justify-content:center;align-items:center;gap:8px;color:var(--cob);z-index:50}
+.cityflat{display:block;position:fixed;left:50%;transform:translateX(-50%);width:200vw;top:calc(var(--cy) + var(--H)*.5 - 79vw);z-index:1;color:#1C2A5A;opacity:.28;pointer-events:none}
+:root[data-theme=dark] .cityflat{color:#AAB7FF}
+.ty{display:none}.tl{height:24px}
+.ct{font-size:21px}.arr{top:auto;bottom:118px}.arr.p{left:30px}.arr.n{left:calc(100% - 30px)}
+.cap{width:calc(100vw - 110px)}
+.tl{left:16px;right:16px;bottom:54px}.ty.odd{display:none}
+.foot{left:16px;right:16px}.foot small{display:none}
+.detail{padding:68px 12px 24px;place-items:start center;grid-template-rows:auto}.spread{max-height:none}.spread{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;height:auto}
+.pg{padding:40px 22px 48px;overflow:visible}.pg.R{order:-1;border-radius:8px 8px 2px 2px}.pg.L{border-radius:2px 2px 8px 8px}.pg.L::after,.pg.R::after{display:none}.rh{left:22px}.L .pn{left:22px}.media{height:auto;width:100%;max-height:none}.media[data-ar=book]{aspect-ratio:3/4}.media[data-ar=tall]{aspect-ratio:4/5}.mi{grid-template-columns:minmax(0,1fr);gap:28px}.ga.p{left:6px}.ga.n{right:6px}.dt1{font-size:32px}.dbrand{display:none}.close{left:20px;top:20px}
+}
+
+/* цэс, хайлт — шинэчилсэн */
+.menu{background:var(--paper);padding:0 0 56px;overflow-x:hidden}.chip::before,.chip.on::before{display:none!important}
+.mh{position:sticky;top:0;z-index:3;max-width:none;margin:0;padding:14px max(5vw,16px);background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+.mh .logo{height:28px}
+.mx{width:44px;height:44px;padding:0;border-radius:50%;border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);background:color-mix(in srgb,var(--ink) 4%,transparent);font-size:18px;color:var(--ink);display:grid;place-items:center}
+.mi{padding:22px max(5vw,16px) 0;max-width:1180px;gap:48px}
+.sbox{position:relative}.sbox svg{position:absolute;left:16px;top:50%;width:20px;height:20px;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.srch{height:54px;padding:0 16px 0 46px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:14px;background:color-mix(in srgb,var(--ink) 4%,var(--paper));font:500 17px "Inter Tight";transition:border-color .15s,box-shadow .15s}
+.srch:focus{border-color:#0A22E0;box-shadow:0 0 0 4px rgba(10,34,224,.15)}
+.chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:8px;margin:14px calc(-1*max(5vw,16px)) 4px;padding:2px max(5vw,16px)}.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;min-height:38px;padding:0 15px;border-radius:19px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);background:transparent;color:var(--ink);font:600 13.5px "Inter Tight";white-space:nowrap;transition:background .15s}
+.chip.on{background:#0A22E0;border-color:#0A22E0;color:#fff}
+.rc{margin:12px 0 2px;font:600 12px "Inter Tight";letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.ri{grid-template-columns:62px minmax(0,1fr) 18px;gap:14px;align-items:center;padding:14px 10px;margin:0 -10px;width:calc(100% + 20px);border:0;border-top:1px solid color-mix(in srgb,var(--ink) 9%,transparent);border-radius:12px;background:none;color:inherit;cursor:pointer;transition:background .15s}
+.ri:hover,.ri:focus-visible{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.ri+.ri{border-top-color:color-mix(in srgb,var(--ink) 9%,transparent)}
+.ri>i.rcv{position:relative;width:62px;height:94px;display:block;color:inherit;font-size:inherit;border-radius:2px 4px 4px 2px;overflow:hidden;box-shadow:0 8px 16px -10px rgba(0,0,0,.6),inset 4px 0 0 rgba(0,0,0,.25)}
+.rcv svg{display:block;width:100%;height:100%}
+.rcv em{position:absolute;inset:auto 4px 4px auto;width:22px;height:22px;border-radius:50%;background:#E86522;color:#fff;font:normal 10px/22px "Inter Tight";text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.rmeta{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font:500 12.5px "Inter Tight";color:var(--muted)}
+.rcat{color:var(--red);font-weight:700;letter-spacing:.02em}
+.rst{padding:2px 8px;border-radius:10px;background:color-mix(in srgb,var(--cob) 14%,transparent);color:var(--cob);font-weight:700;font-size:11.5px}.rst.ok{background:color-mix(in srgb,#11795A 16%,transparent);color:light-dark(#11795A,#5FD3A8)}
+.ri b{font:700 17px/1.28 "Inter Tight";color:var(--ink);margin:5px 0 4px;letter-spacing:-.01em;text-wrap:pretty}
+.ri p{font:400 14.5px/1.45 "Noto Serif",serif;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rgo{font-size:24px;color:var(--muted);line-height:1}
+.empty{display:grid;gap:4px;text-align:center;padding:40px 10px}.empty b{color:var(--ink);font:700 16px "Inter Tight"}
+.about{padding:22px;border-radius:16px;background:color-mix(in srgb,var(--ink) 4%,var(--paper));border:1px solid color-mix(in srgb,var(--ink) 9%,transparent);align-self:start;position:sticky;top:90px}
+.about h2{font-size:20px}.about p{font-size:15.5px}
+.mlinks a{display:flex;justify-content:space-between;text-decoration:none}
+@media(max-width:767px){.mh{padding:10px 16px}.mh .logo{height:24px}.mi{padding:16px 16px 0;gap:28px}.about{position:static}.ri{grid-template-columns:52px minmax(0,1fr);}.rgo{display:none}.ri>i.rcv{width:52px;height:79px}.ri b{font-size:16px}}
+
+/* онцлох ба стори */
+.fbad{display:inline-block;background:#F9CF02;color:#141414;padding:3px 7px;border-radius:4px;font-weight:800;margin-right:4px}
+.stories{position:fixed;left:30px;top:124px;z-index:17;display:flex;flex-direction:column;gap:12px}
+.stories:empty{display:none}
+.st{display:grid;justify-items:center;gap:5px;width:72px;background:none;border:0;padding:0;cursor:pointer;color:var(--ink)}
+.st i{width:60px;height:60px;border-radius:50%;padding:3px;background:conic-gradient(from 210deg,#E86522,#F9CF02,#0A22E0,#E86522);display:block;box-shadow:0 6px 14px -8px rgba(0,0,0,.5)}
+.st.seen i{background:color-mix(in srgb,var(--ink) 25%,transparent)}
+.st i span{display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;border:2px solid var(--paper);background:var(--paper)}
+.st i svg,.st i img{display:block;width:100%;height:100%;object-fit:cover}
+.st small{font:600 10.5px/1.15 "Inter Tight";text-align:center;max-width:72px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 1px 6px var(--paper)}
+.sv{position:fixed;inset:0;z-index:95;background:rgba(4,6,14,.94);display:grid;place-items:center}.sv[hidden]{display:none}
+.svb{position:relative;height:min(92vh,860px);aspect-ratio:9/16;max-width:100vw;border-radius:16px;overflow:hidden;background:#0B1230;color:#fff;box-shadow:0 30px 80px -20px #000}
+.svm{position:absolute;inset:0}.svm img,.svm video,.svm svg{width:100%;height:100%;object-fit:cover;display:block}
+.svm::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.55),transparent 18%,transparent 45%,rgba(4,6,20,.92) 82%)}
+.svp{position:absolute;top:10px;left:10px;right:10px;z-index:3;display:flex;gap:4px}.svp b{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.35);overflow:hidden}.svp b i{display:block;height:100%;width:0;background:#fff}
+.svh{position:absolute;top:22px;left:14px;right:10px;z-index:3;display:flex;align-items:center;gap:10px;font:600 12px "Inter Tight";color:rgba(255,255,255,.85)}.svh img{height:20px}.svh button{margin-left:auto;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.35);border:0;color:#fff;font-size:18px;cursor:pointer;position:relative;z-index:5}
+.svt{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:22px 20px 24px;display:grid;gap:8px}
+.svc{font:700 12px "Inter Tight";letter-spacing:.06em;color:#F9CF02;text-transform:uppercase}
+.svt h2{margin:0;font:800 clamp(22px,3.4vh,30px)/1.12 "Inter Tight";letter-spacing:-.015em;text-wrap:balance}
+.svt p{margin:0;font:400 15px/1.45 "Noto Serif",serif;color:rgba(255,255,255,.85)}
+.svgo{justify-self:start;margin-top:6px;height:46px;padding:0 20px;border-radius:23px;border:0;background:#fff;color:#0A22E0;font:700 15px "Inter Tight";cursor:pointer;position:relative;z-index:5}
+.svz{position:absolute;top:70px;bottom:150px;width:40%;z-index:2;background:none;border:0;cursor:pointer}.svz.l{left:0}.svz.r{right:0;width:60%}
+@media(max-width:1180px) and (min-width:768px){.stories{display:none}}
+@media(max-width:767px){
+ .stories{left:0;right:0;top:88px;flex-direction:row;gap:10px;overflow-x:auto;padding:0 14px;scrollbar-width:none}.stories::-webkit-scrollbar{display:none}
+ .st{width:62px;flex:none}.st i{width:54px;height:54px}.st small{font-size:10px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.8)}
+ .svb{height:100%;width:100%;border-radius:0;aspect-ratio:auto}
+}
+
+.thm{width:36px;height:36px;border-radius:50%;border:1px solid currentColor;background:rgba(255,255,255,.12);color:inherit;font-size:16px;line-height:1;display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.tinfo{flex:none;display:flex;align-items:center;gap:14px;padding:0 12px;border-left:1px solid color-mix(in srgb,var(--cob) 35%,transparent);font:600 12.5px/30px "Inter Tight";color:var(--ink);white-space:nowrap}
+.tinfo:empty{display:none}.tinfo .up{color:#11795A}.tinfo .dn{color:#C0392B}.tinfo small{color:var(--muted);font-weight:500}
+.tr a.tad{color:var(--red);text-decoration:none;font-weight:700}.tr a.tad::before{content:"ЗАР";background:var(--red);color:#fff;font-size:10px;padding:2px 5px;border-radius:3px;margin-right:8px;vertical-align:1px}
+.tr span.tad::before{content:none}
+.minfo{margin-top:22px;display:grid;gap:8px}.minfo h3{margin:0}
+.wx{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--ink) 5%,transparent)}.wx b{font:800 28px "Inter Tight";color:var(--ink)}.wx i{font-style:normal;font-size:28px}.wx span{font:500 13px/1.3 "Inter Tight";color:var(--muted)}
+.fx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.fx div{display:flex;justify-content:space-between;padding:8px 12px;border-radius:10px;background:color-mix(in srgb,var(--ink) 5%,transparent);font:600 14px "Inter Tight";color:var(--ink)}.fx .up{color:#11795A}.fx .dn{color:#C0392B}
+.minfo2{display:none}@media(max-width:767px){.minfo2:not(:empty){display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 12px;padding:0 16px}.minfo2 span{flex:none;padding:8px 12px;border-radius:10px;background:color-mix(in srgb,var(--ink) 6%,transparent);font:600 13px "Inter Tight";white-space:nowrap}.minfo2 .up,.minfo2 .dn{background:none;padding:0}.minfo2 .up{color:#11795A}.minfo2 .dn{color:#C0392B}}
+.isrc{font:500 11.5px "Inter Tight";color:var(--muted)}
+@media(max-width:1300px){.tinfo .fxx{display:none}}
+@media(max-width:767px){.thm{width:32px;height:32px;font-size:14px}}
+
+.chips{gap:10px!important;padding-bottom:6px!important}
+.chip{display:grid!important;grid-template-columns:auto;justify-items:start;align-content:space-between;gap:10px;width:124px;min-height:104px!important;padding:12px 14px!important;border-radius:16px!important;border:1px solid color-mix(in srgb,var(--ink) 10%,transparent)!important;background:color-mix(in srgb,var(--ink) 4%,var(--paper))!important;text-align:left;white-space:normal!important;box-shadow:0 6px 16px -14px rgba(0,0,0,.5)}
+.chip i{font-style:normal;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:18px;background:color-mix(in srgb,#0A22E0 12%,transparent);color:#0A22E0}
+.chip b{font:700 14px/1.2 "Inter Tight";color:var(--ink)}.chip small{font:500 11.5px "Inter Tight";color:var(--muted);margin-top:-6px}
+.chip.on{background:#0A22E0!important;border-color:#0A22E0!important}.chip.on b,.chip.on small{color:#fff}.chip.on i{background:rgba(255,255,255,.18);color:#fff}
+@media(max-width:767px){.chip{width:112px;min-height:96px!important}}
+/* нийтлэлийн бие */
+.dbody{white-space:normal!important;color:var(--ink)!important;opacity:.88;max-width:52ch}
+.dbody p{margin:0 0 12px}.dbody h3{font:700 19px/1.3 "Inter Tight";color:#0A22E0;margin:18px 0 8px}
+.dbody blockquote{margin:14px 0;padding:6px 0 6px 16px;border-left:3px solid #E86522;font-style:italic;font-size:17px}
+.dbody ul{margin:0 0 12px;padding-left:20px}.dbody li{margin:3px 0}
+.dbody figure{margin:16px 0}.dbody figure img{width:100%;border-radius:4px;display:block;cursor:zoom-in}.dbody figcaption{font:italic 13px/1.4 "Noto Serif",serif;color:#6D6A63;margin-top:6px}
+.dbody a{color:#0A22E0}
+
+.bt.sm{height:34px;padding:0 12px;font-size:14px}.bt[hidden]{display:none}a.bt{text-decoration:none}
+.rtools{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#6D6A63}
+.rprog{position:sticky;top:-44px;margin:-44px -7% 30px -9%;height:3px;background:rgba(10,34,224,.12);z-index:2}.rprog i{display:block;height:100%;width:0;background:#E86522;transition:width .1s}
+.spread{--fz:1}.dlede{font-size:calc(18px*var(--fz))!important}.dbody{font-size:calc(16px*var(--fz))!important}
+@media(max-width:767px){.rprog{position:fixed;top:0;left:0;right:0;margin:0;z-index:70}}
+
+/* хөндлөн утас, богино дэлгэц */
+@media (max-height:540px) and (orientation:landscape){
+ :root{--H:min(50vh,23vw);--cy:47%;--hh:60vh}
+ .top{height:48px;padding:0 max(20px,env(safe-area-inset-left))}.brand span,.brand i,.nav a:not(.live){display:none}.logo{height:22px}.thm{width:30px;height:30px;font-size:13px}
+ .tick,.wg,.stories,.foot,.mstat,.flagw,.cityflat{display:none!important}
+ .cityw{display:block!important}
+ .shelf{top:calc(var(--cy) - var(--H)/2 - 50px)}
+ .cap{top:calc(var(--cy) + var(--H)/2 + 8px);gap:2px;width:min(70vw,620px)}
+ .ct{font-size:clamp(16px,2.4vw,22px)!important}.m.ct>span{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+ .cs,.rl,.cl{display:none!important}.cy{font-size:11px}
+ .arr{top:calc(var(--cy) + var(--H)/2 + 4px)!important;bottom:auto!important}.arr.p{left:max(34px,env(safe-area-inset-left))!important}.arr.n{left:calc(100% - max(34px,env(safe-area-inset-right)))!important}
+ .tl{left:max(24px,env(safe-area-inset-left));right:max(24px,env(safe-area-inset-right));bottom:6px;height:22px}.ty{display:none}
+ .detail{padding:52px 10px 10px}.close{top:10px;left:14px}.dbrand{display:none}
+ .media{max-height:calc(100svh - 90px)!important}.pg.L{padding:24px 5% 36px!important}.pg.R{padding:16px 5% 6px!important}.dt1{font-size:clamp(26px,4vw,36px)!important}
+ .tbar{gap:4px}.tbar .fzg{gap:4px}.ic{width:36px;height:36px}.ic svg{width:17px;height:17px}.tbar .bt.sm{height:36px;width:36px;padding:0;justify-content:center;border-radius:50%}.tbar .wl,.tbar .sep{display:none}
+}
+.nx,.cm{display:block;width:100%;margin-top:18px}
+.nxh{font:600 11px/1 'Inter Tight',sans-serif;letter-spacing:.14em;color:var(--red);margin:0 0 10px;text-transform:uppercase}
+.nxb{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;width:100%;text-align:left;padding:12px;border:1px solid color-mix(in srgb,var(--cob) 35%,transparent);background:color-mix(in srgb,var(--sheet) 70%,transparent);margin-bottom:8px;cursor:pointer;color:var(--ink)}
+.nxb:hover{border-color:var(--cob)}.nxb i{display:block;width:64px;aspect-ratio:474/620;overflow:hidden;border-radius:2px;box-shadow:0 6px 14px -8px rgba(0,0,0,.5)}.nxb i svg{width:100%;height:100%;display:block}
+.nxb b{display:block;font:700 16px/1.25 'Inter Tight',sans-serif;color:var(--cob)}.nxb small{display:block;margin-top:5px;font:500 12px/1.3 'Inter Tight',sans-serif;color:var(--muted)}
+.nxb.big{grid-template-columns:86px 1fr;border-width:2px}.nxb.big i{width:86px}.nxb.big b{font-size:19px}
+.cmf{display:grid;gap:8px;margin:6px 0 14px}.cmf textarea{width:100%;min-height:84px;padding:12px;border:1px solid color-mix(in srgb,var(--ink) 25%,transparent);background:var(--sheet);color:var(--ink);font:400 16px/1.45 'Inter Tight',sans-serif;resize:vertical;border-radius:2px}
+.cmf textarea:focus{outline:2px solid var(--cob);outline-offset:-1px}.cmr{display:flex;justify-content:space-between;align-items:center;gap:10px;font:500 12px 'Inter Tight',sans-serif;color:var(--muted)}
+.cmi{padding:12px 0;border-top:1px solid color-mix(in srgb,var(--ink) 14%,transparent)}.cmi p{margin:4px 0 0;font:400 15.5px/1.5 'PT Serif',Georgia,serif;white-space:pre-wrap;overflow-wrap:anywhere}
+.cmi header{display:flex;gap:8px;align-items:baseline;font:600 13px 'Inter Tight',sans-serif}.cmi header span{font-weight:400;color:var(--muted);font-size:12px}.cmi header button{margin-left:auto;font-size:12px;color:var(--red)}
+.cmo{font:400 14px/1.5 'Inter Tight',sans-serif;color:var(--muted);padding:6px 0}
+.plate s{white-space:nowrap;letter-spacing:.04em}
+.tbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 0;border-top:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-bottom:1px solid color-mix(in srgb,var(--ink) 14%,transparent);width:100%}
+.tbar.end{margin-top:6px}.tbl{font:600 11px/1 'Inter Tight',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.ic{width:40px;height:40px;border-radius:50%;display:inline-grid;place-items:center;border:1px solid color-mix(in srgb,var(--ink) 22%,transparent);color:var(--ink);background:transparent;text-decoration:none;flex:0 0 auto;transition:background .2s,color .2s,border-color .2s;cursor:pointer}
+.ic svg{width:18px;height:18px}.ic:hover,.ic:focus-visible{background:var(--cob);border-color:var(--cob);color:#fff}.ic.fb:hover{background:#1877F2;border-color:#1877F2}
+.ic.tx{font:700 15px/1 'Inter Tight',sans-serif}.ic.tx small{font-size:11px;margin-left:1px}.ic:disabled{opacity:.35;pointer-events:none}
+.tbar .sep{width:1px;height:24px;background:color-mix(in srgb,var(--ink) 18%,transparent);margin:0 2px}
+.tbar .bt.sm{height:40px;border-radius:20px;padding:0 14px}.tbar .bt[hidden]{display:none}
+.m>span.tbar{display:flex}.ic.tx{display:inline-flex;align-items:center;justify-content:center;gap:0}.tbar .fzg{display:inline-flex;gap:6px;margin-left:auto}
+@media (max-width:480px){.tbar{gap:4px}.tbar .fzg{gap:4px}.ic{width:36px;height:36px}.ic svg{width:17px;height:17px}.tbar .bt.sm{height:36px;width:36px;padding:0;justify-content:center;border-radius:50%}.tbar .wl,.tbar .sep{display:none}}
+.mlg{display:flex;align-items:center;text-decoration:none}.mlg b{display:none;font:800 20px/1 'Inter Tight',sans-serif;color:var(--cob);letter-spacing:-.02em}.mlg b em{font-style:normal;color:var(--red)}.mlg.nf img{display:none!important}.mlg.nf b{display:block}
+.chips{scroll-snap-type:x proximity;scroll-padding-inline:max(5vw,16px)}.chip{scroll-snap-align:start}
+@media(min-width:768px) and (max-width:1100px){.brand span,.brand i{display:none}.nav{gap:18px}
+ .tbar{gap:4px}.tbar .fzg{gap:4px}.ic{width:36px;height:36px}.ic svg{width:17px;height:17px}.tbar .bt.sm{height:36px;width:36px;padding:0;justify-content:center;border-radius:50%}.tbar .wl,.tbar .sep{display:none}}
+@media (max-height:540px) and (orientation:landscape){
+ .lbi{padding:46px 60px 4px!important}.lbi img{max-height:calc(100svh - 74px)}.lbi svg{height:calc(100svh - 74px)}.lbi video{max-height:calc(100svh - 74px);width:min(100%,calc((100svh - 74px)*16/9))}
+ .lba{display:grid!important}.svb{height:calc(100svh - 16px)!important;width:auto!important;aspect-ratio:9/16!important;border-radius:12px!important}
+ .mh{padding:8px max(20px,env(safe-area-inset-left))}
+ .svt{padding:12px 14px 14px;gap:6px}.svt h2{font-size:18px}.svt p{font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+}
+
+/* ===== feed & footer ===== */
+@media(min-width:1101px){:root[data-logo=center] .top .brand{position:absolute;left:50%;transform:translateX(-50%)}:root[data-logo=center] .top .brand span,:root[data-logo=center] .top .brand i{display:none}}
+.fdn{justify-self:center;font:700 12px/1 'Inter Tight',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--cob);padding:8px 14px;border:1px solid color-mix(in srgb,var(--cob) 40%,transparent);border-radius:20px;background:color-mix(in srgb,var(--paper) 70%,transparent)}.fdn b{display:inline-block;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(3px)}}@media(prefers-reduced-motion:reduce){.fdn b{animation:none}}
+.top.sc{height:60px;background:#0A22E0;box-shadow:0 8px 24px -14px rgba(0,0,0,.5)}.top.sc .tick{display:none}
+.feed{position:relative;z-index:52;margin-top:100vh;margin-top:100svh;background:var(--paper);color:var(--ink);user-select:text;box-shadow:0 -30px 60px -30px rgba(10,16,40,.35);border-radius:22px 22px 0 0;padding:34px 0 40px}
+.fw{max-width:1200px;margin:0 auto;padding:0 max(4vw,16px)}
+.fh{display:flex;align-items:center;gap:10px;margin:0 0 16px;font:800 24px/1.1 'Inter Tight',sans-serif;color:var(--cob);letter-spacing:-.01em}.fh i{width:10px;height:10px;background:var(--red);display:block;box-shadow:4px 4px 0 var(--cob)}.fh.sm{font-size:17px;margin-top:26px}
+.fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:16px;margin-bottom:36px}
+.fc{display:grid;grid-template-rows:auto 1fr;text-align:left;color:inherit;background:var(--sheet);border:1px solid color-mix(in srgb,var(--ink) 10%,transparent);border-radius:10px;overflow:hidden;cursor:pointer;padding:0;transition:transform .25s,box-shadow .25s}
+.fc:hover{transform:translateY(-3px);box-shadow:0 18px 34px -22px rgba(10,16,40,.45)}
+.fc .im{position:relative;aspect-ratio:16/9;overflow:hidden;background:#0A22E0}.fc .im>img,.fc .im>svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.fc:first-child{grid-row:span 2;grid-template-rows:1fr auto}.fc:first-child .im{aspect-ratio:auto;min-height:240px;height:100%}
+.fc .tx{padding:14px 16px 16px;display:grid;gap:6px;align-content:start}.fc b{font:800 18px/1.22 'Inter Tight',sans-serif;color:var(--cob)}.fc:first-child b{font-size:24px}
+.fc p{margin:0;font:400 14.5px/1.5 'Noto Serif',Georgia,serif;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bdg{position:absolute;left:10px;top:10px;z-index:2;font:700 11px/1 'Inter Tight',sans-serif;letter-spacing:.06em;padding:6px 8px;border-radius:4px;background:#F9CF02;color:#141414}.bdg.v{left:auto;right:10px;background:rgba(10,14,30,.75);color:#fff}
+.kc{font:700 11px/1 'Inter Tight',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--red)}
+.fmeta{display:flex;flex-wrap:wrap;align-items:center;gap:14px;font:500 12.5px/1 'Inter Tight',sans-serif;color:var(--muted)}.fmeta span{display:inline-flex;align-items:center;gap:5px}.fmeta svg{width:14px;height:14px}
+.fcols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px;align-items:start}
+.fcat{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 0 8px;padding-bottom:4px}.fcat::-webkit-scrollbar{display:none}
+.fcat button{flex:0 0 auto;height:34px;padding:0 14px;border-radius:17px;border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);font:600 13px 'Inter Tight',sans-serif;color:var(--ink);background:transparent}.fcat button[aria-selected=true]{background:var(--cob);border-color:var(--cob);color:#fff}
+.fi{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:20px;align-items:center;width:100%;text-align:left;padding:18px 0;border-bottom:1px solid color-mix(in srgb,var(--ink) 12%,transparent);color:inherit;background:none;cursor:pointer}
+.fi .tx{display:grid;gap:7px}.fi b{font:800 20px/1.25 'Inter Tight',sans-serif;color:var(--ink);transition:color .2s}.fi:hover b{color:var(--cob)}
+.fi p{margin:0;font:400 15px/1.5 'Noto Serif',Georgia,serif;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fi .im{position:relative;aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#0A22E0}.fi .im>img,.fi .im>svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.fmore{display:block;margin:22px auto 0;height:46px;padding:0 26px;border-radius:23px;border:1px solid var(--cob);color:var(--cob);font:700 14px 'Inter Tight',sans-serif;background:transparent}.fmore:hover{background:var(--cob);color:#fff}.fmore[hidden]{display:none}
+.adw{position:relative;margin:20px 0;border-radius:10px;overflow:hidden}.adw small{position:absolute;right:8px;top:8px;z-index:3;font:600 10px/1 'Inter Tight',sans-serif;letter-spacing:.08em;background:rgba(0,0,0,.55);color:#fff;padding:4px 6px;border-radius:3px}
+.adr2{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.adr2::-webkit-scrollbar{display:none}
+.adr2>*{flex:0 0 100%;scroll-snap-align:start;display:block;aspect-ratio:4/1;position:relative}.adw.side .adr2>*{aspect-ratio:6/5}
+.adr2 img{width:100%;height:100%;object-fit:cover;display:block}
+.add{position:absolute;left:0;right:0;bottom:8px;display:flex;justify-content:center;gap:6px;z-index:3}.add i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.5)}.add i.on{background:#fff}
+.hous{display:grid!important;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;padding:0 26px;background:linear-gradient(110deg,#0A22E0 0 62%,#E86522 62%);color:#fff;text-decoration:none}
+.hous b{font:800 clamp(16px,2.2vw,24px)/1.15 'Inter Tight',sans-serif}.hous span{font:500 13px/1.3 'Inter Tight',sans-serif;opacity:.85;display:block;margin-top:4px}.hous em{font:700 13px 'Inter Tight',sans-serif;font-style:normal;background:#fff;color:#0A22E0;padding:10px 16px;border-radius:20px;white-space:nowrap}
+.hous img{height:30px;width:auto}.adw.side .hous{grid-template-columns:1fr;align-content:center;text-align:left;background:linear-gradient(160deg,#0A22E0 0 58%,#E86522 58%);padding:22px}.adw.side .hous img{display:none}.adw.side .hous em{justify-self:start}
+.fb2{display:grid;gap:6px;width:100%;text-align:left;padding:12px 0;border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent);color:inherit;background:none;cursor:pointer}.fb2 b{font:700 15px/1.3 'Inter Tight',sans-serif}.fb2:hover b{color:var(--cob)}
+.bst{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}.bst i{height:5px;border-radius:2px;background:color-mix(in srgb,var(--ink) 14%,transparent)}.bst i.on{background:var(--cob)}.bst i.cur{background:var(--red)}
+.fb2 small{font:500 12px 'Inter Tight',sans-serif;color:var(--muted)}
+.fv{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;width:100%;text-align:left;padding:10px 0;color:inherit;background:none;cursor:pointer}.fv .im{position:relative;aspect-ratio:16/10;border-radius:6px;overflow:hidden;background:#000}.fv .im>img,.fv .im>svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.fv .im::after{content:"";background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5.5v13l11-6.5z' fill='white'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:22px;position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:18px;background:rgba(0,0,0,.25)}.fv b{font:700 14.5px/1.3 'Inter Tight',sans-serif}
+.sfoot{position:relative;z-index:52;background:#0B1230;color:#C9CFE3;user-select:text;padding:48px 0 0}
+.sfw{max-width:1200px;margin:0 auto;padding:0 max(4vw,16px) 36px;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:36px}
+.sflogo img{height:34px;width:auto;display:block}.sflogo b{font:800 24px 'Inter Tight',sans-serif;color:#fff}.sfb p{margin:14px 0;font:400 14.5px/1.55 'Noto Serif',Georgia,serif;color:#AEB6D0;max-width:34ch}
+.sfc{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px;font:500 14px/1.4 'Inter Tight',sans-serif}.sfc a{color:#fff}
+.sfso{display:flex;gap:10px}.sfso a{width:42px;height:42px;border-radius:50%;background:#fff;color:#0B1230;display:grid;place-items:center}.sfso a svg{width:19px;height:19px}.sfso a:hover{background:#E86522;color:#fff}.sfso a[hidden]{display:none}
+.sfn h3{margin:0 0 14px;font:700 15px 'Inter Tight',sans-serif;color:#fff}.sfn ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}.sfn a{color:#AEB6D0;text-decoration:none;font:500 14.5px 'Inter Tight',sans-serif}.sfn a:hover{color:#fff}
+.sfset{display:grid;gap:8px;font:500 13px 'Inter Tight',sans-serif}.seg{display:flex;max-width:100%;border:1px solid #3A4570;border-radius:8px;overflow:hidden;width:max-content}.seg button{flex:1 1 auto;height:34px;padding:0 10px;color:#C9CFE3;font:600 13px 'Inter Tight',sans-serif;background:none}.seg button.on{background:#fff;color:#0B1230}
+.sfbot{border-top:1px solid #222C52;max-width:none;padding:16px max(4vw,16px) calc(16px + env(safe-area-inset-bottom));display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:space-between;font:500 12.5px 'Inter Tight',sans-serif;color:#8C95B4}.sfbot a{color:#C9CFE3}
+.sfup{height:36px;padding:0 14px;border-radius:18px;border:1px solid #3A4570;color:#fff;font:600 13px 'Inter Tight',sans-serif;background:none}
+.pgm{position:fixed;inset:0;z-index:96;background:rgba(6,10,24,.6);display:grid;place-items:center;padding:16px}.pgm[hidden]{display:none}
+.pgb{position:relative;background:var(--sheet);color:var(--ink);border-radius:14px;max-width:640px;width:100%;max-height:min(80vh,720px);overflow:auto;padding:30px 28px;user-select:text}.pgb h2{margin:0 0 14px;font:800 26px/1.15 'Inter Tight',sans-serif;color:var(--cob)}.pgb p,.pgb li{font:400 16px/1.6 'Noto Serif',Georgia,serif}.pgx{position:absolute;right:12px;top:12px;width:38px;height:38px;border-radius:50%;border:1px solid color-mix(in srgb,var(--ink) 20%,transparent);color:var(--ink);background:none}
+@media(max-width:1000px){.fcols{grid-template-columns:minmax(0,1fr)}.fside{display:grid;gap:0}.sfw{grid-template-columns:1fr 1fr}.sfb{grid-column:1/-1}.fgrid{grid-template-columns:1fr 1fr}.fc:first-child{grid-column:1/-1;grid-row:auto}.fc:first-child .im{min-height:0;aspect-ratio:16/9}}
+@media(max-width:767px){.feed{padding-top:24px;border-radius:18px 18px 0 0}.fh{font-size:21px}
+ .fgrid{grid-template-columns:minmax(0,1fr);gap:14px}.fc:first-child b{font-size:21px}
+ .fi{grid-template-columns:minmax(0,1fr) 112px;gap:14px;padding:14px 0}.fi b{font-size:17px}.fi p{font-size:14px;-webkit-line-clamp:2}.fi .im{aspect-ratio:1/1}
+ .adr2>*{aspect-ratio:3/1}.hous{grid-template-columns:1fr auto;padding:0 16px;gap:10px}.hous img{display:none}.hous span{display:none}
+ .sfw{grid-template-columns:1fr 1fr;gap:28px 18px}.sfbot{justify-content:flex-start}.sfn:has(.seg){grid-column:1/-1}.sfn:has(.seg) .seg{max-width:320px}
+ .top.sc{height:56px}}
+@media (max-height:540px) and (orientation:landscape){.top.sc{height:48px}.fi{grid-template-columns:minmax(0,1fr) 150px}}
+
+/* ===== standard article layout (tablet/desktop) ===== */
+@media(max-width:767px){.dlede{font-size:calc(19px*var(--fz))!important;line-height:1.6!important}.dbody{font-size:calc(17.5px*var(--fz))!important;line-height:1.72!important}.pn,.rh{display:none!important}.pg.L,.pg.R{background:#F7F2E7!important;box-shadow:none!important}.pg.L{padding-top:24px!important}}
+@media(min-width:768px){
+ .detail{padding:76px 24px 64px;place-items:start center;grid-template-rows:auto;overflow:auto}
+ .spread{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto;height:auto!important;max-height:none!important;width:min(820px,100%)!important;filter:drop-shadow(0 22px 40px rgba(20,16,10,.16))}
+ .pg{overflow:visible!important;align-content:start}
+ .pg.R{order:-1;border-radius:12px 12px 0 0;padding:28px 28px 6px;background:#F7F2E7;box-shadow:none}
+ .pg.L{border-radius:0 0 12px 12px;padding:22px 64px 56px;background:#F7F2E7;box-shadow:none}
+ .pg.L::after,.pg.R::after,.rh,.pn{display:none!important}
+ .dr{height:auto}.media{height:auto!important;width:100%!important;max-height:none;aspect-ratio:16/9}
+ .media[data-ar=wide]{aspect-ratio:16/9}.media[data-ar=book],.media[data-ar=tall],.media[data-ar=sq]{aspect-ratio:16/10}
+ .dt1{font-size:clamp(34px,4vw,48px)}
+ .dlede{max-width:none!important;font-size:calc(21px*var(--fz))!important;line-height:1.6!important}
+ .dbody{max-width:none!important;font-size:calc(19px*var(--fz))!important;line-height:1.75!important}
+ .dbody h3{font-size:23px}.dcred{font-size:16px}
+ .rprog{position:fixed;top:0;left:0;right:0;margin:0;z-index:70}.close{position:fixed;left:24px;top:20px;z-index:3;background:var(--paper)}.dbrand{position:fixed;right:28px;top:22px}
+}
+
+
+/* ===== research improvements ===== */
+:root{--lb:0px}
+.lbar{position:fixed;left:0;right:0;top:0;height:34px;z-index:59;display:flex;align-items:center;gap:10px;padding:0 max(16px,env(safe-area-inset-left));background:#C8102E;color:#fff;text-decoration:none;font:600 13.5px/1 'Inter Tight',sans-serif;overflow:hidden}.lbar[hidden]{display:none}
+.lbar b{flex:0 0 auto;font-weight:800;letter-spacing:.08em;font-size:12px;display:inline-flex;align-items:center;gap:6px}.lbar b.lv::before{content:"";width:8px;height:8px;border-radius:50%;background:#fff;animation:pulse 1.4s infinite}
+.lbar span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lbar em{flex:0 0 auto;font-style:normal;font-weight:700;background:#fff;color:#C8102E;padding:5px 10px;border-radius:12px;font-size:12px}
+:root.has-lbar{--lb:34px}.top{top:var(--lb)}.tick{top:calc(76px + var(--lb))}
+@media(max-width:767px){.mstat{top:calc(64px + var(--lb))!important}.stories{top:calc(88px + var(--lb))!important}}
+.dtags{display:flex;flex-wrap:wrap;gap:6px}.dtags button{height:30px;padding:0 12px;border-radius:15px;border:1px solid color-mix(in srgb,#0A22E0 30%,transparent);background:color-mix(in srgb,#0A22E0 6%,transparent);color:#0A22E0;font:600 12.5px 'Inter Tight',sans-serif}.dtags button:hover{background:#0A22E0;color:#fff}
+.tflt{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:4px 0 10px;font:600 12px 'Inter Tight',sans-serif;color:var(--muted)}.tflt span{margin-right:4px;letter-spacing:.06em;text-transform:uppercase;font-size:11px}
+.tflt button{height:30px;padding:0 12px;border-radius:15px;border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);color:var(--ink);font:600 12.5px 'Inter Tight',sans-serif;background:none}.tflt button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.today{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 24px;align-items:start;padding:20px 22px;margin:0 0 34px;border:1px solid color-mix(in srgb,var(--cob) 20%,transparent);border-radius:12px;background:color-mix(in srgb,var(--sheet) 80%,transparent)}
+.today h2{margin:0;font:800 22px/1.15 'Inter Tight',sans-serif;color:var(--cob)}.today .td{font:500 13px 'Inter Tight',sans-serif;color:var(--muted);margin-top:4px}
+.today .tst{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:17px;font:700 13px 'Inter Tight',sans-serif;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--ink);text-decoration:none;white-space:nowrap}.today .tst.on{background:#C8102E;color:#fff}.today .tst.on::before{content:"";width:8px;height:8px;border-radius:50%;background:#fff;animation:pulse 1.4s infinite}
+.today ol{grid-column:1/-1;list-style:none;margin:6px 0 0;padding:0;display:grid;gap:0}
+.today li{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+.today time{font:800 17px 'Inter Tight',sans-serif;color:var(--cob)}.today li span{font:500 15px/1.4 'Inter Tight',sans-serif}
+.today .rmd{height:32px;padding:0 12px;border-radius:16px;border:1px solid color-mix(in srgb,var(--cob) 40%,transparent);color:var(--cob);font:600 12.5px 'Inter Tight',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.today .rmd:hover{background:var(--cob);color:#fff}
+.today .tsm{grid-column:1/-1;font:500 12px 'Inter Tight',sans-serif;color:var(--muted)}
+.mtab{display:none}
+@media(max-width:767px){
+ .mtab{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:57;height:calc(58px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid color-mix(in srgb,var(--ink) 12%,transparent)}
+ .mtab button{display:grid;justify-items:center;align-content:center;gap:3px;font:600 10.5px 'Inter Tight',sans-serif;color:var(--muted);background:none;border:0}
+ .mtab svg{width:22px;height:22px}.mtab button.on{color:var(--cob)}.mtab button[data-tb=live].lv{color:#C8102E}
+ .tl{display:none!important}.foot{bottom:calc(70px + env(safe-area-inset-bottom))!important}
+ .sfoot{padding-bottom:calc(58px + env(safe-area-inset-bottom))}.toast{bottom:calc(76px + env(safe-area-inset-bottom))}
+ .today{grid-template-columns:minmax(0,1fr);padding:16px}.today li{grid-template-columns:52px minmax(0,1fr);}.today .rmd{grid-column:2;justify-self:start}
+}
+@media (max-height:540px) and (orientation:landscape){.mtab{display:none!important}}
+.rv0{opacity:0;transform:translateY(16px)}.rv1{opacity:1;transform:none;transition:opacity .6s var(--ease),transform .6s var(--ease)}
+@media(prefers-reduced-motion:reduce){.rv0{opacity:1;transform:none}}
+
+/* short phones */
+@media(max-width:767px) and (max-height:720px) and (orientation:portrait){:root{--H:min(62vw,33svh)!important;--cy:46%!important}.cl,.rl{display:none!important}}
+
+/* ===== minimal icon system ===== */
+.ic0{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em;flex:0 0 auto;display:inline-block}
+.thm .ic0{width:17px;height:17px;vertical-align:middle}.seg .ic0{width:14px;height:14px;margin-right:2px}
+.lvd{color:#C8102E;width:.8em;height:.8em;vertical-align:-.05em}
+.bdg .ic0,.fbad .ic0{width:11px;height:11px;vertical-align:-1px}
+.ri em .ic0{width:12px;height:12px;stroke:none}
+.wx i .ic0{width:22px;height:22px}
+.mlinks a{justify-content:flex-start!important;align-items:center;gap:8px}.bdg{display:inline-flex;align-items:center;gap:4px}
+
+/* about panel v2 */
+.about .minfo:empty{display:none}
+.about{padding:22px!important;display:grid;gap:18px}
+.abh .abk{font:700 10.5px/1 'Inter Tight',sans-serif;letter-spacing:.16em;color:var(--red)}.abh h2{margin:8px 0 6px!important;font:800 22px/1.15 'Inter Tight',sans-serif!important;color:var(--cob)}.abh p{margin:0;font:400 15px/1.5 'Noto Serif',serif;color:var(--muted)}
+.ablive{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--sheet);border:1px solid color-mix(in srgb,var(--ink) 10%,transparent);color:var(--ink);text-decoration:none}
+.ablive .lvp{width:10px;height:10px;border-radius:50%;background:color-mix(in srgb,var(--ink) 30%,transparent);flex:0 0 auto}.ablive.is-live .lvp{background:#C8102E;box-shadow:0 0 0 0 rgba(200,16,46,.5);animation:lvp 1.6s infinite}
+@keyframes lvp{70%{box-shadow:0 0 0 8px rgba(200,16,46,0)}100%{box-shadow:0 0 0 0 rgba(200,16,46,0)}}
+.ablive.is-live{border-color:color-mix(in srgb,#C8102E 40%,transparent)}.ablive.is-live b{color:#C8102E}
+.abtx{display:grid;gap:3px;flex:1;min-width:0}.abtx b{font:700 14.5px/1.2 'Inter Tight',sans-serif}.abtx small{font:500 12.5px/1.3 'Inter Tight',sans-serif;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.abch{color:var(--muted);width:16px!important;height:16px!important;margin-left:auto}
+.abv{list-style:none;margin:0;padding:0;display:grid;gap:14px}.abv li{display:grid;grid-template-columns:22px 1fr;gap:12px;align-items:start}.abv li>.ic0{width:20px;height:20px;color:var(--cob);margin-top:1px}
+.abv h3{margin:0 0 3px!important;font:700 11px/1.2 'Inter Tight',sans-serif!important;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)!important}.abv p{margin:0;font:400 14.5px/1.5 'Noto Serif',serif!important;color:color-mix(in srgb,var(--ink) 80%,transparent)}
+.abl{margin:0!important;display:grid;border-top:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+.abl a{display:flex!important;align-items:center;gap:12px!important;padding:12px 2px!important;border-top:0!important;border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent);color:var(--ink)!important;font:600 14.5px 'Inter Tight',sans-serif!important;text-decoration:none}
+.abl a>.ic0:first-child{color:var(--cob);width:19px;height:19px}.abl a:hover span{color:var(--cob)}
+.abf{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.abso{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);color:var(--ink)}.abso svg{width:17px;height:17px}.abso:hover{background:var(--cob);border-color:var(--cob);color:#fff}.abso[hidden]{display:none}
+.abct{height:38px;padding:0 14px;border-radius:19px;display:inline-flex;align-items:center;gap:7px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);color:var(--ink);font:600 13px 'Inter Tight',sans-serif;text-decoration:none}.abct:hover{border-color:var(--cob);color:var(--cob)}
+.abadm{margin-left:auto;display:inline-flex;align-items:center;gap:6px;color:var(--muted);font:600 12.5px 'Inter Tight',sans-serif;text-decoration:none}.abadm:hover{color:var(--cob)}
+/* minimal category chips */
+.chips{display:flex!important;flex-wrap:wrap!important;gap:8px!important;margin:16px 0 8px!important;padding:0!important;overflow:visible!important}
+.chip{display:inline-flex!important;align-items:center;gap:8px;width:auto!important;min-height:40px!important;height:40px;padding:0 14px 0 12px!important;border-radius:20px!important;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent)!important;background:transparent!important;white-space:nowrap!important}
+.chip:hover{border-color:color-mix(in srgb,var(--ink) 35%,transparent)!important}
+.chip i{width:auto!important;height:auto!important;border-radius:0!important;background:none!important;color:var(--cob)!important;font-size:inherit!important}
+.chip i .ic0{width:17px;height:17px}
+.chip b{font:600 14px/1 "Inter Tight"!important;color:var(--ink)!important}
+.chip small{margin:0!important;font:600 11.5px/1 "Inter Tight"!important;color:var(--muted)!important;background:color-mix(in srgb,var(--ink) 7%,transparent);padding:4px 7px;border-radius:10px}
+.chip.on{background:var(--ink)!important;border-color:var(--ink)!important}.chip.on b,.chip.on i{color:var(--paper)!important}.chip.on small{color:var(--paper)!important;background:color-mix(in srgb,var(--paper) 18%,transparent)}
+@media(max-width:767px){.chips{flex-wrap:nowrap!important;overflow-x:auto!important;margin:14px -16px 6px!important;padding:2px 16px!important;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.chip{flex:0 0 auto}}
+
+/* header layout v2 */
+.top .logo{height:var(--lgh,30px)}
+.brand{position:relative}.btag{display:none;font:600 10px/1.1 'Inter Tight',sans-serif;letter-spacing:.08em;font-style:normal;text-transform:none;color:inherit;opacity:.85;white-space:nowrap}
+:root.has-tag .top .brand{display:grid;grid-template-columns:auto;justify-items:start;gap:4px}:root.has-tag .top .brand i,:root.has-tag .top .brand span{display:none}:root.has-tag .btag{display:block}
+:root[data-logo=center] .top .brand{position:absolute;left:50%;transform:translateX(-50%);justify-items:center}:root[data-logo=center] .top .brand i,:root[data-logo=center] .top .brand span{display:none}
+:root[data-logo=center] .top{justify-content:flex-end}:root[data-logo=center] .top .nav{width:100%;justify-content:flex-start}:root[data-logo=center] .top .burger{margin-left:auto}:root[data-logo=center][data-menu=inline] .top .navc a{display:none}
+:root[data-logo=right] .top{flex-direction:row-reverse}:root[data-logo=right] .top .brand{justify-items:end}:root[data-logo=right] .top .brand i,:root[data-logo=right] .top .brand span{display:none}:root[data-logo=right] .nav{flex-direction:row-reverse}
+.navc{display:contents}
+:root[data-menu=burger] .navc,:root[data-menu=below] .navc{display:none}
+.ndd{position:relative;display:inline-flex}.ndd>a{display:inline-flex;align-items:center;gap:3px}.nch{width:13px;height:13px}
+.ndm{position:absolute;top:100%;left:-12px;min-width:200px;padding:8px;border-radius:12px;background:var(--paper);color:var(--ink);box-shadow:0 18px 40px -16px rgba(10,16,40,.45);border:1px solid color-mix(in srgb,var(--ink) 10%,transparent);display:none;flex-direction:column;z-index:70;text-shadow:none}
+.ndd:hover .ndm,.ndd:focus-within .ndm{display:flex}.ndm a{padding:9px 10px;border-radius:8px;color:var(--ink)!important;text-decoration:none;font:600 13px 'Inter Tight',sans-serif;letter-spacing:0;text-transform:none;white-space:nowrap}.ndm a:hover{background:color-mix(in srgb,var(--cob) 10%,transparent);color:var(--cob)!important}
+.nav2{display:none}
+:root[data-menu=below] .nav2{display:flex;justify-content:center;align-items:center;gap:26px;position:fixed;left:0;right:0;top:calc(76px + var(--lb));height:40px;z-index:57;color:#fff;background:rgba(11,18,48,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid rgba(255,255,255,.12)}
+.nav2 a{color:inherit;text-decoration:none}
+:root[data-menu=below] .tick{top:calc(116px + var(--lb))}:root[data-menu=below] .stories{top:164px}
+:root[data-menu=below].sc-on .nav2{top:calc(60px + var(--lb))}
+@media(max-width:1100px){:root[data-menu=below] .nav2{justify-content:flex-start;overflow-x:auto;padding:0 16px;scrollbar-width:none}.nav2::-webkit-scrollbar{display:none}}
+@media(max-width:767px){.top .logo{height:min(var(--lgh,30px),30px)}:root[data-menu=below] .nav2{display:none}:root[data-logo=center] .top .nav{width:auto;margin-left:auto}:root[data-logo=center] .top{justify-content:space-between}}
+/* clean stage instead of skyline */
+.fdn{white-space:nowrap}@media(max-width:767px){.foot{justify-content:center}.foot>.lbl{display:none}.fdn{padding:7px 14px;font-size:11px}}
+.cityw,.cityflat,.palace{display:none!important}
+.plat{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--cy) + var(--H)*.30);width:min(108vw,calc(var(--H)*3.9));height:calc(var(--H)*.5);border-radius:50%;z-index:2;pointer-events:none;
+ background:radial-gradient(50% 50% at 50% 50%,color-mix(in srgb,var(--paper) 55%,#fff) 0,color-mix(in srgb,var(--paper) 96%,#7a6a50) 78%,transparent 100%);
+ border-top:2px solid color-mix(in srgb,var(--cob) 45%,transparent);box-shadow:inset 0 10px 22px -12px color-mix(in srgb,var(--cob) 40%,transparent)}
+.plat::after{content:"";position:absolute;inset:16% 12% 30%;border-radius:50%;border-top:1px solid color-mix(in srgb,var(--cob) 22%,transparent)}
+.plat::before{content:"";position:absolute;left:50%;top:-1px;transform:translateX(-50%);width:22%;height:4px;border-radius:2px;background:var(--red)}
+
+/* dark article */
+:root[data-theme=dark] .stgp{background:rgba(154,170,255,.1)!important;border-left-color:#9AAAFF!important}:root[data-theme=dark] .stgp p{color:#D5D9E6!important}:root[data-theme=dark] .stgp .sh span,:root[data-theme=dark] .vl{color:#9AA1B6!important}:root[data-theme=dark] .vl b{color:#ECE8E0!important}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .stgp{background:rgba(154,170,255,.1)!important;border-left-color:#9AAAFF!important}:root:not([data-theme=light]) .stgp p{color:#D5D9E6!important}:root:not([data-theme=light]) .stgp .sh span,:root:not([data-theme=light]) .vl{color:#9AA1B6!important}:root:not([data-theme=light]) .vl b{color:#ECE8E0!important}}
+:root[data-theme=dark] .spread{--cob:#9AAAFF;--muted:#9AA1B6;--ink:#ECE8E0;color:#ECE8E0}:root[data-theme=dark] .pg.L,:root[data-theme=dark] .pg.R{background:#131B31!important;box-shadow:none!important}:root[data-theme=dark] .dbody h3,:root[data-theme=dark] .dtags button{color:#9AAAFF}:root[data-theme=dark] .pg::before{opacity:.15}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .spread{--cob:#9AAAFF;--muted:#9AA1B6;--ink:#ECE8E0;color:#ECE8E0}:root:not([data-theme=light]) .pg.L,:root:not([data-theme=light]) .pg.R{background:#131B31!important;box-shadow:none!important}:root:not([data-theme=light]) .dbody h3,:root:not([data-theme=light]) .dtags button{color:#9AAAFF}:root:not([data-theme=light]) .pg::before{opacity:.15}}
+
+.rtw{overflow-x:auto;margin:0 -4px}.rt{width:100%;border-collapse:collapse;font:500 14px/1.4 'Inter Tight',sans-serif}.rt th{text-align:left;font:700 11px 'Inter Tight',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 6px;border-bottom:2px solid color-mix(in srgb,var(--ink) 15%,transparent)}
+.rt td{padding:11px 6px;border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent);vertical-align:top}.rt td small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.rt .pr{white-space:nowrap;font-weight:800;color:var(--cob)}.rt .pr small{display:inline;margin-left:3px;font-weight:500}
+.rtn{font:500 12.5px/1.5 'Inter Tight',sans-serif!important;color:var(--muted);margin:10px 0 0!important}
+.rtb{display:inline-flex;align-items:center;justify-content:center;margin-top:14px;height:44px;padding:0 20px;border-radius:22px;background:var(--cob);color:#fff!important;font:700 14px 'Inter Tight',sans-serif;text-decoration:none;border:0}
+.rsu{display:flex;gap:8px;align-items:center;padding:8px 8px 8px 14px;border-radius:10px;border:1px solid color-mix(in srgb,var(--ink) 15%,transparent);background:var(--paper)}.rsu code{flex:1;font:600 14px ui-monospace,monospace;overflow:hidden;text-overflow:ellipsis}.rsu button{height:34px;padding:0 12px;border-radius:8px;border:0;background:var(--cob);color:#fff;font:600 13px 'Inter Tight',sans-serif}
+.sfn li[hidden]{display:none}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="duo0" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncR type="table" tableValues=".024 .953"/><feFuncG type="table" tableValues=".071 .941"/><feFuncB type="table" tableValues=".4 .918"/></feComponentTransfer></filter><filter id="duo1" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncR type="table" tableValues=".039 .969"/><feFuncG type="table" tableValues=".133 .949"/><feFuncB type="table" tableValues=".878 .906"/></feComponentTransfer></filter><filter id="duo2" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncR type="table" tableValues=".353 1"/><feFuncG type="table" tableValues=".114 .902"/><feFuncB type="table" tableValues=".016 .839"/></feComponentTransfer></filter></defs><symbol id="lgD" viewBox="0 0 792 180"><image href="logo.png" width="792" height="180"/></symbol><symbol id="lgW" viewBox="0 0 792 180"><image href="logo-white.png" width="792" height="180"/></symbol><symbol id="mkD" viewBox="6 48 98 128"><image href="logo.png" width="792" height="180"/></symbol><symbol id="mkW" viewBox="6 48 98 128"><image href="logo-white.png" width="792" height="180"/></symbol></svg>
+<div class="hero" aria-hidden="true"></div>
+<div class="grain"></div>
+<header class="top">
+  <a class="brand lbl" href="#" aria-label="Parliament News нүүр"><img class="logo d" src="logo.png" alt="Parliament News"><img class="logo w" src="logo-white.png" alt=""><i></i><span>parlamentnews.mn</span><em class="btag" id="btag"></em></a>
+  <nav class="nav lbl"><span class="navc" id="navc"><a href="#" data-f="all">Мэдээ</a><a href="#" data-f="Чуулган">Чуулган</a><a href="#" data-f="Хуулийн мэдээ">Хуулийн мэдээ</a><a href="#" data-f="vid">Видео</a></span><button class="thm" id="thm" aria-label="Өдөр, шөнийн горим"><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button><a class="live" href="#" id="live">Шууд</a><button class="burger" id="burger" aria-label="Цэс ба хайлт"><i></i><i></i></button></nav>
+</header>
+<nav class="nav2 lbl" id="nav2" aria-label="Ангилал"></nav>
+<div class="tick" aria-label="Шууд мэдээ"><b class="lbl">ШУУД</b><div class="tw"><div class="tr" id="tr"></div></div><div class="tinfo" id="tinfo"></div></div>
+<div class="mstat lbl" id="mstat"></div>
+<aside class="wg wl" aria-label="Нэгдсэн хуралдаан">
+  <svg viewBox="0 0 220 116" id="hemi"></svg>
+  <div class="lbl wk">УИХ · Нэгдсэн хуралдаан</div>
+  <div class="big"><span id="att">98</span><small> / 126 ирц</small></div>
+  <div class="lbl on" id="sst">Хуралдаж байна</div>
+</aside>
+<aside class="wg wr" aria-label="Өнөөдрийн хэлэлцэх асуудал">
+  <div class="lbl wk">Өнөөдөр хэлэлцэх асуудал</div>
+  <ol class="ag" id="ag">
+    <li><time>10:00</time><span>Нэгдсэн хуралдаан — төсвийн гүйцэтгэлийн тайлан</span></li>
+    <li><time>14:00</time><span>Эдийн засгийн байнгын хороо</span></li>
+    <li><time>16:30</time><span>Ажлын хэсэг — сонгуулийн хууль</span></li>
+  </ol>
+  <div class="smp" id="smp">Жишээ өгөгдөл</div>
+</aside>
+<svg class="cityflat" viewBox="0 0 740 292" aria-hidden="true"><use href="#cityS"/></svg>
+<nav class="stories" id="stories" aria-label="Стори мэдээ"></nav>
+<div class="sv" id="sv" hidden role="dialog" aria-label="Стори"><div class="svb" id="svb"><div class="svp" id="svp"></div><div class="svh"><img src="logo-white.png" alt="Parliament News"><span id="svd"></span><button id="svx" aria-label="Хаах">✕</button></div><div class="svm" id="svm"></div><div class="svt"><span class="svc" id="svc"></span><h2 id="svT"></h2><p id="svL"></p><button class="svgo" id="svgo">Мэдээг унших →</button></div><button class="svz l" id="svl" aria-label="Өмнөх"></button><button class="svz r" id="svr" aria-label="Дараах"></button></div></div>
+<div class="cityw" aria-hidden="true"><div class="city"><div class="cst" id="cst"></div></div></div><svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="cityS" viewBox="0 0 740 292"><path id="cityP" fill="currentColor" fill-rule="evenodd"/></symbol></svg>
+<div class="plat" aria-hidden="true"></div><div class="floor"></div>
+<section class="shelf" id="shelf" aria-label="Мэдээний тавиур"><div class="stage" id="stage"></div></section>
+<button class="play" id="play" aria-label="Мэдээг нээх"></button>
+<div class="cap" aria-live="polite">
+  <div class="m ct" id="cT"></div>
+  <div class="m cs" id="cS"></div>
+  <div class="rl"></div>
+  <div class="m cy" id="cY"></div>
+  <div class="m cl" id="cL"></div>
+</div>
+<button class="arr p" id="prev" aria-label="Өмнөх"><svg width="24" height="12" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M6 1L1 6l5 5M1 6h23"/></svg></button>
+<button class="arr n" id="next" aria-label="Дараах"><svg width="24" height="12" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M18 1l5 5-5 5M23 6H0"/></svg></button>
+<div class="tl" id="tl"><div class="ln"></div><div id="tks"></div><div class="dot" id="dot"></div><div class="hit" id="hit"></div></div>
+<footer class="foot"><span class="lbl">© 2026 PARLIAMENT NEWS</span><button class="fdn" id="fdn" type="button">Бүх мэдээ <b>↓</b></button><span class="lbl"><a href="#">FACEBOOK</a> / <a href="#">YOUTUBE</a></span></footer>
+<main class="feed" id="feed" aria-label="Мэдээний урсгал">
+ <div class="fw">
+  <section class="today" id="today" aria-label="Өнөөдөр парламентад"></section>
+  <section class="fsec"><h2 class="fh"><i></i>Онцлох мэдээ</h2><div class="fgrid" id="fFeat"></div></section>
+  <div class="fcols">
+   <div class="fmain"><h2 class="fh"><i></i>Шинэ мэдээ</h2><div class="fcat" id="fCat" role="tablist" aria-label="Ангилал"></div><div id="fList"></div><button class="fmore" id="fMore" type="button">Цааш үзэх</button></div>
+   <aside class="fside"><div id="fSideAd"></div><h2 class="fh sm"><i></i>Хуулийн төслийн явц</h2><div id="fBills"></div><h2 class="fh sm"><i></i>Видео мэдээ</h2><div id="fVid"></div></aside>
+  </div>
+ </div>
+</main>
+<footer class="sfoot" id="sfoot">
+ <div class="sfw">
+  <div class="sfb"><a href="#" class="sflogo" id="sfLogo" aria-label="Дээш буцах"><img src="logo-white.png" alt="Parliament News" width="160" height="36" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'Parliament News'}))"></a>
+   <p>Хараат бус, хариуцлагатай улс төрийн мэдээ. Төр ба иргэний гүүр.</p>
+   <ul class="sfc" id="sfContact"></ul>
+   <div class="sfso" id="sfSoc"><a data-so="fb" aria-label="Facebook" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.6c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v1.9H8V11.7h2.6V21.5H14v-9.8h2.7l.4-3.2z" fill="currentColor"/></svg></a><a data-so="x" aria-label="X" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.8 3h3l-6.6 7.6L22 21h-6.1l-4.8-6.3L5.6 21h-3l7.1-8.1L2.3 3h6.2l4.3 5.7zm-1 16.2h1.7L7.3 4.7H5.5z" fill="currentColor"/></svg></a><a data-so="ig" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg></a><a data-so="yt" aria-label="YouTube" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2a2.6 2.6 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.6 2.6 0 0 0 2.4 7.2 27 27 0 0 0 2 12a27 27 0 0 0 .4 4.8 2.6 2.6 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.6 2.6 0 0 0 1.8-1.8A27 27 0 0 0 22 12a27 27 0 0 0-.4-4.8zM10 15V9l5.2 3z" fill="currentColor"/></svg></a></div></div>
+  <nav class="sfn"><h3>Ангилал</h3><ul id="sfCats"></ul></nav>
+  <nav class="sfn"><h3>Тохиргоо</h3><div class="sfset"><span>Горим</span><div class="seg" id="sfTheme" role="group" aria-label="Өнгөний горим"><button data-th="light"><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2.5 12h2M19.5 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg> Өдөр</button><button data-th="dark"><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg> Шөнө</button></div></div>
+   <h3 style="margin-top:22px">Хамтран ажиллах</h3><ul><li><a href="#" data-pg="ads">Сурталчилгаа байршуулах · Үнэ</a></li><li id="sfRss"><a href="#" data-pg="rss">RSS мэдээний суваг</a></li><li><a href="#" data-pg="policy">Редакцын бодлого</a></li></ul></nav>
+  <nav class="sfn"><h3>Бидний тухай</h3><ul><li><a href="#" data-pg="about">Танилцуулга</a></li><li><a href="#" data-pg="privacy">Нууцлалын бодлого</a></li><li><a href="#" data-pg="contact">Холбоо барих</a></li><li><a href="admin.html">Редакцын нэвтрэх ↗</a></li></ul></nav>
+ </div>
+ <div class="sfbot"><span>© 2026 Parliament News · Бүх эрх хуулиар хамгаалагдсан</span><span>УИХ-ын албан ёсны сайт биш · Хуулийн эх: <a href="https://legalinfo.mn" target="_blank" rel="noopener">legalinfo.mn</a></span><button type="button" class="sfup" id="sfUp">↑ Дээш</button></div>
+</footer>
+<div class="pgm" id="pgm" hidden role="dialog" aria-modal="true" aria-labelledby="pgmT"><div class="pgb"><button class="pgx" id="pgmX" aria-label="Хаах">✕</button><h2 id="pgmT"></h2><div id="pgmB"></div></div></div>
+<a class="lbar" id="lbar" hidden href="#"><b id="lbK"></b><span id="lbT"></span><em id="lbG"></em></a>
+<nav class="mtab" id="mtab" aria-label="Үндсэн цэс"><button data-tb="home" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Нүүр</button><button data-tb="live"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M7 7a7 7 0 0 0 0 10M17 7a7 7 0 0 1 0 10M4 4a11 11 0 0 0 0 16M20 4a11 11 0 0 1 0 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Шууд</button><button data-tb="vid"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9v6l5-3z" fill="currentColor"/></svg>Видео</button><button data-tb="bill"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0zM8 21h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Хууль</button><button data-tb="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Хайлт</button></nav>
+<div class="cur" id="cur"><div class="rg"></div><div class="dt"></div><div class="tx">НОМ<br>нээх</div></div>
+
+<section class="detail" id="det" hidden aria-modal="true" role="dialog">
+  <button class="close lbl" id="close">ХААХ ✕</button>
+  <div class="dbrand"><img class="logo d" src="logo.png" alt="Parliament News"><img class="logo w" src="logo-white.png" alt=""></div>
+  <div class="spread"><div class="pg L"><div class="rprog"><i id="rprog"></i></div><div class="rh lbl" id="dH"></div><div class="dl" id="dl">
+    <div class="m"><span class="lbl dcat" id="dC"></span></div>
+    <div class="m"><span><h1 class="dt1" id="dT"></h1></span></div>
+    <div class="m"><span class="dmeta" id="dM"></span></div>
+    <div class="m"><span class="tbar" role="toolbar" aria-label="Нийтлэлийн хэрэгсэл"><button class="bt solid sm" id="watch" aria-label="Видео үзэх"><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg><span class="wl">&nbsp;Видео</span></button><button class="ic" id="nsh" aria-label="Хуваалцах" title="Хуваалцах"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><a class="ic fb" id="fbs" target="_blank" rel="noopener" aria-label="Facebook-т хуваалцах" title="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.6c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v1.9H8V11.7h2.6V21.5H14v-9.8h2.7l.4-3.2z" fill="currentColor"/></svg></a><a class="ic" id="xs" target="_blank" rel="noopener" aria-label="X-т хуваалцах" title="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.8 3h3l-6.6 7.6L22 21h-6.1l-4.8-6.3L5.6 21h-3l7.1-8.1L2.3 3h6.2l4.3 5.7zm-1 16.2h1.7L7.3 4.7H5.5z" fill="currentColor"/></svg></a><a class="ic" id="tgs" target="_blank" rel="noopener" aria-label="Telegram-аар илгээх" title="Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.5 4.2 2.9 11.4c-1.3.5-1.3 1.2-.2 1.5l4.8 1.5 1.8 5.6c.2.6.4.8.8.8.4 0 .6-.2.9-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8l3.1-14.8c.3-1.3-.5-1.9-1.4-1.6zM9 14.2l9.2-5.8c.4-.3.8-.1.5.2l-7.9 7.1-.3 3.3z" fill="currentColor"/></svg></a><button class="ic" id="share" aria-label="Холбоос хуулах" title="Холбоос хуулах"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4L12 5.6M14 10a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><i class="sep"></i><span class="fzg"><button class="ic tx" id="fsm" aria-label="Үсэг жижигрүүлэх" title="Үсэг жижигрүүлэх">A<small>−</small></button><button class="ic tx" id="fsp" aria-label="Үсэг томруулах" title="Үсэг томруулах">A<small>+</small></button></span><button class="bt sm" id="tts" hidden><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg> Сонсох</button></span></div>
+    <div class="m"><span id="dP"></span></div>
+    <div class="m"><span><p class="dlede" id="dL"></p></span></div>
+    <div class="m"><span><div class="dbody" id="dB"></div></span></div>
+    <div class="m"><span class="dcred" id="dR"></span></div>
+    <div class="m"><span class="dtags" id="dTg"></span></div>
+    <div class="m"><span id="dS"></span></div>
+    <div class="m"><span class="tbar end"><span class="tbl">Хуваалцах</span><button class="ic" data-sh="n" aria-label="Хуваалцах"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><a class="ic fb" data-sh="fb" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.6c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v1.9H8V11.7h2.6V21.5H14v-9.8h2.7l.4-3.2z" fill="currentColor"/></svg></a><a class="ic" data-sh="x" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.8 3h3l-6.6 7.6L22 21h-6.1l-4.8-6.3L5.6 21h-3l7.1-8.1L2.3 3h6.2l4.3 5.7zm-1 16.2h1.7L7.3 4.7H5.5z" fill="currentColor"/></svg></a><a class="ic" data-sh="tg" target="_blank" rel="noopener" aria-label="Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.5 4.2 2.9 11.4c-1.3.5-1.3 1.2-.2 1.5l4.8 1.5 1.8 5.6c.2.6.4.8.8.8.4 0 .6-.2.9-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8l3.1-14.8c.3-1.3-.5-1.9-1.4-1.6zM9 14.2l9.2-5.8c.4-.3.8-.1.5.2l-7.9 7.1-.3 3.3z" fill="currentColor"/></svg></a><button class="ic" data-sh="c" aria-label="Холбоос хуулах"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4L12 5.6M14 10a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></span></div>
+    <div class="m"><span id="dAd" class="nx"></span></div>
+    <div class="m"><span id="dNx" class="nx"></span></div>
+    <div class="m"><span id="dCm" class="cm"></span></div>
+    <div class="m"><span class="note">Parliament News бол хараат бус хэвлэл мэдээллийн байгууллага бөгөөд УИХ-ын албан ёсны сайт биш. Хуулийн албан ёсны эхийг <a href="https://legalinfo.mn" target="_blank" rel="noopener">legalinfo.mn</a>-ээс үзнэ үү.</span></div>
+  </div>
+<div class="pn" id="pn1"></div></div><div class="pg R"><div class="dr"><div class="media"><div class="slides" id="slides"><div class="slide"><svg viewBox="0 0 474 900" id="post"><defs><filter id="inkf" x="-30%" y="-30%" width="160%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="7"/><feDisplacementMap in="SourceGraphic" scale="120" xChannelSelector="R" yChannelSelector="G"/></filter><mask id="inkm" maskUnits="userSpaceOnUse" x="-200" y="-200" width="874" height="1300"><g filter="url(#inkf)" id="circ"></g></mask></defs><g mask="url(#inkm)" id="pg"></g></svg></div></div><button class="gx" id="gx" aria-label="Томоор харах"><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3.5h5.5V9M9 20.5H3.5V15M20.5 3.5l-7 7M3.5 20.5l7-7"/></svg> Томоор</button><button class="ga p" id="gp" aria-label="Өмнөх зураг">‹</button><button class="ga n" id="gn" aria-label="Дараах зураг">›</button></div><div class="gnav" id="gnav"><span id="gcnt"></span><span class="dots" id="dots"></span></div><p class="fcap" id="fcap"></p></div><div class="pn" id="pn2"></div></div></div>
+</section>
+<section class="menu" id="menu" hidden role="dialog" aria-label="Цэс ба хайлт">
+  <div class="mh"><a class="mlg" href="#" aria-label="Parliament News нүүр"><img class="logo d" src="logo.png" alt="Parliament News" width="123" height="28" onerror="this.parentNode.classList.add('nf')"><img class="logo w" src="logo-white.png" alt="" width="123" height="28" onerror="this.parentNode.classList.add('nf')"><b>Parliament <em>News</em></b></a><button class="mx" id="mclose" aria-label="Хаах">✕</button></div>
+  <div class="mi">
+    <div>
+      <div class="minfo2" id="minfo2"></div><div class="sbox"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input class="srch" id="q" type="search" placeholder="Мэдээ хайх: төсөв, сонгууль, хороо…" autocomplete="off" aria-label="Мэдээ хайх"></div>
+      <div class="chips" id="chips"></div>
+      <div class="tflt" id="tflt" role="group" aria-label="Хугацаагаар шүүх"><span>Хугацаа</span><button data-t="all" class="on">Бүгд</button><button data-t="w">7 хоног</button><button data-t="m">30 хоног</button><button data-t="y">Энэ жил</button></div>
+      <div class="rc" id="rc"></div>
+      <div id="res"></div>
+    </div>
+    <aside class="about">
+      <div class="abh"><span class="abk">PARLIAMENT NEWS</span><h2>Бидний тухай</h2><p>Хараат бус, хариуцлагатай улс төрийн мэдээ.</p></div>
+      <a href="#" id="mlive" class="ablive"><span class="lvp" aria-hidden="true"></span><span class="abtx"><b>Шууд дамжуулалт</b><small id="mlst">Одоогоор дамжуулалт алга</small></span><svg class="ic0 abch" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></a>
+      <ul class="abv">
+        <li><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg><div><h3>Алсын хараа</h3><p>Хариуцлагатай сэтгүүл зүйгээр төр, иргэний гүүр болно.</p></div></li>
+        <li><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg><div><h3>Эрхэм зорилго</h3><p>Аливаа ашиг сонирхлоос ангид, тэнцвэртэй сэтгүүл зүйг баримтална.</p></div></li>
+        <li><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><div><h3>Үнэт зүйл</h3><p>Мэргэжлийн сэтгүүл зүй. Тэнцвэртэй байр суурь.</p></div></li>
+      </ul>
+      <div class="minfo" id="minfo"></div>
+      <nav class="mlinks abl" aria-label="Холбоос"><a href="#" data-f="vid"><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="14" height="12" rx="2.5"/><path d="M16.5 10.5l5-2.5v8l-5-2.5z"/></svg><span>Видео мэдээ</span><svg class="ic0 abch" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></a><a href="#" data-f="bill"><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span>Хуулийн төслийн явц</span><svg class="ic0 abch" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></a><a href="https://legalinfo.mn" target="_blank" rel="noopener"><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M7 21h10M5 7h14M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/></svg><span>Хуулийн эх — legalinfo.mn</span><svg class="ic0 abch" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></nav>
+      <div class="abf"><a data-so="fb" class="abso" aria-label="Facebook" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.6c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v1.9H8V11.7h2.6V21.5H14v-9.8h2.7l.4-3.2z" fill="currentColor"/></svg></a><a data-so="yt" class="abso" aria-label="YouTube" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2a2.6 2.6 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.6 2.6 0 0 0 2.4 7.2 27 27 0 0 0 2 12a27 27 0 0 0 .4 4.8 2.6 2.6 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.6 2.6 0 0 0 1.8-1.8A27 27 0 0 0 22 12a27 27 0 0 0-.4-4.8zM10 15V9l5.2 3z" fill="currentColor"/></svg></a><a href="#" data-pg="contact" class="abct"><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg> Холбоо барих</a><a href="admin.html" class="abadm" title="Редакцын нэвтрэх"><svg class="ic0" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M10.3 3h3.4l.5 2.5 1.9.8 2.1-1.4 2.4 2.4-1.4 2.1.8 1.9 2.5.5v3.4l-2.5.5-.8 1.9 1.4 2.1-2.4 2.4-2.1-1.4-1.9.8-.5 2.5h-3.4l-.5-2.5-1.9-.8-2.1 1.4-2.4-2.4 1.4-2.1-.8-1.9L3 13.7v-3.4l2.5-.5.8-1.9-1.4-2.1 2.4-2.4 2.1 1.4 1.9-.8z"/></svg><span>Редакц</span></a></div>
+    </aside>
+  </div>
+</section>
+<div class="lb" id="lb" hidden role="dialog" aria-label="Зураг, видео томоор"><div class="lbs" id="lbs"></div><button class="lbx" id="lbx" aria-label="Хаах">✕</button><button class="lba p" id="lbp" aria-label="Өмнөх">‹</button><button class="lba n" id="lbn2" aria-label="Дараах">›</button><div class="lbc"><span id="lbk"></span><p id="lbcap"></p></div></div>
+<div class="toast" id="toast"></div>
+<div id="probe" style="position:fixed;height:var(--H);width:1px;visibility:hidden"></div>
+
+<script>
+{
+const SAMPLE=[
+{d:'2026-01-15',img:'img/palace.jpg',imgs:['img/palace.jpg','img/flag.jpg'],caps:['Төрийн ордон. Зураг: Parliament News','Төрийн далбаа. Жишээ зураг'],c:'Чуулган',k:'Хаврын чуулганы дараалал',t:'Хаврын чуулганы хуралдааны дараалал батлагдлаа',m:'hemi',th:0,l:'Улсын Их Хурлын хаврын ээлжит чуулганаар хэлэлцэх асуудлын дарааллыг гишүүдийн олонх дэмжиж баталлаа.'},
+{d:'2026-02-10',c:'Хуулийн мэдээ',k:'Сонгуулийн хууль',t:'Сонгуулийн тухай хуулийн шинэчилсэн найруулгыг хэлэлцэж эхэллээ',m:'cols',th:1,l:'Ажлын хэсэг төслийн үзэл баримтлалыг танилцуулж, анхны хэлэлцүүлгийн хуваарийг гаргалаа.'},
+{d:'2026-03-05',c:'Байнгын хороо',k:'Татварын багц',t:'Эдийн засгийн байнгын хороо татварын багцыг хэлэлцлээ',m:'bars',th:2,l:'Хороо татварын хуулийн багц төслүүдийг чуулганы нэгдсэн хуралдаанд оруулах саналыг дэмжлээ.'},
+{story:true,d:'2026-04-02',c:'Гадаад харилцаа',k:'Парламентын айлчлал',t:'Парламентын бүлэг Сөүл хотод айлчлал хийлээ',m:'rings',th:0,l:'Монгол–Солонгосын парламентын бүлгийн гишүүд хоёр орны хамтын ажиллагааны асуудлаар уулзалт хийлээ.'},
+{d:'2026-04-28',c:'Нийгэм',k:'Боловсролын хууль',t:'Боловсролын хуулийн төсөлд олон нийтийн санал авч эхэллээ',m:'sun',th:1,l:'Иргэд, багш нар төслийн талаарх саналаа цахимаар болон орон нутгийн уулзалтаар өгөх боломжтой.'},
+{d:'2026-05-20',c:'Төсөв',k:'Төсвийн тодотгол',t:'Төсвийн тодотголын төслийг анхны хэлэлцүүлэгт оруулав',m:'bars',th:0,l:'Засгийн газраас өргөн мэдүүлсэн тодотголын төслийн зарлагын өөрчлөлтийг гишүүд асуулт хариултаар тодрууллаа.'},
+{story:true,d:'2026-06-18',vid:'media/sample.mp4',c:'Видео',k:'Нээлттэй парламент',t:'«Нээлттэй парламент» өдөрлөг иргэдэд хаалгаа нээлээ',m:'wave',th:2,l:'Төрийн ордонд зохион байгуулсан өдөрлөгт оюутан, сурагчид чуулганы танхимтай танилцлаа.'},
+{d:'2026-07-07',c:'Хуулийн мэдээ',k:'Агаарын чанар',t:'Агаарын бохирдлыг бууруулах хуулийн төсөл батлагдлаа',m:'wave',th:1,l:'Хуулиар хот суурин газрын агаарын чанарыг хянах, мэдээлэх тогтолцоог шинэчиллээ.'},
+{story:true,d:'2026-09-01',c:'Чуулган',k:'Намрын чуулган нээгдэв',t:'Намрын ээлжит чуулган нээлтээ хийлээ',m:'hemi',th:2,l:'Чуулганы нээлтийн хуралдаанд 2027 оны төсвийн төсөл болон хуулийн 40 гаруй төсөл хэлэлцэхээр төлөвлөжээ.'},
+{d:'2026-09-24',c:'Байнгын хороо',k:'Төрийн байгуулалт',t:'Төрийн байгуулалтын байнгын хороо сонсгол зохион байгууллаа',m:'cols',th:0,l:'Хяналтын сонсголд төрийн албаны шинэчлэлийн явцын талаар холбогдох байгууллагууд мэдээлэл хийлээ.'},
+{d:'2026-10-15',c:'Эдийн засаг',k:'Орлогын сангийн тайлан',t:'Уул уурхайн орлогын сангийн тайланг сонслоо',m:'grid',th:1,l:'Сангийн хуримтлал, зарцуулалтын тайланг гишүүд хэлэлцэж, ил тод байдлыг сайжруулах санал гаргалаа.'},
+{feat:true,story:true,d:'2026-11-20',img:'img/palace.jpg',imgs:['img/palace.jpg','img/flag.jpg'],caps:['Төрийн ордон. Зураг: Parliament News','Төрийн далбаа. Жишээ зураг'],vid:'media/sample.mp4',c:'Төсөв',k:'2027 оны төсөв',t:'2027 оны улсын төсвийг баталлаа',m:'bars',th:2,l:'Улсын Их Хурлын нэгдсэн хуралдаан 2027 оны төсвийн тухай хуулийг эцэслэн баталлаа.'}];
+const ST=['Өргөн мэдүүлсэн','Байнгын хороо','Анхны хэлэлцүүлэг','Эцсийн хэлэлцүүлэг','Баталсан'];
+const ROM=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+const BILL0=[{s:4,y:71,n:9},{s:2,steps:[{d:'2026-01-20',x:'Засгийн газар хуулийн шинэчилсэн найруулгын төслийг УИХ-д өргөн мэдүүлэв. (Жишээ мэдээлэл)'},{d:'2026-02-03',x:'Төрийн байгуулалтын байнгын хороо төслийг хэлэлцэх нь зүйтэй гэж үзэж, ажлын хэсэг байгуулав. (Жишээ мэдээлэл)'},{d:'2026-02-10',x:'Нэгдсэн хуралдаанд үзэл баримтлалыг танилцуулж, анхны хэлэлцүүлгийн хуваарийг баталлаа. (Жишээ мэдээлэл)'}]},{s:1,y:12,n:3},null,{s:0},{s:2},null,{s:4,y:82,n:6},null,null,null,{s:4,y:76,n:18,steps:[{d:'2026-09-30',x:'Засгийн газар 2027 оны төсвийн төслийг хуулийн хугацаанд өргөн мэдүүлэв. (Жишээ мэдээлэл)'},{d:'2026-10-14',x:'Төсвийн байнгын хороо төслийн зарлагын бүтцийг хэлэлцэж, санал, дүгнэлтээ нэгдсэн хуралдаанд хүргүүлэв. (Жишээ мэдээлэл)'},{d:'2026-10-28',x:'Анхны хэлэлцүүлгээр зарчмын зөрүүтэй саналуудаар санал хураалт явуулав. (Жишээ мэдээлэл)'},{d:'2026-11-18',x:'Эцсийн хэлэлцүүлгийг дуусгаж, хуулийн төслийг батлахаар нэгдсэн хуралдаанд оруулав. (Жишээ мэдээлэл)'},{d:'2026-11-20',x:'Нэгдсэн хуралдаан 2027 оны төсвийн тухай хуулийг баталлаа. Дэмжсэн 76, татгалзсан 18. (Жишээ мэдээлэл)'}]}];
+const BODY='Хуралдааны дэлгэрэнгүй тэмдэглэл, санал хураалтын дүн болон гишүүдийн байр суурийг доорх видео бичлэг, баримт бичгээс үзэх боломжтой. Парламент Мэдээ уг асуудлын цаашдын явцыг үргэлжлүүлэн мэдээлнэ.';
+const REP=['Б. Номин','Г. Тэмүүлэн','С. Ариунаа','Д. Билгүүн'];
+const MN=['1-р сар','2-р сар','3-р сар','4-р сар','5-р сар','6-р сар','7-р сар','8-р сар','9-р сар','10-р сар','11-р сар','12-р сар'];
+const HK=[1,1,1,1,1,1,1,1,1,1,1,1];
+SAMPLE.forEach((n,i)=>n.bill=BILL0[i]);
+let NEWS=SAMPLE,BILL=NEWS.map(n=>n.bill||null),L=NEWS.length,TOT=L*3;const PAL=[['#0A22E0','#F3F0EA','#E86522'],['#F3F0EA','#0A22E0','#E86522'],['#E86522','#F3F0EA','#0A22E0']];
+const ICP={"grid": "<rect x=\"3.5\" y=\"3.5\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"13.5\" y=\"3.5\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"3.5\" y=\"13.5\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"13.5\" y=\"13.5\" width=\"7\" height=\"7\" rx=\"1.5\"/>", "landmark": "<path d=\"M3 21h18M5 21V10M9.5 21V10M14.5 21V10M19 21V10M2.5 10 12 4l9.5 6z\"/>", "scale": "<path d=\"M12 3v18M7 21h10M5 7h14M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z\"/>", "users": "<circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.6a6.5 6.5 0 0 1 3.5 5.4\"/>", "globe": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18\"/>", "heart": "<path d=\"M12 20s-7.5-4.6-9.2-9.3A4.6 4.6 0 0 1 12 7.3a4.6 4.6 0 0 1 9.2 3.4C19.5 15.4 12 20 12 20z\"/>", "wallet": "<rect x=\"3\" y=\"6\" width=\"18\" height=\"13\" rx=\"2.5\"/><path d=\"M3 10.5h18M16 15h2\"/>", "trend": "<path d=\"M3 17l6-6 4 4 8-8M15 7h6v6\"/>", "play": "<path d=\"M8 5.5v13l11-6.5z\" fill=\"currentColor\"/>", "video": "<rect x=\"2.5\" y=\"6\" width=\"14\" height=\"12\" rx=\"2.5\"/><path d=\"M16.5 10.5l5-2.5v8l-5-2.5z\"/>", "file": "<path d=\"M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z\"/><path d=\"M14 3v5h5M9 13h6M9 17h6\"/>", "tag": "<path d=\"M3.5 12.5V4.5a1 1 0 0 1 1-1h8l8 8-9 9z\"/><circle cx=\"8.5\" cy=\"8.5\" r=\"1.5\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2.5v2M12 19.5v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2.5 12h2M19.5 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"/>", "moon": "<path d=\"M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z\"/>", "cloud": "<path d=\"M7 18.5a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 11a3.75 3.75 0 0 1-.5 7.5z\"/>", "cloudsun": "<path d=\"M8 2.5V4M3 7.5h1.5M4.6 4.1l1 1M12.4 5.1l-1 1\"/><path d=\"M5.3 10.8A3.5 3.5 0 0 1 11.4 7\"/><path d=\"M9 20.5a4 4 0 0 1-.4-8A5.5 5.5 0 0 1 19 13.8a3.4 3.4 0 0 1-.6 6.7z\"/>", "snow": "<path d=\"M12 2.5v19M3.8 7.3l16.4 9.4M20.2 7.3 3.8 16.7M9.5 4l2.5 2 2.5-2M9.5 20l2.5-2 2.5 2\"/>", "rain": "<path d=\"M7 15a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 7.5 3.75 3.75 0 0 1 17.5 15z\"/><path d=\"M8.5 18l-1 3M12.5 18l-1 3M16.5 18l-1 3\"/>", "wind": "<path d=\"M3 8h11a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 16h7\"/>", "fog": "<path d=\"M3 8h18M5 12h14M3 16h18M7 20h10\"/>", "thermo": "<path d=\"M14 14.8V4.5a2 2 0 0 0-4 0v10.3a4 4 0 1 0 4 0z\"/>", "volume": "<path d=\"M4 9.5v5h3.5L13 19V5L7.5 9.5z\"/><path d=\"M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12\"/>", "stop": "<rect x=\"6.5\" y=\"6.5\" width=\"11\" height=\"11\" rx=\"2\" fill=\"currentColor\"/>", "link": "<path d=\"M10 14a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4L12 5.6M14 10a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2\"/>", "news": "<path d=\"M4 5h13v14H6a2 2 0 0 1-2-2z\"/><path d=\"M17 9h3v8a2 2 0 0 1-2 2M8 9h5M8 13h5M8 16h3\"/>", "gear": "<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M10.3 3h3.4l.5 2.5 1.9.8 2.1-1.4 2.4 2.4-1.4 2.1.8 1.9 2.5.5v3.4l-2.5.5-.8 1.9 1.4 2.1-2.4 2.4-2.1-1.4-1.9.8-.5 2.5h-3.4l-.5-2.5-1.9-.8-2.1 1.4-2.4-2.4 1.4-2.1-.8-1.9L3 13.7v-3.4l2.5-.5.8-1.9-1.4-2.1 2.4-2.4 2.1 1.4 1.9-.8z\"/>", "bell": "<path d=\"M6 9.5a6 6 0 0 1 12 0c0 5.5 2.5 7 2.5 7h-17S6 15 6 9.5z\"/><path d=\"M10 20a2 2 0 0 0 4 0\"/>", "zap": "<path d=\"M13 2.5 4.5 14H11l-1 7.5L18.5 10H12z\"/>", "expand": "<path d=\"M15 3.5h5.5V9M9 20.5H3.5V15M20.5 3.5l-7 7M3.5 20.5l7-7\"/>", "star": "<path d=\"M12 3.2l2.7 5.5 6 .9-4.4 4.2 1 6L12 17l-5.3 2.8 1-6-4.4-4.2 6-.9z\" fill=\"currentColor\"/>", "dot": "<circle cx=\"12\" cy=\"12\" r=\"5\" fill=\"currentColor\"/>", "arrow": "<path d=\"M5 12h14M13 6l6 6-6 6\"/>"},I=(n,c)=>`<svg class="ic0${c?' '+c:''}" viewBox="0 0 24 24" aria-hidden="true">${ICP[n]||ICP.tag}</svg>`;
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt=d=>{const [y,m,dd]=d.split('-');return `${y}.${m}.${dd}`};
+const frac=d=>{const t=new Date(d+'T00:00:00'),s=new Date('2026-01-01T00:00:00');return Math.max(0,Math.min(1,(t-s)/864e5/365))};
+
+function wrap(t,n){const w=t.split(' '),o=[];let c='';for(const x of w){if((c+' '+x).trim().length>n&&c){o.push(c);c=x}else c=(c+' '+x).trim()}o.push(c);return o.slice(0,5)}
+function motif(m,fg,ac){
+ let s='';
+ if(m=='hemi'){const rs=[80,100,120,140,160,180,200];let k=0;rs.forEach(r=>{const n=Math.round(126*r/980);for(let i=0;i<n;i++){const a=Math.PI+Math.PI*(i+.5)/n;s+=`<circle cx="${(237+r*Math.cos(a)).toFixed(1)}" cy="${(490+r*Math.sin(a)).toFixed(1)}" r="7" fill="${i/n<.6?ac:fg}"/>`}});s+=`<rect x="197" y="470" width="80" height="40" fill="${fg}"/><rect x="77" y="520" width="320" height="4" fill="${fg}"/>`}
+ else if(m=='cols'){s+=`<polygon points="87,270 237,190 387,270" fill="${fg}"/><polygon points="187,256 237,230 287,256" fill="${ac}"/><rect x="87" y="276" width="300" height="18" fill="${fg}"/>`;for(let i=0;i<6;i++)s+=`<rect x="${104+i*50}" y="304" width="22" height="180" fill="${fg}"/>`;[0,1,2].forEach(i=>s+=`<rect x="${77-i*14}" y="${492+i*14}" width="${320+i*28}" height="10" fill="${fg}"/>`)}
+ else if(m=='bars'){const h=[120,180,150,240,200,300,260,340];h.forEach((v,i)=>s+=`<rect x="${61+i*45}" y="${540-v}" width="30" height="${v}" fill="${i==7?ac:fg}"/>`);s+=`<rect x="47" y="544" width="380" height="3" fill="${fg}"/>`}
+ else if(m=='rings'){s+=`<g fill="none" stroke="${fg}" stroke-width="3"><circle cx="237" cy="370" r="170"/><ellipse cx="237" cy="370" rx="110" ry="170"/><ellipse cx="237" cy="370" rx="45" ry="170"/><path d="M67 370h340M90 285h294M90 455h294"/></g><circle cx="300" cy="300" r="16" fill="${ac}"/><circle cx="150" cy="330" r="10" fill="${ac}"/>`}
+ else if(m=='sun'){s+=`<circle cx="237" cy="380" r="92" fill="${ac}"/>`;for(let i=0;i<24;i++){const a=i*Math.PI/12;s+=`<line x1="${237+112*Math.cos(a)}" y1="${380+112*Math.sin(a)}" x2="${237+178*Math.cos(a)}" y2="${380+178*Math.sin(a)}" stroke="${fg}" stroke-width="5"/>`}}
+ else if(m=='wave'){for(let j=0;j<9;j++){let p=`M47 ${220+j*40}`;for(let x=47;x<=427;x+=20)p+=` L${x} ${(220+j*40+Math.sin(x/38+j*.7)*18).toFixed(1)}`;s+=`<path d="${p}" fill="none" stroke="${j==4?ac:fg}" stroke-width="${j==4?7:4}"/>`}}
+ else {for(let i=0;i<9;i++)for(let j=0;j<9;j++)s+=`<circle cx="${61+i*44}" cy="${200+j*40}" r="4" fill="${fg}"/>`;s+=`<polyline points="61,520 105,480 149,500 193,400 237,420 281,320 325,340 369,240 413,200" fill="none" stroke="${ac}" stroke-width="8" stroke-linejoin="round"/>`}
+ return s}
+const HEX=/^#[0-9a-fA-F]{6}$/;
+function pal(n){const p=PAL[n.th]||PAL[0],o=n.look||{};return [HEX.test(o.bg)?o.bg:p[0],HEX.test(o.fg)?o.fg:p[1],HEX.test(o.ac)?o.ac:p[2]]}
+const light=h=>{const v=parseInt(h.slice(1),16);return ((v>>16)*299+(v>>8&255)*587+(v&255)*114)/1000>150};
+function cover(n){const [bg,fg,ac]=pal(n),o=n.look||{},lay=['top','full','text'].includes(o.lay)?o.lay:'top',fs=Math.max(.8,Math.min(1.25,+o.size||1)),serif=o.font=='serif',ff=serif?'PT Serif,Georgia,serif':'Inter Tight,sans-serif',lt=light(bg),fy=Number.isFinite(+o.fy)?+o.fy:50,duo=o.duo!==false;
+ const tsz=(lay=='text'?58:44)*fs,lh=tsz*1.14,ln=wrap(n.t,Math.round((lay=='text'?10.5:13)/fs));
+ const rgb=h=>[1,3,5].map(i=>(parseInt(h.substr(i,2),16)/255).toFixed(3)),[dk,li]=lt?[fg,bg]:[bg,fg],a=rgb(dk),b=rgb(li),fid='dq'+dk.slice(1)+li.slice(1);
+ const flt=`<filter id="${fid}" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncR type="table" tableValues="${a[0]} ${b[0]}"/><feFuncG type="table" tableValues="${a[1]} ${b[1]}"/><feFuncB type="table" tableValues="${a[2]} ${b[2]}"/></feComponentTransfer></filter><linearGradient id="g${fid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${bg}" stop-opacity=".9"/><stop offset=".18" stop-color="${bg}" stop-opacity="0"/><stop offset=".42" stop-color="${bg}" stop-opacity="0"/><stop offset=".78" stop-color="${bg}" stop-opacity=".96"/></linearGradient>`;
+ const pa='xMidY'+(fy<34?'Min':fy>66?'Max':'Mid')+' slice',fl=duo?` filter="url(#${fid})"`:'';
+ let art='',ty=612;
+ if(lay=='full'&&n.img){art=`<image href="${esc(n.img)}" width="474" height="900" preserveAspectRatio="${pa}"${fl}/><rect width="474" height="900" fill="url(#g${fid})"/>`;ty=830-(ln.length-1)*lh-10}
+ else if(lay=='text')ty=190+tsz;
+ else art=n.img?`<image href="${esc(n.img)}" x="0" y="132" width="474" height="452" preserveAspectRatio="${pa}"${fl}/>`:motif(n.m,fg,ac);
+ let sum='';if(lay=='text'&&n.l){const sl=wrap(n.l,32).slice(0,5),sy=ty+(ln.length-1)*lh+70;sum=`<rect x="37" y="${(sy-38).toFixed(0)}" width="64" height="5" fill="${ac}"/>`+sl.map((l,i)=>`<text x="37" y="${(sy+i*31).toFixed(0)}" font-size="21" font-family="Noto Serif,Georgia,serif" opacity=".92">${esc(l)}</text>`).join('')}
+ return `<defs>${flt}</defs><rect width="474" height="900" fill="${bg}"/>${art}<g font-family="Inter Tight,sans-serif" fill="${fg}"><use href="#${lt?'lgD':'lgW'}" x="37" y="22" width="220" height="50"/><rect x="37" y="74" width="400" height="2"/><text x="37" y="116" font-size="22" font-weight="600">${esc(n.c)}</text>${ln.map((l,i)=>`<text x="37" y="${(ty+i*lh).toFixed(0)}" font-size="${tsz.toFixed(0)}" font-weight="${serif?700:800}" font-family="${ff}" letter-spacing="${serif?0:-1}">${esc(l)}</text>`).join('')}${sum}${n.feat?`<rect x="300" y="0" width="137" height="34" fill="#F9CF02"/><path d="M318 10.5l2.4 4.8 5.3.8-3.8 3.7.9 5.3-4.8-2.5-4.8 2.5.9-5.3-3.8-3.7 5.3-.8z" fill="#141414"/><text x="378" y="23" font-size="15" font-weight="800" text-anchor="middle" fill="#141414">ОНЦЛОХ</text>`:''}<text x="37" y="868" font-size="18" font-weight="600">${fmt(n.d)}</text>${n.vid?`<rect x="349" y="94" width="88" height="30" fill="${ac}"/><path d="M359 102v14l11-7z" fill="${light(ac)?'#141414':'#FFFFFF'}"/><text x="403" y="115" font-size="15" font-weight="800" text-anchor="middle" fill="${light(ac)?'#141414':'#FFFFFF'}">ВИДЕО</text>`:''}<use href="#${lt?'mkD':'mkW'}" x="402" y="836" width="35" height="46"/></g>`}
+
+const stage=$('stage'),tapes=[];
+function buildShelf(){stage.innerHTML='';tapes.length=0;
+for(let v=0;v<TOT;v++){const n=NEWS[v%L],[bg,fg,ac]=pal(n),lt=light(bg),e=document.createElement('div');e.className='tape';
+ e.style.setProperty('--hk',HK[v%12]);e.innerHTML=`<div class="f sp th${lt?1:0}" style="--bg:${bg};color:${fg}"><i class="gb"></i><span class="plate"><s>МЭДЭЭ</s>${esc(n.c)}</span><b>${esc(n.k)}</b><em>№ ${141+v%L}<br>${n.d.slice(5).replace('-','.')}</em><svg class="mk" viewBox="0 0 98 128"><use href="#${lt?'mkD':'mkW'}" width="98" height="128"/></svg><i class="gb"></i></div><div class="f cv" style="background:${bg}"><svg viewBox="0 0 474 900" preserveAspectRatio="xMidYMid meet">${cover(n)}</svg></div><div class="f bk" style="--bg:${bg};color:${fg}"><div class="bkt"><small>ТОВЧ АГУУЛГА</small><p>${esc(n.l)}</p><i></i></div></div><div class="f fe"></div>`;
+ e.dataset.v=v;stage.appendChild(e);tapes.push({e,sp:e.children[0],cv:e.children[1],bk:e.children[2],fe:e.children[3],lift:0})}}
+buildShelf();
+
+const NS=18,cst=$('cst');cst.innerHTML=Array.from({length:NS},(_,i)=>`<svg viewBox="${(i*740/NS-.6).toFixed(2)} 0 ${(740/NS+1.2).toFixed(2)} 292" preserveAspectRatio="none"><use href="#cityS" width="740" height="292"/></svg>`).join('');const strips=[...cst.children];
+fetch('city.svg').then(r=>r.text()).then(t=>{const m=t.match(/ d="([^"]+)"/);if(m)$('cityP').setAttribute('d',m[1])}).catch(()=>{});
+function layCity(){const Z=H*2.6,hw=H*1.32*(P+Z)/P,ww=hw*740/292,Th=2.3,Rc=ww/Th,yb=(H/2)*(P+Z)/P,sw=ww/NS*(740/NS+1.2)/(740/NS);
+ strips.forEach((e,i)=>{const t=-Th/2+(i+.5)*Th/NS;e.style.width=sw+'px';e.style.height=hw+'px';e.style.left=-sw/2+'px';e.style.top=(yb-hw)+'px';e.style.transform=`translate3d(${Rc*Math.sin(t)}px,0,${-Z+Rc*(1-Math.cos(t))}px) rotateY(${-t}rad)`})}
+let H,ws,d,gap,U,XS=[];const P=1400;
+function measure(){H=$('probe').getBoundingClientRect().height;ws=H*.25;d=H*.62;gap=H*.035;U=H*(innerWidth<768?1.05:1.3);XS=[];let a=0;for(let u=0;u<=3*U;u+=2){XS.push(a);a+=2/(1+(u/U)**1.6)}
+ for(const t of tapes){t.sp.style.width=ws+'px';t.sp.style.left=-ws/2+'px';t.sp.style.transform=`translateZ(${d/2}px)`;t.cv.style.width=d+'px';t.cv.style.left=-d/2+'px';t.cv.style.transform=`rotateY(90deg) translateZ(${ws/2}px)`;t.bk.style.width=d+'px';t.bk.style.left=-d/2+'px';t.bk.style.transform=`rotateY(-90deg) translateZ(${ws/2}px)`;t.fe.style.width=ws*.94+'px';t.fe.style.left=-ws*.47+'px';t.fe.style.transform=`rotateY(180deg) translateZ(${d/2-3}px)`}layCity()}
+measure();addEventListener('resize',measure);
+const xsc=u=>Math.sign(u)*XS[Math.min(XS.length-1,Math.floor(Math.abs(u)/2))];
+const B=r=>Math.abs(r)<1?(r+Math.sin(Math.PI*r)/Math.PI)/2:Math.sign(r)*.5;
+const F=r=>r*(ws+gap)+(d-ws+1.4*gap)*B(r);
+const sm=x=>x*x*(3-2*x);
+const rel=(v,s)=>{let r=((v-s)%TOT+TOT)%TOT;return r>=TOT/2?r-TOT:r};
+
+const startIx=()=>{let j=-1;NEWS.forEach((n,i)=>{if(n.feat)j=i});return j<0?L-1:j};
+let s=startIx()+L,T=s,act=-1,drag=false,moved=false,hov=-1,isOpen=false,mx=innerWidth/2,my=innerHeight/2,tX=0,tY=0,dp=frac(NEWS[startIx()].d),lt=performance.now(),inkT=0,cx=mx,cyc=my;
+const shelf=$('shelf'),cur=$('cur'),play=$('play');
+
+// timeline
+function buildTl(){let h='';for(let w=0;w<=52;w++)h+=`<div class="tk" style="left:${w/52*100}%;height:7px;opacity:.4"></div>`;
+ MN.forEach((m,i)=>{const f=frac(`2026-${String(i+1).padStart(2,'0')}-01`);h+=`<div class="tk" style="left:${f*100}%;height:13px;opacity:.75"></div><div class="ty ${i==0?'first':''} ${i%2?'odd':''}" style="left:${f*100}%">${m}</div>`});
+ NEWS.forEach(n=>h+=`<div class="ev" style="left:${frac(n.d)*100}%"></div>`);$('tks').innerHTML=h}buildTl();
+
+function swap(id,txt,dir,html){const m=$(id),sp=document.createElement('span');if(html)sp.innerHTML=txt;else sp.textContent=txt;
+ const old=[...m.children];m.appendChild(sp);if(RM||dir==0){old.forEach(o=>o.remove());return}
+ const o={duration:650,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'};
+ sp.animate([{transform:`translateY(${dir*105}%)`},{transform:'translateY(0)'}],o);
+ old.forEach(e=>e.animate([{transform:getComputedStyle(e).transform=='none'?'translateY(0)':getComputedStyle(e).transform},{transform:`translateY(${-dir*105}%)`}],o).onfinish=()=>e.remove())}
+function caption(i,dir){const n=NEWS[i];swap('cT',n.t,dir);swap('cS',`<span class="lbl">${n.feat?'<b class="fbad">'+I('star')+' ОНЦЛОХ</b> ':''}${esc(n.c.toUpperCase())} · PARLIAMENT NEWS</span>`,dir,1);swap('cL',n.l,dir);swap('cY',`${fmt(n.d)} — ${esc(n.c)}${BILL[i]?`<span class="stg">${ST[BILL[i].s]}</span>`:''}`,dir,1)}
+
+function frame(now){const dt=Math.min(.05,(now-lt)/1000);lt=now;
+ const k=drag?18:5.2;s=RM&&!drag?T:s+(T-s)*(1-Math.exp(-k*dt));
+ if(s>TOT){s-=TOT;T-=TOT}if(s<0){s+=TOT;T+=TOT}
+ const W=innerWidth,sr=shelf.getBoundingClientRect(),scy=sr.top+sr.height/2,settled=Math.abs(T-s)<.3;
+ const onC=settled&&!isOpen&&scrollY<40&&$('menu').hidden&&$('sv').hidden&&Math.abs(mx-W/2)<.55*d&&Math.abs(my-scy)<.55*H;
+ const e7=1-Math.exp(-7*dt);
+cst.style.transform=`rotateX(${tX*.25}deg) rotateY(${3.5*Math.sin(s/L*2*Math.PI)+tY*.5}deg)`;
+ tY+=((onC?(mx-W/2)/(.55*d)*8:(mx-W/2)/W*4)-tY)*e7;tX+=((onC?-(my-scy)/(H/2)*5:0)-tX)*e7;
+ for(let v=0;v<TOT;v++){const t=tapes[v],r=rel(v,s),o=sm(Math.max(0,1-Math.abs(r))),u=F(r);
+  t.lift+=((v==hov&&Math.abs(r)>.5?1:0)-t.lift)*(RM?1:1-Math.exp(-12*dt));
+  if(Math.abs(u)>U*1.95){t.e.style.display='none';continue}t.e.style.display='';
+  const sc=1/(1+(Math.abs(u)/U)**1.6),kk=1/sc,z=P*(1-kk)+o*H*.1,x=xsc(u)*kk,y=(H*.5*(1-sc)*.42+o*H*.012-t.lift*H*.05)*kk;
+  const ry=Math.sign(u)*Math.min(1,Math.abs(u)/U)*26*(1-o)-90*o+tY*o,rx=tX*o;
+  t.e.style.transform=`translate3d(${x}px,${y}px,${z}px) rotateX(${rx}deg) rotateY(${ry}deg)`;t.e.style.zIndex=Math.round(3000+z);
+  t.sp.style.setProperty('--shade',Math.min(.6,o*.55+(1-sc)*.32));t.cv.style.setProperty('--shade',(1-o)*.82);t.bk.style.setProperty('--shade',.5)}
+ const a=((Math.round(s)%L)+L)%L;if(a!=act){caption(a,act<0?0:Math.sign(T-s)||1);act=a}
+ // timeline dot
+ const fl=Math.floor(s),i0=((fl%L)+L)%L,i1=(i0+1)%L,f=s-fl;
+ const tgt=i0==L-1?(f<.5?frac(NEWS[i0].d):frac(NEWS[i1].d)):frac(NEWS[i0].d)+(frac(NEWS[i1].d)-frac(NEWS[i0].d))*f;
+ dp=Math.abs(tgt-dp)>.17?tgt:dp+(tgt-dp)*(1-Math.exp(-14*dt));$('dot').style.left=dp*100+'%';
+ // play ring
+ const ps=isOpen?0:sm(Math.max(0,1-Math.abs(T-s)*3));play.style.left=(W/2-d/2-6)+'px';play.style.top=(scy+.36*H)+'px';play.style.transform=`translate(-50%,-50%) scale(${ps})`;play.style.visibility=ps<.05?'hidden':'visible';
+ // cursor
+ const e16=1-Math.exp(-16*dt);cx+=(mx-cx)*e16;cyc+=(my-cyc)*e16;cur.style.transform=`translate(${cx}px,${cyc}px)`;
+ const tg=document.elementFromPoint(mx,my);cur.className='cur'+(scrollY>=40&&!isOpen?(tg&&tg.closest('button,a')?' btn':''):isOpen?(tg&&tg.closest('button,a')?' btn':''):onC?' open':tg&&tg.closest('button,a,.tl')?' btn':hov>=0?' spine':'');
+ // ink
+ if(isOpen){const el=now-inkT;[...$('circ').children].forEach(c=>{const p=Math.max(0,Math.min(1,(el-520-+c.dataset.d)/1250));c.setAttribute('r',720*(1-(1-p)**3))})}
+ requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+
+// улс төрийн хэсгүүд
+function stgHtml(b,k){const x=(b.steps||[])[k]||{},st=k<b.s?'Дууссан':k==b.s?'Одоогийн шат':'Хүлээгдэж буй';
+ return `<div class="sh"><b>${k+1}. ${ST[k]}</b><span>${st}${x.d?' · '+fmt(x.d):''}</span></div><p>${x.x?esc(x.x):(k>b.s?'Энэ шат хараахан эхлээгүй байна.':'Энэ шатны дэлгэрэнгүй мэдээлэл хараахан ороогүй байна.')}</p>${attHtml(x.att)}`}
+function inl(s){return esc(s).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/(^|[^*])\*([^*]+)\*/g,'$1<i>$2</i>').replace(/\[([^\]]{1,120})\]\((https:\/\/[^\s)"'<>]+)\)/g,(m,t,u)=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`)}
+function richBody(src){const blocks=String(src).replace(/\r/g,'').split(/\n{2,}/);
+ return blocks.map(b=>{b=b.trim();if(!b)return '';let m;
+  if(m=b.match(/^\[\[img:(\S+?)(?:\|([^\]]*))?\]\]$/)){const u=m[1];if(!okU(u))return '';return `<figure><img src="${esc(u)}" alt="${esc(m[2]||'')}" loading="lazy" data-zoom="${esc(u)}">${m[2]?`<figcaption>${esc(m[2])}</figcaption>`:''}</figure>`}
+  if(/^##\s/.test(b))return `<h3>${inl(b.replace(/^##\s+/,''))}</h3>`;
+  if(/^>\s?/.test(b))return `<blockquote>${inl(b.replace(/^>\s?/gm,''))}</blockquote>`;
+  if(/^[-•]\s/m.test(b)&&b.split('\n').every(l=>/^[-•]\s/.test(l)))return `<ul>${b.split('\n').map(l=>`<li>${inl(l.replace(/^[-•]\s+/,''))}</li>`).join('')}</ul>`;
+  return `<p>${inl(b).replace(/\n/g,'<br>')}</p>`}).join('')}
+function attHtml(a){if(!Array.isArray(a)||!a.length)return '';const md=a.filter(x=>x.k=='img'||x.k=='vid'),ln=a.filter(x=>x.k=='link'),nw=a.filter(x=>x.k=='news');
+ return (md.length?`<div class="amd">${md.map(x=>x.k=='img'?`<button type="button" class="amb" data-zoom="${esc(x.u)}" aria-label="Томоор харах"><img src="${esc(x.u)}" alt="${esc(x.t||'')}" loading="lazy"></button>`:`<video src="${esc(x.u)}" controls playsinline preload="metadata"></video>`).join('')}</div>`:'')+
+  (ln.length?`<ul class="alk">${ln.map(x=>`<li><a href="${esc(x.u)}" target="_blank" rel="noopener">${I('link')} ${esc(x.t||x.u.replace(/^https:\/\//,'').slice(0,60))} ↗</a></li>`).join('')}</ul>`:'')+
+  (nw.length?`<div class="anw">${nw.map(x=>{const j=NEWS.findIndex(n=>n.id==x.id);return j<0?'':`<button type="button" class="anb" data-goto="${j}">${I('news')} ${esc(NEWS[j].t)}</button>`}).join('')}</div>`:'')}
+function dPol(i){let b=BILL[i];if(!b)return '<div class="vl">Хяналт, мэдээллийн сонсгол</div>';
+ let s='<div class="lbl" style="color:#6D6A63;margin-bottom:8px">Хуулийн төслийн явц <span style="font-weight:500;letter-spacing:0">— шат бүр дээр дарж уншина</span></div><div class="trk" role="tablist">'+ST.map((t,k)=>`<button type="button" role="tab" data-stg="${k}" class="${k<b.s?'dn':k==b.s?'cu':''}${k==b.s?' sel':''}" aria-selected="${k==b.s}">${t}</button>`).join('')+'</div><div class="stgp" id="stgp">'+stgHtml(b,b.s)+'</div>';
+ if(b.y!=null){const nn=b.n||0,tot=b.y+nn||1;b={...b,n:nn};s+=`<div class="vt" style="margin-top:14px"><div class="vb"><span style="width:${b.y/tot*100}%"></span><span style="width:${b.n/tot*100}%"></span></div><div class="vl"><span>Дэмжсэн <b>${b.y}</b></span><span>Татгалзсан <b>${b.n}</b></span><span>${Math.round(b.y/tot*100)}% дэмжлэг</span></div></div>`}
+ s+='<a class="src" href="https://legalinfo.mn" target="_blank" rel="noopener" style="display:inline-block;margin-top:12px;font-size:13px;font-weight:600">Хуулийн албан ёсны эх — legalinfo.mn ↗</a>';
+ return s}
+function drawHemi(att){const rs=[44,56,68,80,92,104];let s='';const tot=rs.reduce((a,b)=>a+b,0);const pts=[];
+ rs.forEach(r=>{const n=Math.round(126*r/tot);for(let i=0;i<n;i++){const a=Math.PI+Math.PI*(i+.5)/n;pts.push([110+r*Math.cos(a),110+r*Math.sin(a),a])}});
+ pts.sort((p,q)=>p[2]-q[2]).slice(0,126).forEach((p,i)=>{s+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.6" ${(i*37)%126<att?'fill="currentColor"':'fill="none" stroke="currentColor" stroke-width="1"'}/>`});
+ $('hemi').innerHTML=s+'<rect x="98" y="100" width="24" height="12" rx="1" fill="var(--red)"/>';
+}
+let ADS=[];function buildTicker(){const ns=NEWS.slice().reverse().map(n=>`<span>${esc(n.t)}</span>`);const ad=ADS.map(a=>a.u?`<a class="tad" href="${esc(a.u)}" target="_blank" rel="noopener sponsored">${esc(a.x)}</a>`:`<span class="tad"><a class="tad">${esc(a.x)}</a></span>`);const out=[];ns.forEach((x,k)=>{out.push(x);if(ad.length&&k%3==2)out.push(ad[(k/3|0)%ad.length])});const items=out.join('');$('tr').innerHTML=items+items}
+// өдөр, шөнийн горим
+(()=>{const R=document.documentElement;let v=null;try{v=localStorage.getItem('pn_theme')}catch(_){}
+ const isDark=()=>R.dataset.theme?R.dataset.theme=='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+ if(v)R.dataset.theme=v;const upd=()=>{$('thm').innerHTML=I(isDark()?'sun':'moon');$('thm').setAttribute('aria-label',isDark()?'Өдрийн горим':'Шөнийн горим')};upd();
+ $('thm').onclick=()=>{const n=isDark()?'light':'dark';R.dataset.theme=n;try{localStorage.setItem('pn_theme',n)}catch(_){}upd();window.pnThemeSync&&pnThemeSync()};
+ window.pnSetTheme=v=>{if(v=='system'){delete R.dataset.theme;try{localStorage.removeItem('pn_theme')}catch(_){}}else{R.dataset.theme=v;try{localStorage.setItem('pn_theme',v)}catch(_){}}upd()}})();
+// ханш, цаг агаар
+const WXI={sun:I('sun'),cloud:I('cloudsun'),over:I('cloud'),snow:I('snow'),rain:I('rain'),wind:I('wind'),fog:I('fog')};
+const SYM={USD:'$',EUR:'€',CNY:'¥',RUB:'₽',KRW:'₩',JPY:'¥'};
+function applyInfo(o){const w=o&&o.wx,fx=(o&&Array.isArray(o.fx)?o.fx:[]).filter(x=>x&&/^[A-Z]{3}$/.test(x.c)&&Number.isFinite(+x.v)).slice(0,6);
+ const nf=v=>(+v).toLocaleString('mn-MN',{maximumFractionDigits:2}),ar=c=>!+c?'':+c>0?`<span class="up">▲${nf(c)}</span>`:`<span class="dn">▼${nf(Math.abs(c))}</span>`;
+ const wt=w&&Number.isFinite(+w.t)?`${WXI[w.i]||I('thermo')} ${Math.round(+w.t)}°C ${esc(str(w.city,24)||'Улаанбаатар')}`:'';
+ $('tinfo').innerHTML=(wt?`<span>${wt}</span>`:'')+fx.slice(0,3).map((x,k)=>`<span class="${k?'fxx':''}">${x.c} ${nf(x.v)}₮ ${ar(x.ch)}</span>`).join('');
+ const src=str(o&&o.fxsrc,60);
+ $('minfo').innerHTML=(wt||fx.length)?`<h3>ӨНӨӨДӨР</h3>${wt?`<div class="wx"><i>${WXI[w.i]||I('thermo')}</i><b>${Math.round(+w.t)}°</b><span>${esc(str(w.city,24)||'Улаанбаатар')}<br>${esc(str(w.txt,40))}</span></div>`:''}${fx.length?`<div class="fx">${fx.map(x=>`<div><span>${SYM[x.c]||''} ${x.c}</span><span>${nf(x.v)}₮ ${ar(x.ch)}</span></div>`).join('')}</div><span class="isrc">Ханш: ${esc(src||'Монголбанк')}${o.infoAt?' · '+new Date(+o.infoAt).toLocaleDateString('mn-MN'):''}</span>`:''}`:'';
+ $('minfo2').innerHTML=$('tinfo').innerHTML.replace(/ class="fxx"/g,'');
+ if(wt){const m=$('mstat');m.dataset.wx=` · ${WXI[w.i]||''} ${Math.round(+w.t)}°`}}
+
+drawHemi(98);buildTicker();$('mstat').textContent='Хуралдаж байна · Ирц 98/126';
+// зургийн цомог, видео
+let GS=[],gi=0;
+function slideImg(u){return `<span class="bgb" style="background-image:url('${esc(u)}')"></span><img class="fg" src="${esc(u)}" alt="" loading="lazy">`}
+function gal(n){const sl=$('slides');[...sl.children].slice(1).forEach(e=>e.remove());
+ const s0=sl.firstElementChild;s0.querySelectorAll('.s0').forEach(e=>e.remove());$('post').style.display='none';
+ s0.insertAdjacentHTML('beforeend',`<div class="s0">${n.img?slideImg(n.img):`<svg viewBox="0 0 474 900" preserveAspectRatio="xMidYMid meet">${cover(n)}</svg>`}</div>`);
+ const md=$('slides').parentElement;md.dataset.ar='book';
+ if(n.img){const im=new Image();im.onload=()=>{const r=im.naturalWidth/Math.max(1,im.naturalHeight);md.dataset.ar=r>1.25?'wide':r<.85?'tall':'sq'};im.src=n.img}else if(n.vid&&!(n.imgs||[]).length)md.dataset.ar='wide';
+ md.classList.remove('rev');void md.offsetWidth;md.classList.add('rev');
+ const caps=n.caps||[];GS=[{k:'svg',c:n.img?(caps[0]||''):''}];
+ (n.imgs||[]).slice(1).forEach((src,j)=>GS.push({k:'img',src,c:caps[j+1]||''}));
+ if(n.vid)GS.push({k:'vid',src:n.vid,c:'Видео мэдээ · Parliament News'});
+ sl.insertAdjacentHTML('beforeend',GS.slice(1).map(g=>g.k=='img'?`<div class="slide">${slideImg(g.src)}</div>`:`<div class="slide"><span class="vt2">${I('play')} ВИДЕО</span><video src="${esc(g.src)}" poster="media/poster.jpg" controls playsinline preload="metadata"></video></div>`).join(''));
+ $('dots').innerHTML=GS.map((g,k)=>`<button data-k="${k}" class="${g.k=='vid'?'v':''}" aria-label="${g.k=='vid'?'Видео':'Зураг '+(k+1)}"></button>`).join('');
+ const multi=GS.length>1;$('gp').hidden=$('gn').hidden=$('gnav').hidden=!multi;$('watch').hidden=!n.vid;
+ sl.scrollLeft=0;gi=-1;setSlide(0)}
+function setSlide(k){gi=k;const g=GS[k];if(!g)return;$('fcap').textContent=g.c;
+ const ni=GS.filter(x=>x.k!='vid').length;$('gcnt').textContent=g.k=='vid'?'Видео':`Зураг ${k+1} / ${ni}`;
+ [...$('dots').children].forEach((b,j)=>b.classList.toggle('on',j==k));
+ $('slides').querySelectorAll('video').forEach(v=>{if(g.k!='vid')v.pause()})}
+function goSlide(k){k=Math.max(0,Math.min(GS.length-1,k));const sl=$('slides');sl.scrollTo({left:k*sl.clientWidth,behavior:RM?'auto':'smooth'});setSlide(k)}
+// detail
+const CIRC=[[150,330,0],[340,600,120],[250,120,220],[90,760,300],[400,250,360],[260,860,420],[230,470,180]];
+function activeCv(){return tapes[((Math.round(T)%TOT)+TOT)%TOT].cv.getBoundingClientRect()}
+function open(){if(isOpen)return;document.documentElement.style.overflow='hidden';T=Math.round(T);const i=((T%L)+L)%L,n=NEWS[i];
+ $('dC').textContent=n.c.toUpperCase();$('dT').textContent=n.t;$('dP').innerHTML=dPol(i);$('dM').textContent=`${fmt(n.d)} / ${n.c} / 4 мин унших`;$('dL').textContent=n.l;$('dB').innerHTML=richBody(n.body||BODY);setShare(n);renderTags(n);$('rprog').style.width='0';$('dS').innerHTML=n.src&&n.src.length?'<div class="srch3">ЭХ СУРВАЛЖ БА ХОЛБООС</div>'+attHtml(n.src):'';$('dR').textContent=`Сурвалжлагч ${(n.rep||REP[i%4])} · Parliament News`;
+ renderNx(i);renderCm();$('dAd').innerHTML=BNR.some(b=>b.p=='article'||b.p=='all')?adBlock('article'):'';$('pg').innerHTML=n.img?`<image href="${esc(n.img)}" width="474" height="900" preserveAspectRatio="xMidYMid slice"/>`:cover(n);gal(n);$('dH').textContent=`PARLIAMENT NEWS · ${n.c.toUpperCase()}`;$('pn1').textContent=12+i*2;$('pn2').textContent=13+i*2;$('circ').innerHTML=CIRC.map(c=>`<circle cx="${c[0]}" cy="${c[1]}" r="0" fill="#fff" data-d="${c[2]}"/>`).join('');
+ const r=activeCv(),det=$('det');det.hidden=false;isOpen=true;inkT=performance.now()-(RM?5000:0);
+ det.animate([{clipPath:`inset(${r.top}px ${innerWidth-r.right}px ${innerHeight-r.bottom}px ${r.left}px round 3px)`},{clipPath:'inset(0 round 0)'}],{duration:RM?1:1050,easing:'cubic-bezier(.76,0,.18,1)',fill:'both'});
+ [...$('dl').children].forEach((m,j)=>m.firstElementChild.animate([{transform:'translateY(110%)'},{transform:'translateY(0)'}],{duration:RM?1:900,delay:RM?0:620+j*75,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'}));
+ $('close').focus()}
+function close(){if(!isOpen)return;try{tts&&tts.stop()}catch(_){}const det=$('det'),r=activeCv();$('slides').querySelectorAll('video').forEach(v=>v.pause());
+ det.animate([{clipPath:'inset(0 round 0)'},{clipPath:`inset(${r.top}px ${innerWidth-r.right}px ${innerHeight-r.bottom}px ${r.left}px round 3px)`}],{duration:RM?1:850,easing:'cubic-bezier(.76,0,.18,1)',fill:'both'}).onfinish=()=>{det.hidden=true;det.getAnimations({subtree:true}).forEach(a=>a.cancel());isOpen=false;document.documentElement.style.overflow='';if(pend){const a=pend;pend=null;setData(a)}}}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),1800)}
+
+// inputs
+addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY});
+stage.addEventListener('pointerover',e=>{const t=e.target.closest('.tape');hov=t?+t.dataset.v:-1});
+stage.addEventListener('pointerout',e=>{if(!e.relatedTarget||!e.relatedTarget.closest('.tape'))hov=-1});
+shelf.addEventListener('click',e=>{if(moved||isOpen)return;const r0=activeCv();if(e.clientX>=r0.left&&e.clientX<=r0.right&&e.clientY>=r0.top&&e.clientY<=r0.bottom){open();return}const t=e.target.closest('.tape');if(!t)return;const r=rel(+t.dataset.v,s);if(Math.abs(r)<.5)open();else T=Math.round(T+r)});
+let x0=0,T0=0,pid=null;
+shelf.addEventListener('pointerdown',e=>{if(isOpen)return;x0=e.clientX;T0=T;pid=e.pointerId;moved=false});
+addEventListener('pointermove',e=>{if(pid!==e.pointerId)return;const dx=e.clientX-x0;if(!moved&&Math.abs(dx)>5){moved=true;drag=true}if(drag)T=T0-dx/(ws+gap)});
+addEventListener('pointerup',e=>{if(pid!==e.pointerId)return;pid=null;if(drag){T=Math.round(T);drag=false}setTimeout(()=>moved=false,0)});
+let wt;addEventListener('wheel',e=>{if(isOpen||!$('menu').hidden)return;if(scrollY>4)return;const hz=Math.abs(e.deltaX)>Math.abs(e.deltaY),sr2=shelf.getBoundingClientRect();if(!hz&&(e.clientY<sr2.top||e.clientY>sr2.bottom))return;e.preventDefault();const dl=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;T+=dl/(ws+gap)*.5;clearTimeout(wt);wt=setTimeout(()=>T=Math.round(T),160)},{passive:false});
+$('prev').onclick=()=>T=Math.round(T)-1;$('next').onclick=()=>T=Math.round(T)+1;
+play.onclick=open;$('close').onclick=close;
+$('watch').onclick=()=>{const k=GS.findIndex(x=>x.k=='vid');if(k>=0)openLB(k)};
+let li=0;
+function openLB(k){const n=NEWS[act];$('slides').querySelectorAll('video').forEach(v=>v.pause());
+ $('lbs').innerHTML=GS.map(g=>`<div class="lbi">${g.k=='svg'?(n.img?`<img src="${esc(n.img)}" alt="">`:`<svg viewBox="0 0 474 900">${cover(n)}</svg>`):g.k=='img'?`<img src="${esc(g.src)}" alt="">`:`<video src="${esc(g.src)}" poster="media/poster.jpg" controls playsinline></video>`}</div>`).join('');
+ $('lb').hidden=false;$('lbp').hidden=$('lbn2').hidden=GS.length<2;
+ requestAnimationFrame(()=>{const s2=$('lbs');s2.scrollLeft=k*s2.clientWidth;lbSet(k,GS[k]&&GS[k].k=='vid')});$('lbx').focus()}
+function lbSet(k,play){li=k;const g=GS[k];if(!g)return;const ni=GS.filter(x=>x.k!='vid').length;$('lbk').textContent=g.k=='vid'?'ВИДЕО':`ЗУРАГ ${Math.min(k+1,ni)} / ${ni}`;$('lbcap').textContent=g.c||'';
+ [...$('lbs').children].forEach((sl,j)=>{const v=sl.querySelector('video');if(!v)return;if(j!==k)v.pause();else if(play)v.play().catch(()=>{})})}
+let GS0=null;function closeLB(){if(GS0){GS=GS0;GS0=null}$('lbs').querySelectorAll('video').forEach(v=>v.pause());$('lb').hidden=true;$('lbs').innerHTML=''}
+const lbGo=k=>{k=Math.max(0,Math.min(GS.length-1,k));const s2=$('lbs');s2.scrollTo({left:k*s2.clientWidth,behavior:RM?'auto':'smooth'});lbSet(k,GS[k].k=='vid')};
+$('lbs').addEventListener('scroll',()=>{const s2=$('lbs'),k=Math.round(s2.scrollLeft/Math.max(1,s2.clientWidth));if(k!=li)lbSet(k,false)},{passive:true});
+$('dP').addEventListener('click',e=>{const t=e.target.closest('[data-stg]');if(!t)return;const b=BILL[act];if(!b)return;const k=+t.dataset.stg;$('stgp').innerHTML=stgHtml(b,k);$('dP').querySelectorAll('[data-stg]').forEach(x=>{x.classList.toggle('sel',x==t);x.setAttribute('aria-selected',x==t)})});
+$('det').addEventListener('click',e=>{const z=e.target.closest('[data-zoom]');if(z){GS0=GS;GS=[{k:'img',src:z.dataset.zoom,c:(z.querySelector('img')||z).alt||''}];$('lbs').innerHTML=`<div class="lbi"><img src="${esc(z.dataset.zoom)}" alt=""></div>`;$('lb').hidden=false;$('lbp').hidden=$('lbn2').hidden=true;lbSet(0,false);return}
+ const g=e.target.closest('[data-goto]');if(g){const j=+g.dataset.goto;close();setTimeout(()=>goTo(j),RM?50:950)}});
+// уншигчийн хэрэгсэл
+let fz=1;try{fz=+localStorage.getItem('pn_fz')||1}catch(_){}
+const setFz=v=>{fz=Math.max(.85,Math.min(1.4,Math.round(v*100)/100));document.querySelector('.spread').style.setProperty('--fz',fz);try{localStorage.setItem('pn_fz',fz)}catch(_){}$('fsm').disabled=fz<=.85;$('fsp').disabled=fz>=1.4};setFz(fz);
+$('fsm').onclick=()=>setFz(fz-.1);$('fsp').onclick=()=>setFz(fz+.1);
+function shUrl(n){return 'https://parlamentnews.mn/'+encodeURIComponent(n.id||n.d)}
+function setShare(n){const u=encodeURIComponent(shUrl(n)),t=encodeURIComponent(n.t);const L2={fb:'https://www.facebook.com/sharer/sharer.php?u='+u,x:'https://twitter.com/intent/tweet?url='+u+'&text='+t,tg:'https://t.me/share/url?url='+u+'&text='+t};
+ $('fbs').href=L2.fb;$('xs').href=L2.x;$('tgs').href=L2.tg;document.querySelectorAll('[data-sh]').forEach(a=>{if(L2[a.dataset.sh])a.href=L2[a.dataset.sh]})}
+function copyLink(){const n=NEWS[act];try{navigator.clipboard.writeText(shUrl(n)).then(()=>toast('Холбоос хуулагдлаа'),()=>toast('Хуулах боломжгүй байна'))}catch(_){toast('Хуулах боломжгүй байна')}}
+async function nativeShare(){const n=NEWS[act];if(navigator.share){try{await navigator.share({title:n.t,text:n.l,url:shUrl(n)})}catch(_){}}else copyLink()}
+$('nsh').onclick=nativeShare;
+document.querySelectorAll('[data-sh="n"]').forEach(b=>b.onclick=nativeShare);document.querySelectorAll('[data-sh="c"]').forEach(b=>b.onclick=copyLink);
+const pgL=document.querySelector('.pg.L');const prog=()=>{const el=$('det');const m=el.scrollHeight-el.clientHeight;$('rprog').style.width=(m>4?Math.min(100,el.scrollTop/m*100):0)+'%'};pgL.addEventListener('scroll',prog,{passive:true});$('det').addEventListener('scroll',prog,{passive:true});
+let tts=null;(async()=>{const C=window.claude;if(!C||!C.use)return;try{tts=await C.use('tts')}catch(_){}if(!tts)return;$('tts').hidden=false;
+ tts.onState(({state})=>{$('tts').dataset.on=state=='speaking'?'1':'';$('tts').innerHTML=state=='speaking'?I('stop')+' Зогсоох':I('volume')+' Сонсох'})})();
+$('tts').onclick=()=>{if(!tts)return;if($('tts').dataset.on){tts.stop();return}const n=NEWS[act];const body=(n.body||BODY).replace(/\[\[img:[^\]]*\]\]/g,'').replace(/[#>*]/g,'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1');
+ tts.speak([n.t,n.l,...body.split(/\n{2,}/)].filter(Boolean).map(x=>({text:x.slice(0,1900)}))).catch(e=>{if(e&&e.code=='not_granted')$('tts').hidden=true})};
+$('lbp').onclick=()=>lbGo(li-1);$('lbn2').onclick=()=>lbGo(li+1);$('lbx').onclick=closeLB;$('gx').onclick=()=>openLB(gi);
+$('slides').addEventListener('click',e=>{if(e.target.closest('video'))return;openLB(gi)});
+$('gp').onclick=()=>goSlide(gi-1);$('gn').onclick=()=>goSlide(gi+1);
+$('slides').addEventListener('scroll',()=>{const sl=$('slides'),k=Math.round(sl.scrollLeft/Math.max(1,sl.clientWidth));if(k!=gi)setSlide(k)},{passive:true});
+$('dots').addEventListener('click',e=>{const b=e.target.closest('button');if(b)goSlide(+b.dataset.k)});
+// цэс ба хайлт
+const menu=$('menu');let mf='all';
+const CL={all:'Бүгд',vid:'Видеотой',bill:'Хуулийн төсөл'},cats=()=>{const used=new Set(NEWS.map(n=>n.c));const ord=CATS.length?CATS.map(c=>c.n).filter(c=>used.has(c)):[];return ['all',...new Set([...ord,...NEWS.map(n=>n.c)].filter(c=>c!='Видео')),'vid','bill']};let mt='all';
+function renderRes(){const q=$('q').value.trim().toLowerCase();
+ const CI={bill:'file',all:'grid','Чуулган':'landmark','Хуулийн мэдээ':'scale','Байнгын хороо':'users','Гадаад харилцаа':'globe','Нийгэм':'heart','Төсөв':'wallet','Эдийн засаг':'trend','Видео':'video',vid:'play'};
+ const cnt=c=>c=='all'?NEWS.length:c=='vid'?NEWS.filter(n=>n.vid).length:c=='bill'?NEWS.filter(n=>n.bill).length:NEWS.filter(n=>n.c==c).length;
+ $('chips').innerHTML=cats().map(c=>`<button class="chip${c==mf?' on':''}" data-c="${esc(c)}"><i>${I(CI[c]||'tag')}</i><b>${esc(CL[c]||c)}</b><small>${cnt(c)} мэдээ</small></button>`).join('');
+ const tmin={all:0,w:7,m:30,y:365}[mt];const list=NEWS.map((n,i)=>({n,i})).filter(({n})=>(!msc||n.sc==msc)&&(mf=='all'||(mf=='vid'?n.vid:mf=='bill'?n.bill:n.c==mf))&&(!tmin||(Date.now()-Date.parse(n.d))/864e5<=tmin)&&(!q||(n.t+' '+n.l+' '+n.c+' '+n.k+' '+tagsOf(n).join(' ')).toLowerCase().includes(q))).reverse();$('tflt').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t==mt));
+ $('rc').textContent=`${list.length} мэдээ`;
+ $('res').innerHTML=list.length?list.map(({n,i})=>`<button class="ri" data-i="${i}"><i class="rcv"><svg viewBox="0 0 474 900" preserveAspectRatio="xMidYMid slice">${cover(n)}</svg>${n.vid?'<em>'+I('play')+'</em>':''}</i><span class="rtx"><span class="rmeta"><span class="rcat">${esc(n.c)}</span><span>${fmt(n.d)}</span>${BILL[i]?`<span class="rst${BILL[i].s==4?' ok':''}">${ST[BILL[i].s]}</span>`:''}</span><b>${esc(n.t)}</b><p>${esc(n.l)}</p></span><span class="rgo" aria-hidden="true">›</span></button>`).join(''):'<div class="empty"><b>Илэрц олдсонгүй</b><span>Өөр үгээр хайх эсвэл «Бүгд» ангиллыг сонгоорой.</span></div>'}
+function openMenu(f,sc){if(isOpen)close();document.documentElement.style.overflow='hidden';mf=f||'all';msc=sc||'';renderRes();menu.hidden=false;const b=$('burger').getBoundingClientRect(),x=b.left+b.width/2,y=b.top+b.height/2;
+ menu.animate([{clipPath:`circle(0px at ${x}px ${y}px)`},{clipPath:`circle(${Math.hypot(innerWidth,innerHeight)}px at ${x}px ${y}px)`}],{duration:RM?1:650,easing:'cubic-bezier(.76,0,.18,1)'});
+ if(matchMedia('(pointer:fine)').matches)$('q').focus()}
+function closeMenu(){menu.hidden=true;document.documentElement.style.overflow=''}
+function goTo(j){let df=((j-act)%L+L)%L;if(df>6)df-=L;T=Math.round(T)+df;const w=()=>{if(Math.abs(T-s)<.04)open();else requestAnimationFrame(w)};requestAnimationFrame(w)}
+$('burger').onclick=()=>openMenu('all');$('mclose').onclick=closeMenu;document.querySelector('.mlg').onclick=e=>{e.preventDefault();closeMenu()};
+document.addEventListener('click',e=>{const a=e.target.closest('[data-f]');if(!a)return;e.preventDefault();openMenu(a.dataset.f,a.dataset.sc||'')});
+let msc='';$('chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(b){mf=b.dataset.c;msc='';renderRes()}});
+$('q').addEventListener('input',renderRes);
+$('res').addEventListener('click',e=>{const b=e.target.closest('.ri');if(!b)return;closeMenu();goTo(+b.dataset.i)});
+const liveMsg=e=>{e.preventDefault();if(typeof LIVE!='undefined'&&LIVE.on&&LIVE.u){window.open(LIVE.u,'_blank','noopener');return}toast(typeof LIVE!='undefined'&&LIVE.on?'Дамжуулалтын холбоос удахгүй':'Одоогоор шууд дамжуулалт алга')};$('live').onclick=liveMsg;$('mlive').onclick=liveMsg;
+$('share').onclick=copyLink;
+addEventListener('keydown',e=>{if(!$('lb').hidden){if(e.key=='Escape')closeLB();if(e.key=='ArrowLeft')lbGo(li-1);if(e.key=='ArrowRight')lbGo(li+1);return}if(!menu.hidden){if(e.key=='Escape')closeMenu();return}if(e.key=='/'&&!isOpen){e.preventDefault();openMenu('all');return}if(e.key=='Escape')close();if(isOpen)return;if(e.key=='ArrowLeft')T=Math.round(T)-1;if(e.key=='ArrowRight')T=Math.round(T)+1;if(e.key=='Enter'&&!e.target.closest('button,a'))open()});
+$('hit').addEventListener('click',e=>{const r=$('tl').getBoundingClientRect(),f=(e.clientX-r.left)/r.width;let j=0,b=9;NEWS.forEach((n,i)=>{const q=Math.abs(frac(n.d)-f);if(q<b){b=q;j=i}});let df=((j-act)%L+L)%L;if(df>6)df-=L;T=Math.round(T)+df});
+
+// стори
+let SV=[],si=0,sT=0,sDur=6000,sPaused=false,sRaf=0,sLast=0;
+const seenK='pn_seen';const seenGet=()=>{try{return JSON.parse(localStorage.getItem(seenK)||'[]')}catch(_){return []}};const seenAdd=k=>{try{const a=seenGet();if(!a.includes(k)){a.push(k);localStorage.setItem(seenK,JSON.stringify(a.slice(-200)))}}catch(_){}};
+const skey=n=>n.id||n.d+n.k;
+function buildStories(){let a=NEWS.map((n,i)=>({n,i})).filter(x=>x.n.story);if(!a.length)a=NEWS.map((n,i)=>({n,i})).slice(-5);a=a.reverse().sort((x,y)=>(y.n.feat?1:0)-(x.n.feat?1:0)).slice(0,6);SV=a;
+ const seen=seenGet();$('stories').innerHTML=a.map((x,k)=>`<button class="st${seen.includes(skey(x.n))?' seen':''}" data-sk="${k}" aria-label="Стори: ${esc(x.n.t)}"><i><span>${x.n.img?`<img src="${esc(x.n.img)}" alt="">`:`<svg viewBox="0 0 474 900" preserveAspectRatio="xMidYMid slice">${cover(x.n)}</svg>`}</span></i><small>${x.n.feat?I('star'):''}${esc(x.n.k||x.n.c)}</small></button>`).join('')}
+function svShow(k){if(k<0)k=0;if(k>=SV.length){svClose();return}si=k;sT=0;const n=SV[k].n;seenAdd(skey(n));
+ $('svp').innerHTML=SV.map((_,j)=>`<b><i style="width:${j<k?100:0}%"></i></b>`).join('');
+ $('svm').innerHTML=n.vid?`<video src="${esc(n.vid)}" poster="${esc(n.img||'media/poster.jpg')}" autoplay muted playsinline></video>`:n.img?`<img src="${esc(n.img)}" alt="">`:`<svg viewBox="0 0 474 900" preserveAspectRatio="xMidYMid slice">${cover(n)}</svg>`;
+ const v=$('svm').querySelector('video');sDur=6000;if(v){v.onloadedmetadata=()=>{sDur=Math.min(15000,(v.duration||6)*1000)};v.play().catch(()=>{})}
+ $('svc').textContent=(n.feat?'Онцлох · ':'')+n.c;$('svT').textContent=n.t;$('svL').textContent=n.l;$('svd').textContent=fmt(n.d)}
+function svTick(t){if($('sv').hidden)return;const dt=t-(sLast||t);sLast=t;if(!sPaused&&!RM){sT+=dt;const bar=$('svp').children[si];if(bar)bar.firstChild.style.width=Math.min(100,sT/sDur*100)+'%';if(sT>=sDur){svShow(si+1)}}sRaf=requestAnimationFrame(svTick)}
+function svOpen(k){if(isOpen)close();$('sv').hidden=false;sLast=0;svShow(k);cancelAnimationFrame(sRaf);sRaf=requestAnimationFrame(svTick);$('svx').focus()}
+function svClose(){$('sv').hidden=true;cancelAnimationFrame(sRaf);$('svm').innerHTML='';buildStories()}
+$('stories').addEventListener('click',e=>{const b=e.target.closest('[data-sk]');if(b)svOpen(+b.dataset.sk)});
+$('svx').onclick=svClose;$('svl').onclick=()=>svShow(si-1);$('svr').onclick=()=>svShow(si+1);
+$('svgo').onclick=()=>{const j=SV[si].i;svClose();goTo(j)};
+$('svb').addEventListener('pointerdown',e=>{if(!e.target.closest('button'))sPaused=true});addEventListener('pointerup',()=>{sPaused=false});
+let sy0=null;$('svb').addEventListener('touchstart',e=>{sy0=e.touches[0].clientY},{passive:true});$('svb').addEventListener('touchend',e=>{if(sy0!=null&&e.changedTouches[0].clientY-sy0>90)svClose();sy0=null});
+addEventListener('keydown',e=>{if($('sv').hidden)return;e.stopImmediatePropagation();if(e.key=='Escape')svClose();if(e.key=='ArrowRight')svShow(si+1);if(e.key=='ArrowLeft')svShow(si-1)},true);
+buildStories();
+// өгөгдлийн сан (CMS)
+let pend=null,lastJ='';
+const MOT=['hemi','cols','bars','rings','sun','wave','grid'];
+const okU=u=>typeof u=='string'&&(/^\/_blob\/[\w.-]+$/.test(u)||/^(img|media)\/[\w.-]+$/.test(u)||/^https:\/\/[^\s"'<>]+$/.test(u));
+const str=(v,n)=>typeof v=='string'?v.slice(0,n):'';
+const num=v=>v===''||v==null||!Number.isFinite(+v)?undefined:Math.max(0,Math.min(999,Math.round(+v)));
+function sLook(o){if(!o||typeof o!='object')return undefined;const H=/^#[0-9a-fA-F]{6}$/;return {bg:H.test(o.bg)?o.bg:undefined,fg:H.test(o.fg)?o.fg:undefined,ac:H.test(o.ac)?o.ac:undefined,lay:['top','full','text'].includes(o.lay)?o.lay:'top',font:o.font=='serif'?'serif':'sans',size:Number.isFinite(+o.size)?Math.max(.8,Math.min(1.25,+o.size)):1,fy:Number.isFinite(+o.fy)?Math.max(0,Math.min(100,+o.fy)):50,duo:o.duo!==false}}
+function sAtt(a){return (Array.isArray(a)?a:[]).slice(0,20).map(x=>!x?null:x.k=='news'&&typeof x.id=='string'?{k:'news',id:x.id.slice(0,80)}:['link','img','vid'].includes(x.k)&&(x.k=='link'?/^https:\/\/[^\s"'<>]+$/.test(x.u):okU(x.u))?{k:x.k,u:x.u,t:str(x.t,120)}:null).filter(Boolean)}
+function clean(o){if(!o||typeof o.t!='string'||!o.t.trim())return null;
+ const ims=(Array.isArray(o.imgs)?o.imgs:[]).filter(x=>x&&okU(x.url)).slice(0,12),vu=o.vid&&okU(o.vid.url)?o.vid.url:undefined;
+ const b=o.bill&&Number.isInteger(o.bill.s)&&o.bill.s>=0&&o.bill.s<=4?{s:o.bill.s,y:num(o.bill.y),n:num(o.bill.n),steps:(Array.isArray(o.bill.steps)?o.bill.steps:[]).slice(0,5).map(x=>({d:x&&/^\d{4}-\d{2}-\d{2}$/.test(x.d)?x.d:'',x:str(x&&x.x,1500),att:sAtt(x&&x.att)}))}:null;
+ return {id:typeof o.id=='string'?o.id:undefined,src:sAtt(o.src),d:/^\d{4}-\d{2}-\d{2}$/.test(o.d)?o.d:new Date().toISOString().slice(0,10),c:str(o.c,40)||'Мэдээ',sc:str(o.sc,40),k:str(o.k,40)||str(o.t,40),t:str(o.t,160),l:str(o.l,300),body:str(o.body,8000),rep:str(o.rep,60),
+  m:MOT.includes(o.m)?o.m:'grid',look:sLook(o.look),feat:o.feat===true,story:o.story===true&&(!Number.isFinite(+o.storyUntil)||!o.storyUntil||+o.storyUntil>Date.now()),th:[0,1,2].includes(o.th)?o.th:0,imgs:ims.map(x=>x.url),caps:ims.map(x=>str(x.cap,200)),img:ims[0]?ims[0].url:undefined,vid:vu,bill:b,tags:(Array.isArray(o.tags)?o.tags:[]).filter(x=>typeof x=='string'&&x.trim()).slice(0,8).map(x=>str(x,40))}}
+function setData(a){if(isOpen){pend=a;return}NEWS=a;setTimeout(renderFeed,0);L=a.length;TOT=L*3;BILL=NEWS.map(n=>n.bill||null);buildShelf();measure();buildTl();buildTicker();buildStories();s=T=startIx()+L;act=-1;dp=frac(NEWS[startIx()].d);if(!menu.hidden)renderRes()}
+function applySettings(o){const att=Math.max(0,Math.min(126,Math.round(+o.att||0)));drawHemi(att);$('att').textContent=att;
+ const st=str(o.status,40)||'Хуралдаж байна';$('sst').textContent=st;$('mstat').textContent=`${st} · Ирц ${att}/126`;applyInfo(o);if($('mstat').dataset.wx)$('mstat').textContent+=$('mstat').dataset.wx;ADS=(Array.isArray(o.ads)?o.ads:[]).filter(a=>a&&a.x&&(!a.u||/^https:\/\/[^\s"'<>]+$/.test(a.u))).slice(0,8).map(a=>({x:str(a.x,120),u:a.u||''}));buildTicker();
+ const ag=(Array.isArray(o.agenda)?o.agenda:[]).slice(0,6).filter(x=>x&&x.x);$('ag').innerHTML=ag.map(x=>`<li><time>${esc(str(x.t,8))}</time><span>${esc(str(x.x,90))}</span></li>`).join('')||'<li><time>—</time><span>Өнөөдөр хуралдаан товлогдоогүй</span></li>';
+ $('smp').hidden=true;document.querySelector('.tick').style.visibility=o.ticker===false?'hidden':'';applySite(o);applyLive(o)}
+
+// ===== feed, banners, footer =====
+let BNR=[],FOOT={},fCat='all',fN=8;
+const IC={t:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',c:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',r:'<svg viewBox="0 0 24 24"><path d="M4 5h7a3 3 0 0 1 3 3v11a2 2 0 0 0-2-2H4zM20 5h-4a2 2 0 0 0-2 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>'};
+function agoD(d){const t=Date.parse(d);if(!t)return '';const dd=Math.floor((Date.now()-t)/864e5);return dd<=0?'Өнөөдөр':dd==1?'Өчигдөр':dd<30?dd+' өдрийн өмнө':fmt(d)}
+function rmin(n){const w=String((n.l||'')+' '+(n.body||BODY)).split(/\s+/).length;return Math.max(1,Math.round(w/180))}
+function ccount(n){const k=nkey(n);return CMS.filter(c=>c.nid===k).length}
+function thumb(n){return n.img?`<img src="${esc(n.img)}" alt="" loading="lazy">`:`<svg viewBox="0 0 474 900" preserveAspectRatio="xMidYMid slice">${cover(n)}</svg>`}
+function meta(n){return `<span class="fmeta"><span>${IC.t}${esc(agoD(n.d))}</span><span>${IC.r}~${rmin(n)} мин</span><span>${IC.c}${ccount(n)}</span></span>`}
+function idx(n){return NEWS.indexOf(n)}
+function adBlock(place){const list=BNR.filter(b=>b.p==place||b.p=='all'||(b.p=='both'&&place!='article'));const cls='adw'+(place=='side'?' side':'');
+ const em=FOOT.sales||FOOT.email;const house=`<a class="hous" href="${em?'mailto:'+esc(em):'#'}" data-pg="${em?'':'ads'}"><img src="logo-white.png" alt=""><div><b>Таны зар энд байрлана</b><span>Улс төр, бодлогын уншигчдад шууд хүрнэ</span></div><em>Зар байршуулах →</em></a>`;
+ const items=list.length?list.map(b=>b.u?`<a href="${esc(b.u)}" target="_blank" rel="noopener sponsored"><img src="${esc(b.img)}" alt="${esc(b.t||'Сурталчилгаа')}" loading="lazy"></a>`:`<span><img src="${esc(b.img)}" alt="${esc(b.t||'Сурталчилгаа')}" loading="lazy"></span>`).join(''):house;
+ const n=list.length||1;return `<div class="${cls}"><small>ЗАР</small><div class="adr2">${items}</div>${n>1?`<div class="add">${Array.from({length:n},(_,i)=>`<i class="${i?'':'on'}"></i>`).join('')}</div>`:''}</div>`}
+function renderFeed(){if(!NEWS.length)return;const by=NEWS.slice().sort((a,b)=>a.d<b.d?1:-1);
+ const feat=by.filter(n=>n.feat).concat(by.filter(n=>!n.feat)).slice(0,5);
+ $('fFeat').innerHTML=feat.map(n=>`<button class="fc" data-ni="${idx(n)}"><span class="im">${thumb(n)}${n.feat?'<span class="bdg">'+I('star')+' ОНЦЛОХ</span>':''}${n.vid?'<span class="bdg v">'+I('play')+' ВИДЕО</span>':''}</span><span class="tx"><span class="kc">${esc(n.c)}</span><b>${esc(n.t)}</b><p>${esc(n.l||'')}</p>${meta(n)}</span></button>`).join('');
+ const cs=['all',...new Set(by.map(n=>n.c))];if(!cs.includes(fCat))fCat='all';
+ $('fCat').innerHTML=cs.map(c=>`<button role="tab" aria-selected="${c==fCat}" data-fc="${esc(c)}">${c=='all'?'Бүгд':esc(c)}</button>`).join('');
+ const list=by.filter(n=>fCat=='all'||n.c==fCat);let h='';list.slice(0,fN).forEach((n,k)=>{h+=`<button class="fi" data-ni="${idx(n)}"><span class="tx"><span class="kc">${esc(n.c)}${n.vid?' · '+I('play')+' Видео':''}</span><b>${esc(n.t)}</b><p>${esc(n.l||'')}</p>${meta(n)}</span><span class="im">${thumb(n)}</span></button>`;if(k==2||(k>2&&(k-2)%5==0))h+=adBlock('feed')});
+ $('fList').innerHTML=h||'<p class="cmo">Энэ ангилалд мэдээ алга.</p>';$('fMore').hidden=list.length<=fN;
+ $('fSideAd').innerHTML=adBlock('side');
+ const ST=['Өргөн мэдүүлсэн','Байнгын хороо','Анхны хэлэлцүүлэг','Эцсийн хэлэлцүүлэг','Баталсан'];
+ const bills=by.filter(n=>n.bill&&Number.isFinite(+n.bill.s)).slice(0,5);
+ $('fBills').innerHTML=bills.map(n=>{const st=Math.max(0,Math.min(4,+n.bill.s));return `<button class="fb2" data-ni="${idx(n)}"><b>${esc(n.t)}</b><span class="bst">${ST.map((_,j)=>`<i class="${j<st?'on':j==st?'cur':''}"></i>`).join('')}</span><small>${esc(ST[st])}</small></button>`}).join('')||'<p class="cmo">Одоогоор мэдээлэл алга.</p>';
+ const vids=by.filter(n=>n.vid).slice(0,4);
+ $('fVid').innerHTML=vids.map(n=>`<button class="fv" data-ni="${idx(n)}"><span class="im">${thumb(n)}</span><b>${esc(n.t)}</b></button>`).join('')||'<p class="cmo">Видео мэдээ алга.</p>';
+ $('sfCats').innerHTML=cs.filter(c=>c!='all').map(c=>`<li><a href="#" data-fcat="${esc(c)}">${esc(c)}</a></li>`).join('');
+ startAds();reveal()}
+let adT=null;function startAds(){clearInterval(adT);if(RM)return;adT=setInterval(()=>{document.querySelectorAll('.adw').forEach(w=>{const r=w.querySelector('.adr2'),n=r.children.length;if(n<2||w.matches(':hover'))return;const k=(Math.round(r.scrollLeft/r.clientWidth)+1)%n;r.scrollTo({left:k*r.clientWidth,behavior:'smooth'})})},5000)}
+document.addEventListener('scroll',e=>{const r=e.target;if(!(r.classList&&r.classList.contains('adr2')))return;const k=Math.round(r.scrollLeft/r.clientWidth);r.parentNode.querySelectorAll('.add i').forEach((d,j)=>d.classList.toggle('on',j==k))},true);
+function bindNi(el){el.addEventListener('click',e=>{const b=e.target.closest('[data-ni]');if(!b)return;const j=+b.dataset.ni;if(j<0)return;goTo(j)})}
+['fFeat','fList','fBills','fVid'].forEach(i=>bindNi($(i)));
+$('fCat').addEventListener('click',e=>{const b=e.target.closest('[data-fc]');if(!b)return;fCat=b.dataset.fc;fN=8;renderFeed()});
+$('fMore').onclick=()=>{fN+=8;renderFeed()};
+$('sfCats').addEventListener('click',e=>{const a=e.target.closest('[data-fcat]');if(!a)return;e.preventDefault();fCat=a.dataset.fcat;fN=8;renderFeed();$('feed').scrollIntoView({behavior:RM?'auto':'smooth'});setTimeout(()=>$('fCat').scrollIntoView({block:'center'}),RM?0:500)});
+const toTop=e=>{if(e)e.preventDefault();scrollTo({top:0,behavior:RM?'auto':'smooth'})};
+$('sfUp').onclick=toTop;$('sfLogo').onclick=toTop;$('fdn').onclick=()=>$('feed').scrollIntoView({behavior:RM?'auto':'smooth'});
+document.querySelector('.top .brand').addEventListener('click',e=>{e.preventDefault();if(isOpen)close();if(!menu.hidden)closeMenu();toTop()});
+const topEl=document.querySelector('.top');let scT=false;addEventListener('scroll',()=>{const v=scrollY>innerHeight*.6;if(v!==scT){scT=v;topEl.classList.toggle('sc',v);document.documentElement.classList.toggle('sc-on',v)}},{passive:true});
+// theme segment
+window.pnThemeSync=()=>{const R=document.documentElement,v=R.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.querySelectorAll('#sfTheme button').forEach(b=>b.classList.toggle('on',b.dataset.th==v))};pnThemeSync();
+$('sfTheme').addEventListener('click',e=>{const b=e.target.closest('[data-th]');if(!b)return;pnSetTheme(b.dataset.th);pnThemeSync()});try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{pnThemeSync();const t=$('thm');if(t&&!document.documentElement.dataset.theme)t.innerHTML=I(matchMedia('(prefers-color-scheme: dark)').matches?'sun':'moon')})}catch(_){}
+// static pages
+const PG={about:['Танилцуулга',()=>FOOT.about||'Parliament News бол Улсын Их Хурал, хууль тогтоох үйл ажиллагаа, төрийн бодлогын мэдээг хараат бусаар, баримтад тулгуурлан хүргэдэг хэвлэл мэдээллийн байгууллага юм. Бид иргэдийг хуулийн төсөл бүрийн явцыг ойлгомжтой, нээлттэй хянах боломжоор хангахыг зорьдог.'],
+ policy:['Редакцын бодлого',()=>FOOT.policy||'• Мэдээлэл бүрийг дор хаяж хоёр эх сурвалжаар нягтална.\n• Сурталчилгаа болон редакцын агуулгыг тусгаарлаж, зарыг «ЗАР» шошготой гаргана.\n• Алдаа илэрвэл засварыг нийтлэлийн доор ил тод тэмдэглэнэ.\n• Аль нэг нам, улс төрчийн ашиг сонирхлыг илэрхийлэхгүй.'],
+ privacy:['Нууцлалын бодлого',()=>'• Сэтгэгдэл үлдээхэд таны харагдах нэр, сэтгэгдлийн текст хадгалагдана.\n• Шөнийн горим, үсгийн хэмжээ зэрэг тохиргоо зөвхөн таны төхөөрөмжид хадгалагдана.\n• Бид хувийн мэдээллийг гуравдагч этгээдэд худалдахгүй.'],
+ ads:['Сурталчилгаа байршуулах',()=>'Байршлын төрөл:\n• Мэдээний урсгалын баннер — 1200×300 px\n• Хажуугийн баннер — 600×500 px\n• «ШУУД» гүйдэг мөрийн текст зар\n\n'+((FOOT.sales||FOOT.email)?'Холбогдох: '+(FOOT.sales||FOOT.email)+(FOOT.phone?' · '+FOOT.phone:''):'Холбоо барих мэдээллийг удахгүй нийтэлнэ.')],
+ contact:['Холбоо барих',()=>[FOOT.addr&&'Хаяг: '+FOOT.addr,FOOT.phone&&'Утас: '+FOOT.phone,FOOT.email&&'Редакц: '+FOOT.email,FOOT.sales&&'Маркетинг: '+FOOT.sales].filter(Boolean).join('\n')||'Холбоо барих мэдээллийг удахгүй нийтэлнэ.']};
+function openPg(k){if(k=='ads'){openAds();return}if(k=='rss'){openRss();return}const p=PG[k];if(!p)return;$('pgmT').textContent=p[0];$('pgmB').innerHTML=p[1]().split('\n').map(l=>l.trim()?`<p style="margin:0 0 8px">${esc(l)}</p>`:'<br>').join('');$('pgm').hidden=false;$('pgmX').focus()}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-pg]');if(!a||!a.dataset.pg)return;e.preventDefault();openPg(a.dataset.pg)});
+$('pgmX').onclick=()=>$('pgm').hidden=true;$('pgm').addEventListener('click',e=>{if(e.target.id=='pgm')$('pgm').hidden=true});addEventListener('keydown',e=>{if(e.key=='Escape'&&!$('pgm').hidden)$('pgm').hidden=true});
+
+
+// ===== header layout & category menu =====
+let CATS=[];
+function applyHdr(o){const h=o.hdr&&typeof o.hdr=='object'?o.hdr:{},R=document.documentElement;
+ const pos=['left','center','right'].includes(h.pos)?h.pos:(o.logoPos=='center'?'center':'left'),menu=['inline','below','burger'].includes(h.menu)?h.menu:'inline',sz=Math.max(20,Math.min(56,+h.sz||30));
+ R.dataset.logo=pos;R.dataset.menu=menu;R.style.setProperty('--lgh',sz+'px');const tg=str(h.tag,48);$('btag').textContent=tg;R.classList.toggle('has-tag',!!tg);
+ CATS=(Array.isArray(o.cats)?o.cats:[]).filter(c=>c&&typeof c.n=='string'&&c.n.trim()).slice(0,30).map(c=>({n:str(c.n,40),sub:(Array.isArray(c.sub)?c.sub:[]).filter(x=>typeof x=='string'&&x.trim()).slice(0,12).map(x=>str(x,40)),menu:!!c.menu}));
+ buildNav()}
+function buildNav(){const M=CATS.length?CATS.filter(c=>c.menu):null;if(!M)return;
+ const item=c=>c.sub.length?`<span class="ndd"><a href="#" data-f="${esc(c.n)}">${esc(c.n)}<svg class="ic0 nch" viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></a><span class="ndm">${c.sub.map(x=>`<a href="#" data-f="${esc(c.n)}" data-sc="${esc(x)}">${esc(x)}</a>`).join('')}</span></span>`:`<a href="#" data-f="${esc(c.n)}">${esc(c.n)}</a>`;
+ const html=`<a href="#" data-f="all">Мэдээ</a>`+M.map(item).join('');$('navc').innerHTML=html;$('nav2').innerHTML=`<a href="#" data-f="all">Бүх мэдээ</a>`+CATS.filter(c=>c.menu).map(item).join('')+`<a href="#" data-f="vid">Видео</a>`;
+ // order categories in chips/feed by settings
+ }
+
+// ===== ad rate card & RSS =====
+let RATES=[],RSSON=true;const UN={day:'өдөр',week:'7 хоног',month:'сар',post:'нийтлэл'};
+function openAds(){const em=FOOT.sales||FOOT.email,fm=n=>Math.round(n).toLocaleString('mn-MN')+'₮';
+ $('pgmT').textContent='Сурталчилгаа байршуулах';
+ $('pgmB').innerHTML=`<p style="margin:0 0 14px">Улс төр, бодлогын идэвхтэй уншигчдад шууд хүрэх баннер байршуулах үнийн санал.</p>`+(RATES.length?`<div class="rtw"><table class="rt"><thead><tr><th>Байршил</th><th>Хэмжээ</th><th>Үнэ</th></tr></thead><tbody>${RATES.map(r=>`<tr><td><b>${esc(r.pl)}</b>${r.nt?`<small>${esc(r.nt)}</small>`:''}</td><td>${esc(r.sz||'—')}</td><td class="pr">${r.pr?fm(r.pr):'Тохиролцоно'}<small>/ ${UN[r.u]}</small></td></tr>`).join('')}</tbody></table></div><p class="rtn">Үнэд НӨАТ орсон эсэх, багц хөнгөлөлтийг захиалахдаа тодруулна уу.</p>`:'<p>Үнийн саналыг удахгүй нийтэлнэ.</p>')+(em?`<a class="rtb" href="mailto:${esc(em)}?subject=${encodeURIComponent('Баннер захиалга — Parliament News')}">Захиалах — ${esc(em)}</a>`:'')+(FOOT.phone?`<p class="rtn">Утас: <a href="tel:${esc(FOOT.phone.replace(/[^\d+]/g,''))}">${esc(FOOT.phone)}</a></p>`:'');
+ $('pgm').hidden=false;$('pgmX').focus()}
+const xe=t=>String(t).replace(/[<>&'"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;',"'":'&apos;','"':'&quot;'}[c]));
+function rssXml(){const base='https://parlamentnews.mn/';const it=NEWS.slice().sort((a,b)=>a.d<b.d?1:-1).slice(0,50);
+ return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Parliament News</title><link>${base}</link><description>Хараат бус улс төрийн мэдээ — parlamentnews.mn</description><language>mn</language><atom:link href="${base}rss.xml" rel="self" type="application/rss+xml"/><lastBuildDate>${new Date().toUTCString()}</lastBuildDate>\n`+it.map(n=>{const u=base+'news/'+encodeURIComponent(n.id||n.d);return `<item><title>${xe(n.t)}</title><link>${u}</link><guid isPermaLink="true">${u}</guid><pubDate>${new Date((n.d||'')+'T09:00:00+08:00').toUTCString()}</pubDate><category>${xe(n.c)}</category><description>${xe(n.l||'')}</description></item>`}).join('\n')+'\n</channel></rss>'}
+let DLS=null;(async()=>{const C=window.claude;if(C&&C.use){try{DLS=await C.use('downloads')}catch(_){}}})();
+function openRss(){$('pgmT').textContent='RSS мэдээний суваг';const url='https://parlamentnews.mn/rss.xml';
+ $('pgmB').innerHTML=`<p style="margin:0 0 12px">Parliament News-ийн шинэ мэдээг Feedly, Inoreader, Outlook зэрэг RSS уншигчаар, эсвэл өөрийн сайт, апп-даа автоматаар хүлээн авна.</p><div class="rsu"><code>${url}</code><button type="button" id="rssCp">Хуулах</button></div><p class="rtn">Сүүлийн 50 мэдээ · гарчиг, товч агуулга, ангилал, огноо.</p>${DLS?'<button type="button" class="rtb" id="rssDl">rss.xml файл татах</button>':''}`;
+ $('pgm').hidden=false;$('rssCp').onclick=()=>{try{navigator.clipboard.writeText(url).then(()=>toast('Холбоос хуулагдлаа'))}catch(_){}};
+ if($('rssDl'))$('rssDl').onclick=async()=>{try{await DLS.save({filename:'parliament-news-rss.xml',data:new Blob([rssXml()],{type:'application/rss+xml'})});toast('Татлаа')}catch(_){toast('Татах боломжгүй байна')}}}
+const okH=u=>typeof u=='string'&&/^https:\/\/[^\s"'<>]+$/.test(u)?u:'';
+function applySite(o){const f=o.foot&&typeof o.foot=='object'?o.foot:{};const sv=(v,n)=>typeof v=='string'?v.slice(0,n).trim():'';
+ FOOT={addr:sv(f.addr,160),phone:sv(f.phone,40),email:sv(f.email,80),sales:sv(f.sales,80),about:sv(f.about,1500),policy:sv(f.policy,2000),fb:okH(f.fb),x:okH(f.x),ig:okH(f.ig),yt:okH(f.yt)};
+ const td=new Date().toISOString().slice(0,10);BNR=(Array.isArray(o.banners)?o.banners:[]).filter(b=>b&&okU(b.img)&&b.paid!==false&&(!b.from||b.from<=td)&&(!b.to||b.to>=td)).slice(0,12).map(b=>({img:b.img,u:okH(b.u),t:sv(b.t,80),p:['feed','side','both','article','all'].includes(b.p)?b.p:'both'}));
+ const em=e=>/^[^\s@<>"']+@[^\s@<>"']+$/.test(e)?e:'';
+ RATES=(Array.isArray(o.adrates)?o.adrates:[]).filter(r=>r&&r.pl).slice(0,20).map(r=>({pl:sv(r.pl,60),sz:sv(r.sz,40),u:['day','week','month','post'].includes(r.u)?r.u:'week',pr:Number.isFinite(+r.pr)?+r.pr:0,nt:sv(r.nt,120)}));RSSON=o.rss!==false;$('sfRss').hidden=!RSSON;
+ $('sfContact').innerHTML=[FOOT.addr&&`<li>${esc(FOOT.addr)}</li>`,FOOT.phone&&`<li>Утас: <a href="tel:${esc(FOOT.phone.replace(/[^\d+]/g,''))}">${esc(FOOT.phone)}</a></li>`,em(FOOT.email)&&`<li>Редакц: <a href="mailto:${esc(FOOT.email)}">${esc(FOOT.email)}</a></li>`,em(FOOT.sales)&&`<li>Маркетинг: <a href="mailto:${esc(FOOT.sales)}">${esc(FOOT.sales)}</a></li>`].filter(Boolean).join('');
+ document.querySelectorAll('[data-so]').forEach(a=>{const u=FOOT[a.dataset.so];a.hidden=!u;if(u)a.href=u});
+ document.querySelectorAll('.foot .lbl a').forEach((a,i)=>{const u=[FOOT.fb,FOOT.yt][i];if(u){a.href=u;a.target='_blank';a.rel='noopener'}});
+ applyHdr(o);renderFeed()}
+document.querySelectorAll('[data-so]').forEach(a=>a.hidden=true);setTimeout(renderFeed,0);
+
+// ===== research improvements: tags, live bar, today, tabs, reveal =====
+function tagsOf(n){const t=(n.tags&&n.tags.length?n.tags:[n.k]).filter(x=>x&&x!==n.c);return [...new Set(t)]}
+function renderTags(n){const t=tagsOf(n);$('dTg').innerHTML=t.length?t.map(x=>`<button type="button" data-tag="${esc(x)}">#${esc(x)}</button>`).join(''):''}
+$('dTg').addEventListener('click',e=>{const b=e.target.closest('[data-tag]');if(!b)return;const tg=b.dataset.tag;close();setTimeout(()=>{openMenu('all');$('q').value=tg;renderRes()},RM?30:880)});
+$('tflt').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;mt=b.dataset.t;renderRes()});
+let LIVE={},BRK={},AGD=null;
+function applyLive(o){const lv=o.live||{},br=o.breaking||{};LIVE={on:!!lv.on,t:str(lv.t,80),u:okH(lv.u)};BRK={on:!!br.on&&!!str(br.t,140),t:str(br.t,140),n:typeof br.n=='string'?br.n:''};
+ const ag=(Array.isArray(o.agenda)?o.agenda:[]).filter(x=>x&&x.x).slice(0,6);AGD=ag.map(x=>({t:str(x.t,8),x:str(x.x,90)}));renderLive();renderToday()}
+function renderLive(){const bar=$('lbar');let show=false;
+ if(BRK.on){show=true;$('lbK').className='';$('lbK').innerHTML=I('zap')+' ЯАРАЛТАЙ';$('lbT').textContent=BRK.t;$('lbG').textContent=BRK.n?'Унших →':'';$('lbG').hidden=!BRK.n;bar.removeAttribute('target');bar.href='#';bar.dataset.k='brk'}
+ else if(LIVE.on){show=true;$('lbK').className='lv';$('lbK').textContent='ШУУД';$('lbT').textContent=LIVE.t||'Парламентын шууд дамжуулалт';$('lbG').textContent='Үзэх →';$('lbG').hidden=false;if(LIVE.u){bar.href=LIVE.u;bar.target='_blank';bar.rel='noopener'}else{bar.href='#';bar.removeAttribute('target')}bar.dataset.k='live'}
+ bar.hidden=!show;document.documentElement.classList.toggle('has-lbar',show);$('mlive').classList.toggle('is-live',LIVE.on);$('mlst').textContent=LIVE.on?(LIVE.t||'Явагдаж байна')+' — үзэх':'Одоогоор дамжуулалт алга';document.querySelectorAll('[data-tb=live]').forEach(b=>b.classList.toggle('lv',LIVE.on))}
+$('lbar').addEventListener('click',e=>{const k=$('lbar').dataset.k;if(k=='brk'){e.preventDefault();if(!BRK.n)return;const j=NEWS.findIndex(n=>n.id===BRK.n);if(j>=0){if(!menu.hidden)closeMenu();goTo(j)}}else if(k=='live'&&!LIVE.u){e.preventDefault();toast('Дамжуулалтын холбоос удахгүй')}});
+function gcal(x){const d=new Date(),p=n=>String(n).padStart(2,'0'),[h,m]=(x.t||'10:00').split(':').map(Number);const st=`${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}T${p(h||0)}${p(m||0)}00`,en=`${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}T${p(((h||0)+1)%24)}${p(m||0)}00`;
+ return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('УИХ: '+x.x)+'&dates='+st+'/'+en+'&ctz=Asia/Ulaanbaatar&details='+encodeURIComponent('Parliament News — parlamentnews.mn')}
+function renderToday(){const el=$('today');if(!el)return;let ag=AGD;let sample=false;if(!ag){ag=[...document.querySelectorAll('#ag li')].map(li=>({t:li.querySelector('time').textContent,x:li.querySelector('span').textContent})).filter(a=>a.t!='—');sample=true}
+ const d=new Date(),M=['1','2','3','4','5','6','7','8','9','10','11','12'];const ds=`${d.getFullYear()} оны ${M[d.getMonth()]}-р сарын ${d.getDate()}`;
+ const st=($('sst')&&$('sst').textContent)||'';
+ el.innerHTML=`<div><h2>Өнөөдөр парламентад</h2><div class="td">${esc(ds)} · ${esc(st)}</div></div>${LIVE.on?`<a class="tst on" href="${esc(LIVE.u||'#')}" ${LIVE.u?'target="_blank" rel="noopener"':''}>ШУУД үзэх</a>`:`<span class="tst">Шууд дамжуулалт алга</span>`}
+ <ol>${ag.length?ag.map(x=>`<li><time>${esc(x.t||'—')}</time><span>${esc(x.x)}</span><a class="rmd" href="${esc(gcal(x))}" target="_blank" rel="noopener" aria-label="Календарьт сануулах: ${esc(x.x)}">${I('bell')} Сануулах</a></li>`).join(''):'<li><time>—</time><span>Өнөөдөр хуралдаан товлогдоогүй</span></li>'}</ol>${sample?'<div class="tsm">Жишээ хөтөлбөр — админ → Тохиргооноос оруулна</div>':''}`}
+setTimeout(renderToday,0);
+$('mtab').addEventListener('click',e=>{const b=e.target.closest('[data-tb]');if(!b)return;const k=b.dataset.tb;
+ if(k=='home'){if(!menu.hidden)closeMenu();toTop()}
+ else if(k=='live'){if(LIVE.on&&LIVE.u)window.open(LIVE.u,'_blank','noopener');else{if(!menu.hidden)closeMenu();$('today').scrollIntoView({behavior:RM?'auto':'smooth',block:'start'});toast(LIVE.on?'Дамжуулалтын холбоос удахгүй':'Одоогоор шууд дамжуулалт алга')}}
+ else if(k=='vid')openMenu('vid');else if(k=='bill')openMenu('bill');else if(k=='search'){openMenu('all');setTimeout(()=>$('q').focus(),RM?0:300)}});
+let rvo=null;function reveal(){if(RM||!('IntersectionObserver' in window))return;rvo=rvo||new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('rv1');rvo.unobserve(en.target)}}),{rootMargin:'0px 0px -8% 0px'});
+ document.querySelectorAll('#feed .fc,#feed .fi,#feed .adw,#feed .fb2,#feed .fv,#today').forEach(el=>{if(el.classList.contains('rv1'))return;el.classList.add('rv0');rvo.observe(el)})}
+// ===== recommended next =====
+function nkey(n){return String(n.id||n.d)}
+function renderNx(i){const n=NEWS[i];if(!n||L<2){$('dNx').innerHTML='';return}
+ const nx=(i+1)%L,pool=NEWS.map((m,j)=>({m,j})).filter(o=>o.j!==i&&o.j!==nx);
+ const sc=o=>(o.m.c===n.c?3:0)+(o.m.bill&&n.bill?1:0)+(o.m.feat?1:0)-Math.abs(Date.parse(o.m.d)-Date.parse(n.d))/(864e5*400);
+ const rel=pool.sort((a,b)=>sc(b)-sc(a)).slice(0,3);
+ const card=(m,j,big)=>`<button class="nxb${big?' big':''}" data-nx="${j}"><i><svg viewBox="0 0 474 900" preserveAspectRatio="xMidYMid slice">${cover(m)}</svg></i><span><b>${esc(m.t)}</b><small>${esc(fmt(m.d))} · ${esc(m.c)}${m.vid?' · '+I('play')+' Видео':''}</small></span></button>`;
+ $('dNx').innerHTML=`<div class="nxh">Дараагийн мэдээ →</div>${card(NEWS[nx],nx,1)}${rel.length?`<div class="nxh" style="margin-top:18px">Санал болгох мэдээ</div>${rel.map(o=>card(o.m,o.j)).join('')}`:''}`}
+$('dNx').addEventListener('click',e=>{const b=e.target.closest('.nxb');if(!b)return;const j=+b.dataset.nx;close();setTimeout(()=>goTo(j),RM?30:900)});
+// ===== comments =====
+let CDB=null,CUS=null,CMS=[],MYID=null,MYNAME='',ISOWN=false,cmReady=false;
+function renderCm(){const box=$('dCm');if(!box||act<0&&!isOpen)return;const n=NEWS[((Math.round(T)%L)+L)%L];if(!n)return;const k=nkey(n);
+ const list=CMS.filter(c=>c.nid===k).sort((a,b)=>b.at-a.at);
+ const ago=t=>{const m=Math.round((Date.now()-t)/6e4);return m<1?'дөнгөж сая':m<60?m+' мин өмнө':m<1440?Math.round(m/60)+' цагийн өмнө':new Date(t).toISOString().slice(0,10).replace(/-/g,'.')};
+ let h=`<div class="nxh">Сэтгэгдэл (${list.length})</div>`;
+ if(!cmReady)h+=`<div class="cmo">Сэтгэгдэл ачаалж байна…</div>`;
+ else if(!CDB)h+=`<div class="cmo">Сэтгэгдэл энэ орчинд идэвхгүй байна.</div>`;
+ else h+=`<div class="cmf"><textarea id="cmT" maxlength="600" placeholder="Байр сууриа илэрхийлнэ үү — хүндэтгэлтэй, сэдэвтээ хамааралтай байна уу"></textarea><div class="cmr"><span id="cmN">${MYNAME?esc(MYNAME)+' нэрээр':''} · 0/600</span><button class="bt sm solid" id="cmS">Илгээх</button></div></div>`;
+ h+=list.length?list.map(c=>`<div class="cmi"><header>${esc(c.name||'Уншигч')}<span>${esc(ago(c.at))}</span>${(c.uid===MYID||ISOWN)?`<button data-del="${esc(c.uid)}|${c.at}">Устгах</button>`:''}</header><p>${esc(c.t)}</p></div>`).join(''):(cmReady&&CDB?`<div class="cmo">Анхны сэтгэгдлийг та үлдээгээрэй.</div>`:'');
+ const keep=$('cmT')&&$('cmT').value;box.innerHTML=h;if(keep&&$('cmT'))$('cmT').value=keep}
+$('dCm').addEventListener('input',e=>{if(e.target.id==='cmT')$('cmN').textContent=(MYNAME?MYNAME+' нэрээр · ':'')+e.target.value.length+'/600'});
+$('dCm').addEventListener('click',async e=>{
+ if(e.target.id==='cmS'){const ta=$('cmT'),t=(ta.value||'').trim();if(t.length<2){toast('Сэтгэгдлээ бичнэ үү');return}
+  if(!MYID){toast('Сэтгэгдэл бичихийн тулд нэвтэрнэ үү');return}
+  const n=NEWS[((Math.round(T)%L)+L)%L],mine=CMS.filter(c=>c.uid===MYID).map(({nid,t,at})=>({nid,t,at}));
+  if(mine.some(c=>Date.now()-c.at<20000)){toast('Түр хүлээгээд дахин илгээнэ үү');return}
+  e.target.disabled=true;try{await CDB.doc('cm/'+MYID).set({name:MYNAME||'Уншигч',items:[...mine,{nid:nkey(n),t:t.slice(0,600),at:Date.now()}].slice(-60)});ta.value='';toast('Сэтгэгдэл нийтлэгдлээ')}catch(_){toast('Сэтгэгдэл бичих эрх алга байна')}e.target.disabled=false;return}
+ const d=e.target.closest('[data-del]');if(d){const [u,at]=d.dataset.del.split('|');const rest=CMS.filter(c=>c.uid===u&&String(c.at)!==at).map(({nid,t,at})=>({nid,t,at})),nm=(CMS.find(c=>c.uid===u)||{}).name||'Уншигч';
+  try{await CDB.doc('cm/'+u).set({name:nm,items:rest});toast('Устгагдлаа')}catch(_){toast('Устгах эрх алга')}}});
+(async()=>{const C=window.claude;const fin=()=>{cmReady=true;if(isOpen)renderCm()};const tm=setTimeout(fin,10000);if(!C||!C.use){clearTimeout(tm);fin();return}
+ const db=await C.use('db');if(!db){clearTimeout(tm);fin();return}CDB=db;
+ try{const u=await C.use('user');if(u){MYID=await u.id();try{const me=await u.me();MYNAME=(me&&me.name)||''}catch(_){}try{ISOWN=!!(await u.isOwner())}catch(_){}}}catch(_){}
+ db.collection('cm').onSnapshot(sn=>{clearTimeout(tm);CMS=[];sn.docs.forEach(x=>{const v=x.data()||{},it=Array.isArray(v.items)?v.items:[];it.forEach(c=>{if(c&&typeof c.t=='string'&&typeof c.nid=='string'&&Number.isFinite(+c.at))CMS.push({uid:x.id,name:typeof v.name=='string'?v.name.slice(0,60):'Уншигч',nid:c.nid,t:c.t.slice(0,600),at:+c.at})})});cmReady=true;if(isOpen)renderCm();clearTimeout(window._rf);window._rf=setTimeout(renderFeed,300)},()=>{clearTimeout(tm);fin()})})();
+(async()=>{const C=window.claude;if(!C||!C.use)return;const db=await C.use('db');if(!db)return;
+ db.collection('news').where('status','==','published').onSnapshot(sn=>{const a=sn.docs.map(x=>clean({...x.data(),id:x.id})).filter(Boolean).sort((x,y)=>x.d<y.d?-1:x.d>y.d?1:0);const j=JSON.stringify(a);if(a.length&&j!==lastJ){lastJ=j;setData(a)}},()=>{});
+ db.doc('site/settings').onSnapshot(sn=>{if(sn.exists)applySettings(sn.data())},()=>{})})();
+
+}
+</script>
+</body>
+</html>
