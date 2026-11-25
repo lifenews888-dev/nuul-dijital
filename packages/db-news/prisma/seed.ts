@@ -1,13 +1,13 @@
 /**
  * Parliament News — Gerel News tenant-ийн анхны өгөгдөл.
  *
- * Ажиллуулах:  ADMIN_EMAIL=... pnpm db:seed:news
+ * Ажиллуулах:  ADMIN_EMAIL=... pnpm db:seed
  * Сонголттой:  ADMIN_PASSWORD=...  (байхгүй бол санамсаргүй нэгийг зохиож,
  *              зөвхөн терминал дээр нэг удаа хэвлэнэ)
  *
  * deleteMany хийхгүй — зөвхөн upsert. Дахин ажиллуулахад давхардахгүй.
  */
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, Prisma } from "../generated/client";
 import { randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 
@@ -49,7 +49,7 @@ async function main() {
 
   if (!adminEmail) {
     throw new Error(
-      "ADMIN_EMAIL тохируулаагүй. Жишээ: ADMIN_EMAIL=admin@example.mn pnpm db:seed:news",
+      "ADMIN_EMAIL тохируулаагүй. Жишээ: ADMIN_EMAIL=admin@example.mn pnpm db:seed",
     );
   }
 

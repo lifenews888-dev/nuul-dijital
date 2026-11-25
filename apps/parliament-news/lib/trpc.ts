@@ -1,8 +1,8 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { getServerSession } from "next-auth";
 import type { Session } from "next-auth";
-import { prisma } from "@nuul/db";
-import type { NewsRole } from "@nuul/db";
+import { prisma } from "@nuul/db-news";
+import type { NewsRole } from "@nuul/db-news";
 import { authOptions } from "./auth";
 import { getTenantByHost, TENANT_HEADER } from "./tenant";
 import { pickTenantHost } from "./host";

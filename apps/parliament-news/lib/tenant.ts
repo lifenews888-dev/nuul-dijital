@@ -1,8 +1,8 @@
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { prisma } from "@nuul/db";
-import type { Tenant } from "@nuul/db";
+import { prisma } from "@nuul/db-news";
+import type { Tenant } from "@nuul/db-news";
 import { parseHost, pickTenantHost } from "./host";
 
 export { parseHost, pickTenantHost };

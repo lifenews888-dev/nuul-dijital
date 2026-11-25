@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Prisma } from "@nuul/db";
+import { Prisma } from "@nuul/db-news";
 import { tenantData } from "./tenant-db";
 import type { TenantClient } from "./tenant-db";
 

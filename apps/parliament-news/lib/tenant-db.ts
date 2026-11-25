@@ -1,4 +1,4 @@
-import { prisma } from "@nuul/db";
+import { prisma } from "@nuul/db-news";
 
 /**
  * tenantId баганатай моделиуд. Query бүрт автоматаар шүүгдэнэ.

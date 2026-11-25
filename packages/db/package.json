@@ -9,8 +9,7 @@
     "db:push": "dotenv -e ../../.env -- prisma db push",
     "db:migrate": "dotenv -e ../../.env -- prisma migrate dev",
     "db:studio": "dotenv -e ../../.env -- prisma studio",
-    "db:seed": "dotenv -e ../../.env -- tsx prisma/seed.ts",
-    "db:seed:news": "dotenv -e ../../.env -- tsx prisma/seed-news.ts"
+    "db:seed": "dotenv -e ../../.env -- tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",

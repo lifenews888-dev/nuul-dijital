@@ -1,4 +1,4 @@
-import type { NewsRole, NewsStatus } from "@nuul/db";
+import type { NewsRole, NewsStatus } from "@nuul/db-news";
 
 /**
  * Редакцын эрх ба зөвшөөрөл.

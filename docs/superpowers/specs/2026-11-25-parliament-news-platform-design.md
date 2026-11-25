@@ -51,13 +51,19 @@
 
 | | Хувилбар | Үнэлгээ |
 |---|---|---|
-| A | **Шинэ апп `apps/parliament-news`, нэг Postgres, `packages/db`-г хуваалцана** | ✅ Сонгосон |
+| A | Шинэ апп `apps/parliament-news`, нэг Postgres, `packages/db`-г хуваалцана | 1-р шатыг ингэж эхлүүлсэн, дараа нь C болгов |
 | B | `apps/web` дотор route group болгож, hostname-аар rewrite | nuul.mn-ийн 53 хуудас, dashboard-тай нэг codebase болж зангирна. Нэг деплой — мэдээний сайтын асуудал SaaS-ийг унагана |
-| C | Шинэ апп + тусдаа өгөгдлийн сан | Нэвтрэлт, `User` хүснэгт, blob хоёр дахин. 5 долоо хоногт үнэтэй. Эзэмшлийг бүрэн салгах шаардлага гарвал дараа нь шилжих зам нээлттэй |
+| C | **Шинэ апп + тусдаа өгөгдлийн сан (`packages/db-news`)** | ✅ Сонгосон (2026-11-25, 1-р шатны хяналтын дараа) |
 
-**A-г сонгосон шалтгаан:** мэдээний бүтээгдэхүүн SaaS сайтаасаа тусдаа деплойлогдож,
-тусдаа унаж, тусдаа масштаблана. Гэхдээ `User`/NextAuth/Prisma client/Vercel Blob-ыг
-дахин бичихгүй. Multi-tenancy нь «нэг апп, олон домэйн» хэлбэрээр A дотор яг таарна.
+**C-г сонгосон шалтгаан:** Gerel News-ийн контент nuul.mn-ийн захиалга, төлбөрийн
+өгөгдөлтэй нэг санд байрлахгүй — нэг талын схемийн алдаа нөгөөд хүрэхгүй, «өгөгдөл нь
+Gerel News-ийнх» гэсэн тохиролцоо техникийн хувьд ч биелнэ. nuul.mn-ийн ажиллаж буй
+санд 17 шинэ хүснэгт `db push`-оор нэмэх эрсдэл ч арилна.
+
+**C-ийн төлбөр (зориудаар хүлээсэн):** редакцын хэрэглэгч мэдээний сангийн өөрийн
+`pn_users` хүснэгтэд байрлана, nuul.mn-тэй нэг нэвтрэлт байхгүй. Энэ нь хуваалцсан
+`User`-тэй холбоотой эрхийн алдааны бүтэн нэг төрлийг (редакторт санамсаргүйгээр
+nuul.mn-ийн админ эрх өгөх) бүрмөсөн хаасан.
 
 ## 5. Архитектур
 
@@ -72,7 +78,12 @@ apps/parliament-news/              @nuul/news — Next.js 14 App Router
   lib/tenant.ts                    tenant resolve + cache
   lib/permissions.ts               10 эрхийн модуль (серверт шалгана)
   server/routers/                  news, category, settings, media, team, comment, bill, agenda
-packages/db/prisma/schema.prisma   pn_* моделиуд нэмэгдэнэ
+packages/db-news/                  @nuul/db-news — мэдээний ТУСДАА Postgres
+  prisma/schema.prisma             pn_* моделиуд + редакцын User (pn_users)
+  prisma/seed.ts                   Gerel News tenant, ангилал, тохиргоо, супер админ
+  generated/client/                Prisma client (git-д ордоггүй)
+  src/index.ts                     prisma singleton
+packages/db/prisma/schema.prisma   nuul.mn-ийнх — ХӨНДӨГДӨХГҮЙ
 ```
 
 `site-v2/`, `prototype/` хэвээр үлдэж, дизайн ба өгөгдлийн бүтцийн эх сурвалж болно.
@@ -84,7 +95,16 @@ tenant-ыг олж `x-tenant-id` header-т тавина (edge дээр кэшт�
 `?tenant=parlament` эсвэл `parlament.localhost:3000`. tRPC context `tenantId`-г
 автоматаар inject хийнэ — router-ууд `ctx.tenantId`-гүй query бичихгүй.
 
-### 5.3 Өгөгдлийн сан (шинэ моделиуд, `pn_` хүснэгтийн нэртэй)
+### 5.3 Өгөгдлийн сан (тусдаа Postgres, `pn_` хүснэгтийн нэртэй)
+
+Холболт: `NEWS_DATABASE_URL` / `NEWS_DIRECT_URL` (nuul.mn-ийн `DATABASE_URL`-аас
+өөр Supabase project). Редакцын хэрэглэгч `User` → `pn_users` нь энэ санд байрлана;
+платформын `UserRole` энд байхгүй, эрх зөвхөн `TenantMember`-ээс.
+
+Хүүхэд холбоос бүр `[tenantId, id]` рүү composite foreign key-ээр холбогдоно
+(`NewsMedia`, `NewsComment`, `NewsSlugRedirect`, `BillStage`, мөн сонголттой
+`NewsPost.category`, `NewsCategory.parent`, `Bill.post`) — өөр tenant-ийн мэдээнд
+хавсаргах боломжийг өгөгдлийн сан өөрөө хориглоно.
 
 | Модель | Тайлбар |
 |---|---|
@@ -135,7 +155,9 @@ tenant-ыг олж `x-tenant-id` header-т тавина (edge дээр кэшт�
 ## 6. Хэрэгжүүлэх дараалал
 
 1. **Схем + нэвтрэлт/эрх** — Prisma моделиуд, migration, tenant middleware, эрхийн модуль, seed (Gerel News tenant + 8 ангилал + эрхүүд)
-2. **Нийтийн сайт + SEO** — `/news/<slug>`, нүүр, ангилал, хайлт, sitemap/RSS/OG
+2. **Нийтийн сайт + SEO** — ЭХНИЙ даалгавар нь tenant-ыг замын параметр болгох
+   middleware rewrite (`/_t/<slug>/...`), tenant тус бүрийн кэш салж байгааг тестээр
+   батлах. Үүний дараа `/news/<slug>`, нүүр, ангилал, хайлт, sitemap/RSS/OG
 3. **Редакцын систем** — урсгал, Tiptap редактор, медиа байршуулалт, тохиргоо, баг ба эрх
 4. **Модулиуд** — хуулийн төсөл, хуваарь/ирц/ШУУД, баннер, стори, ханш
 5. **Сошиал нийтлэл + мэдэгдэл** — queue, Meta/YouTube/Telegram
@@ -143,9 +165,15 @@ tenant-ыг олж `x-tenant-id` header-т тавина (edge дээр кэшт�
 
 ## 7. Деплой
 
-Хоёр дахь Vercel project: Root Directory = репогийн эх, build нь `prisma generate` +
-`next build apps/parliament-news`, домэйн `parlamentnews.mn`. `apps/web`-ийн одоогийн
-деплой хөндөгдөхгүй.
+Хоёр дахь Vercel project: Root Directory = репогийн эх, домэйн `parlamentnews.mn`,
+build нь мэдээний client-ыг үүсгэнэ:
+
+```
+cd packages/db-news && pnpm exec prisma generate --schema=prisma/schema.prisma && cd ../../apps/parliament-news && pnpm exec next build
+```
+
+`apps/web`-ийн одоогийн деплой хөндөгдөхгүй. Нээлтийн өмнөх бүрэн шалгах жагсаалт:
+`apps/parliament-news/DEPLOY-CHECKLIST.md`.
 
 ## 8. Эрсдэл ба шийдэх асуултууд
 
@@ -159,7 +187,8 @@ tenant-ыг олж `x-tenant-id` header-т тавина (edge дээр кэшт�
 - Анхны редакцын хэрэглэгчид ба эрх
 
 **Техникийн эрсдэл**
-- Нэг DB-д хамтдаа байх нь хожим эзэмшлийг салгахад migration шаардана (хувилбар C-ийн зам нээлттэй)
+- ~~Нэг DB-д хамтдаа байх нь хожим эзэмшлийг салгахад migration шаардана~~ —
+  хувилбар C-ээр шийдэгдсэн: мэдээний сан эхнээсээ тусдаа
 - Кирилл гарчгийн латин slug — давхардлыг `-2` суффиксээр
 - 400KB artifact дизайныг дахин бичих цаг нь хамгийн том тооцоолох эрсдэл
 

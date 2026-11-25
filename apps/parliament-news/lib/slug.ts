@@ -1,4 +1,4 @@
-import type { NewsStatus } from "@nuul/db";
+import type { NewsStatus } from "@nuul/db-news";
 
 /**
  * Монгол кирилл гарчгийг латин slug болгох.

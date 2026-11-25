@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { prisma } from "@nuul/db";
+import { prisma } from "@nuul/db-news";
 import { forTenant } from "./tenant-db";
 
 let a: string, b: string;

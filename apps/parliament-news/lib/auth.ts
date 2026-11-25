@@ -1,19 +1,15 @@
-import type { NextAuthOptions, User } from "next-auth";
+import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
-import { prisma } from "@nuul/db";
+import { prisma } from "@nuul/db-news";
 
 declare module "next-auth" {
-  interface User {
-    role?: string;
-  }
   interface Session {
     user: {
       id: string;
       name?: string | null;
       email?: string | null;
       image?: string | null;
-      role: string;
     };
   }
 }
@@ -21,11 +17,15 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     id: string;
-    role: string;
   }
 }
 
-/** Редакцын систем — зөвхөн имэйл/нууц үг. Гадны provider байхгүй. */
+/**
+ * Редакцын систем: зөвхөн имэйл/нууц үг, гадны provider байхгүй.
+ * Хэрэглэгч нь мэдээний өөрийн өгөгдлийн санд (pn_users) байрлана —
+ * nuul.mn-ийн users хүснэгттэй хуваалцахгүй. Эрх нь session-д байхгүй,
+ * tenant тус бүрээр TenantMember-ээс tRPC context дээр шийдэгдэнэ.
+ */
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -59,7 +59,6 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           image: user.image,
-          role: user.role,
         };
       },
     }),
@@ -75,7 +74,6 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as User).role ?? "CLIENT";
       }
       return token;
     },
@@ -83,7 +81,6 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id;
-        session.user.role = token.role;
         session.user.name = token.name ?? null;
       }
       return session;

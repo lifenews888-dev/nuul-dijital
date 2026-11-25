@@ -1,0 +1,31 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "node": true,
+    "es2022": true
+  },
+  "ignorePatterns": [
+    ".next/",
+    "node_modules/",
+    "site-v2/",
+    "prototype/",
+    "*.js"
+  ],
+  "rules": {
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "MemberExpression[property.name=/^[$](queryRaw|queryRawUnsafe|executeRaw|executeRawUnsafe)$/]",
+        "message": "Turhii SQL tenant-iin shuultees multarna. forTenant(tenantId)-iin modeliin query hereglene (lib/tenant-db.ts)."
+      }
+    ]
+  }
+}

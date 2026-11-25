@@ -17,7 +17,7 @@
     "paths": {
       "@/*": ["./*"],
       "@nuul/ui": ["../../packages/ui/src"],
-      "@nuul/db": ["../../packages/db/src"]
+      "@nuul/db-news": ["../../packages/db-news/src"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { parseHost } from "./lib/host";
+import { needsStudioAuth, parseHost } from "./lib/host";
 
 /**
  * Edge дээр ажиллана — Prisma дуудахгүй. Хоёр ажил:
@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/studio") && !pathname.startsWith("/studio/signin")) {
+  if (needsStudioAuth(pathname)) {
     const token = await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET,

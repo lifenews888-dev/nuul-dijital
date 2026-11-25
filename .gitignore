@@ -7,3 +7,6 @@ dist/
 *.tsbuildinfo
 
 .vercel
+
+# Prisma-ийн үүсгэсэн мэдээний client
+packages/db-news/generated/
