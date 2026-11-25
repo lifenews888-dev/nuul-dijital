@@ -111,3 +111,12 @@ export function forTenant(tenantId: string) {
 }
 
 export type TenantClient = ReturnType<typeof forTenant>;
+
+/**
+ * create-ийн data-д tenantId-г forTenant extension автоматаар тавина, гэхдээ
+ * Prisma-ийн төрөл үүнийг мэдэхгүй тул шаардсан хэвээр байна. Энэ нь
+ * гүйцэтгэлд юу ч хийхгүй — зөвхөн тэр цоорхойг нөхөж, яагаад гэдгийг нэрлэнэ.
+ */
+export function tenantData<T>(data: T): T & { tenantId: string } {
+  return data as T & { tenantId: string };
+}

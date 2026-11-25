@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { TENANT_MODELS, forTenant } from "./tenant-db";
+import { TENANT_MODELS, forTenant, tenantData } from "./tenant-db";
 
 const A = "tenant-a";
 const B = "tenant-b";
@@ -37,5 +37,12 @@ describe("хориглосон үйлдлүүд (DB-д хүрэхгүй)", () =>
         data: { tenantId: B, slug: "x", title: "Хог", date: new Date() },
       }),
     ).rejects.toThrow(/tenantId/);
+  });
+});
+
+describe("tenantData", () => {
+  it("өгөгдлийг хөндөхгүй, зөвхөн төрлийг нь нөхнө", () => {
+    const input = { key: "header", value: 1 };
+    expect(tenantData(input)).toBe(input);
   });
 });
