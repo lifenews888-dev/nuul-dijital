@@ -42,6 +42,8 @@ model User {
   serviceQuotes    ServiceQuote[]
   blogPosts        BlogPost[]
   newsMemberships  TenantMember[]
+  newsPosts        NewsPost[]
+  newsComments     NewsComment[]
 
   @@map("users")
 }
@@ -833,7 +835,14 @@ model Tenant {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  members TenantMember[]
+  members       TenantMember[]
+  posts         NewsPost[]
+  media         NewsMedia[]
+  categories    NewsCategory[]
+  slugRedirects NewsSlugRedirect[]
+  comments      NewsComment[]
+  activity      NewsActivity[]
+  settings      TenantSetting[]
 
   @@map("pn_tenants")
 }
@@ -865,4 +874,146 @@ enum NewsRole {
   LIVE
   CONTRIBUTOR
   ANALYST
+}
+
+/// Редакцын урсгал — site-v2/admin.html
+enum NewsStatus {
+  DRAFT
+  REVIEW
+  APPROVED
+  PUBLISHED
+  RETURNED
+}
+
+model NewsPost {
+  id          String       @id @default(cuid())
+  tenantId    String
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  slug        String
+  title       String       @db.VarChar(200)
+  kicker      String?      @db.VarChar(60)
+  lead        String?      @db.VarChar(400)
+  body        String?      @db.Text
+  date        DateTime     @db.Date
+  categoryId  String?
+  category    NewsCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  subcategory String?      @db.VarChar(40)
+  reporter    String?      @db.VarChar(60)
+  sources     String[]
+  motif       String       @default("grid")
+  look        Json?
+  theme       Int          @default(0)
+  featured    Boolean      @default(false)
+  story       Boolean      @default(false)
+  storyUntil  DateTime?
+  tags        String[]
+  channels    String[]
+  status      NewsStatus   @default(DRAFT)
+  scheduledAt DateTime?
+  publishedAt DateTime?
+  authorId    String?
+  author      User?        @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  reviewNote  String?      @db.Text
+  views       Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  media         NewsMedia[]
+  comments      NewsComment[]
+  slugRedirects NewsSlugRedirect[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, status, publishedAt])
+  @@index([tenantId, categoryId])
+  @@map("pn_posts")
+}
+
+model NewsMedia {
+  id       String   @id @default(cuid())
+  tenantId String
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  postId   String
+  post     NewsPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  kind     String   @default("image")
+  url      String
+  caption  String?  @db.VarChar(200)
+  order    Int      @default(0)
+
+  @@index([postId])
+  @@map("pn_media")
+}
+
+model NewsCategory {
+  id       String  @id @default(cuid())
+  tenantId String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  slug     String
+  name     String  @db.VarChar(40)
+  parentId String?
+  parent   NewsCategory?  @relation("NewsCategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children NewsCategory[] @relation("NewsCategoryTree")
+  inMenu   Boolean @default(false)
+  order    Int     @default(0)
+
+  posts NewsPost[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, parentId])
+  @@map("pn_categories")
+}
+
+model NewsSlugRedirect {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  fromSlug  String
+  postId    String
+  post      NewsPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, fromSlug])
+  @@map("pn_slug_redirects")
+}
+
+model NewsComment {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  postId     String
+  post       NewsPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  authorName String   @db.VarChar(60)
+  body       String   @db.VarChar(600)
+  hidden     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, postId])
+  @@map("pn_comments")
+}
+
+model NewsActivity {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  postId    String?
+  userId    String?
+  action    String
+  note      String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@map("pn_activity")
+}
+
+model TenantSetting {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  key       String
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, key])
+  @@map("pn_settings")
 }
