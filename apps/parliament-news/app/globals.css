@@ -83,3 +83,10 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * Artifact-ийн дизайн — ХАМГИЙН СҮҮЛД. Зөрчилдвөл энэ ялна: site-v2 нь
+ * дизайны эх сурвалж, Tailwind нь зөвхөн artifact-д байхгүй шинэ зүйлд.
+ * Дахин гаргах: node scripts/extract-artifact-css.mjs
+ */
+@import "./artifact.css";
