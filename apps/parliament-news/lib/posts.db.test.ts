@@ -168,6 +168,13 @@ describe("нийтийн уншилтын хаалга", () => {
     expect(upper.map((r) => r.slug)).toEqual([S.pub]);
   });
 
+  it("LIKE-ийн орлуулагч бүх мэдээг буцаахгүй", async () => {
+    // Хянагч амьд системээс олсон: ?q=%% нь 12 мэдээ буцааж байв
+    for (const q of ["%", "_", "%%%", "%_%"]) {
+      expect(await searchPosts(q, { take: 200, skip: 0 })).toEqual([]);
+    }
+  });
+
   it("хоосон хайлт нь БҮХ мэдээг буцаахгүй, хоосон массив", async () => {
     for (const q of ["", "   ", "а".repeat(201)]) {
       expect(await searchPosts(q, { take: 200, skip: 0 })).toEqual([]);

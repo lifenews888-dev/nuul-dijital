@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { imageSizes, imageDims, safeImageSrc } from "./images";
+import { imageSizes, imageDims, safeImageSrc, imageOrCover } from "./images";
 import { COVER_W, COVER_H } from "./cover";
 
 describe("imageDims", () => {
@@ -65,5 +65,36 @@ describe("safeImageSrc", () => {
   });
   it("зайг тайрна", () => {
     expect(safeImageSrc("  /demo/palace.jpg  ")).toBe("/demo/palace.jpg");
+  });
+});
+
+/**
+ * Хянагчийн олсон зүйл: дуудагчид мэдээнд зураг БАЙГАА эсэхээр салаалдаг
+ * байсан, safeImageSrc АМЖИЛТТАЙ эсэхээр биш. Зөвшөөрөөгүй host-ын зураг нь
+ * PostImage-ийг null болгодог тул нийтлэлд хоосон figure, картад хоосон саарал
+ * хайрцаг үлдэж байв — хавтас руу эргэх ёстой байсан.
+ */
+describe("imageOrCover", () => {
+  it("зөвшөөрөгдсөн зураг — зургийг хэрэглэнэ", () => {
+    expect(imageOrCover("/demo/palace.jpg")).toEqual({
+      useImage: true,
+      src: "/demo/palace.jpg",
+    });
+    expect(imageOrCover("https://abc.public.blob.vercel-storage.com/a.jpg")).toEqual({
+      useImage: true,
+      src: "https://abc.public.blob.vercel-storage.com/a.jpg",
+    });
+  });
+
+  it("зөвшөөрөөгүй host — хавтас руу эргэнэ, хоосон орон зай биш", () => {
+    expect(imageOrCover("https://example.com/a.jpg")).toEqual({ useImage: false });
+    expect(imageOrCover("javascript:alert(1)")).toEqual({ useImage: false });
+    expect(imageOrCover("//evil.com/a.jpg")).toEqual({ useImage: false });
+  });
+
+  it("зураггүй мэдээ — хавтас", () => {
+    expect(imageOrCover(null)).toEqual({ useImage: false });
+    expect(imageOrCover(undefined)).toEqual({ useImage: false });
+    expect(imageOrCover("   ")).toEqual({ useImage: false });
   });
 });

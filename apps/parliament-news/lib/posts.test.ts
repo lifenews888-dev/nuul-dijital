@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { publishedWhere, searchTerm, SEARCH_MAX } from "./posts";
+import { publishedWhere, searchTerm, escapeLike, SEARCH_MAX } from "./posts";
 
 describe("publishedWhere", () => {
   it("зөвхөн PUBLISHED, зөвхөн publishedAt нь өнгөрсөн", () => {
@@ -53,5 +53,35 @@ describe("searchTerm", () => {
 
   it("тайрсны дараа хязгаарт багтвал зөвшөөрнө", () => {
     expect(searchTerm("  " + "а".repeat(SEARCH_MAX) + "  ")).toBe("а".repeat(SEARCH_MAX));
+  });
+});
+
+/**
+ * Prisma-ийн `contains` нь LIKE/ILIKE болж хөрвөхдөө `%` ба `_`-г зугтаадаггүй.
+ * Тиймээс `?q=%` нь БҮХ мэдээг буцаана — «хоосон хайлт бүх мэдээг буцаахгүй»
+ * гэсэн баталгааг өөр хаалгаар давж, мөр бүр дээр ILIKE хийх үнэгүй ачаалал
+ * болно. Хайх үгийг харуулахдаа эх хэвээр, query-д оруулахдаа зугтаасан
+ * хэлбэрээр нь — тиймээс `searchTerm`-ээс тусдаа функц.
+ */
+describe("escapeLike", () => {
+  it("% ба _ нь энгийн тэмдэгт болно", () => {
+    expect(escapeLike("%")).toBe("\\%");
+    expect(escapeLike("_")).toBe("\\_");
+    expect(escapeLike("50%")).toBe("50\\%");
+    expect(escapeLike("%%%")).toBe("\\%\\%\\%");
+  });
+
+  it("backslash-ийг ЭХЛЭЭД зугтаана — эс бөгөөс давхар зугтаана", () => {
+    expect(escapeLike("a\\b")).toBe("a\\\\b");
+    expect(escapeLike("\\%")).toBe("\\\\\\%");
+  });
+
+  it("энгийн үгийг хөндөхгүй", () => {
+    expect(escapeLike("төсөв")).toBe("төсөв");
+    expect(escapeLike("хуулийн төсөл")).toBe("хуулийн төсөл");
+  });
+
+  it("хоосон мөр", () => {
+    expect(escapeLike("")).toBe("");
   });
 });

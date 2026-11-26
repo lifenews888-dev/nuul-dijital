@@ -18,9 +18,13 @@ const config: Config = {
         muted: "var(--muted)",
         cob: "var(--cob)",
         red: "var(--red)",
-      },
-      borderColor: {
-        rule: "var(--rule)",
+        /**
+         * Сувгаар — `border-rule/20` зэрэг alpha-тай хувилбар ажиллахын тулд.
+         * Өмнө нь `borderColor: { rule: "var(--rule)" }` байсан: Tailwind
+         * тунгалаг `var()`-д alpha шургуулж чаддаггүй тул `/NN`-тэй 11
+         * хэрэглээ БҮГД хаягдаж, preflight-ийн саарал шугам гарч байв.
+         */
+        rule: "rgb(var(--rule-rgb) / <alpha-value>)",
       },
       fontFamily: {
         head: ["var(--font-head)", "system-ui", "sans-serif"],

@@ -39,6 +39,21 @@ export function searchTerm(raw: string | undefined | null): string | null {
   return q;
 }
 
+/**
+ * LIKE/ILIKE-ийн орлуулагчийг энгийн тэмдэгт болгоно.
+ *
+ * Prisma-ийн `contains` нь утгыг `%…%` дотор хийж ILIKE болгодог ч `%`, `_`-г
+ * зугтаадаггүй: `?q=%` нь БҮХ мэдээг буцааж, «хоосон хайлт бүх мэдээг
+ * буцаахгүй» гэсэн баталгааг өөр хаалгаар давна.
+ *
+ * `\` нь ХАМГИЙН ЭХЭНД — эс бөгөөс дараа нэмэх зугтаалтын `\` өөрөө дахин
+ * зугтаагдана. Харуулах үг нь эх хэвээр үлдэнэ (`searchTerm`), зөвхөн query-д
+ * орох хувилбар нь зугтаана.
+ */
+export function escapeLike(term: string): string {
+  return term.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+}
+
 const CATEGORY_SELECT = { select: { slug: true, name: true } } as const;
 const MEDIA_SELECT = {
   select: { url: true, caption: true },
@@ -148,10 +163,12 @@ function listWhere(filter: ListFilter): Prisma.NewsPostWhereInput {
   if (filter.tag) where.tags = { has: filter.tag };
   if (filter.featured !== undefined) where.featured = filter.featured;
   if (filter.q) {
+    // Орлуулагчийг зугтаасан хувилбараар — эх үг нь зөвхөн харуулахад
+    const q = escapeLike(filter.q);
     where.OR = [
-      { title: { contains: filter.q, mode: "insensitive" } },
-      { lead: { contains: filter.q, mode: "insensitive" } },
-      { body: { contains: filter.q, mode: "insensitive" } },
+      { title: { contains: q, mode: "insensitive" } },
+      { lead: { contains: q, mode: "insensitive" } },
+      { body: { contains: q, mode: "insensitive" } },
     ];
   }
   return where;

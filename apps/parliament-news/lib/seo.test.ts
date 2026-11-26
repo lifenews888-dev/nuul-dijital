@@ -44,6 +44,16 @@ describe("absoluteUrl", () => {
   it("нүүр хуудас", () => {
     expect(absoluteUrl("/", "https://parlamentnews.mn")).toBe("https://parlamentnews.mn/");
   });
+
+  // Vercel Blob-ийн зураг ҮРГЭЛЖ бүтэн хаягтай ирнэ. Нөхцөлгүй залгавал
+  // JSON-LD-д .../https://... болж, Google зургийг хаяна; OG зураг татаж чадахгүй.
+  it("аль хэдийн бүтэн хаягийг хөндөхгүй", () => {
+    expect(
+      absoluteUrl("https://abc.public.blob.vercel-storage.com/x.jpg", "https://parlamentnews.mn"),
+    ).toBe("https://abc.public.blob.vercel-storage.com/x.jpg");
+    expect(absoluteUrl("http://ex.mn/a.jpg", "https://parlamentnews.mn")).toBe("http://ex.mn/a.jpg");
+    expect(absoluteUrl("HTTPS://ex.mn/a.jpg", "https://parlamentnews.mn")).toBe("HTTPS://ex.mn/a.jpg");
+  });
 });
 
 describe("metaDescription", () => {

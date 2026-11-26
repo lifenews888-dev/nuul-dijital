@@ -8,6 +8,7 @@ import { metaDescription, absoluteUrl } from "../../../lib/seo";
 import { ArticleBody } from "../../../components/article-body";
 import { PostCover } from "../../../components/post-cover";
 import { PostImage } from "../../../components/post-image";
+import { imageOrCover } from "../../../lib/images";
 
 export const revalidate = 300;
 
@@ -72,6 +73,8 @@ export default async function ArticlePage({ params }: Params) {
   // target.kind === "render" тул direct заавал байна
   const post = direct as PostFull;
   const hero = post.media[0];
+  // Зөвшөөрөөгүй host-ын зураг нь хоосон figure үлдээхгүй, хавтас руу эргэнэ
+  const media = imageOrCover(hero?.url);
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-10">
@@ -108,10 +111,10 @@ export default async function ArticlePage({ params }: Params) {
       </div>
 
       <figure className="mt-6">
-        {hero ? (
+        {media.useImage ? (
           <PostImage
-            src={hero.url}
-            alt={hero.caption ?? post.title}
+            src={media.src}
+            alt={hero?.caption ?? post.title}
             variant="hero"
             priority
             className="h-auto w-full"
@@ -119,7 +122,7 @@ export default async function ArticlePage({ params }: Params) {
         ) : (
           <PostCover post={post} className="mx-auto max-w-sm" />
         )}
-        {hero?.caption ? (
+        {media.useImage && hero?.caption ? (
           <figcaption className="mt-2 text-sm text-muted">{hero.caption}</figcaption>
         ) : null}
       </figure>

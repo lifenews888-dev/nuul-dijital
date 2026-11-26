@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { mnDate } from "../lib/format";
 import type { PostListItem } from "../lib/posts";
+import { imageOrCover } from "../lib/images";
 import { PostImage } from "./post-image";
 import { PostCoverImage } from "./post-cover";
 
@@ -18,6 +19,9 @@ export function PostCard({
   variant?: "feature" | "list";
 }) {
   const feature = variant === "feature";
+  // Зураг нь үйлчлэгдэх боломжтой эсэхээр салаална, БАЙГАА эсэхээр биш —
+  // зөвшөөрөөгүй host-ын зураг хоосон хайрцаг үлдээхгүй, хавтас руу эргэнэ.
+  const media = imageOrCover(post.imageUrl);
 
   return (
     <article className={feature ? "" : "border-t border-rule/15 pt-4"}>
@@ -29,9 +33,9 @@ export function PostCard({
           motif байгаа, хамгийн таних хэсэг нь.
         */}
         <div className="aspect-[3/2] overflow-hidden bg-sheet">
-          {post.imageUrl ? (
+          {media.useImage ? (
             <PostImage
-              src={post.imageUrl}
+              src={media.src}
               alt={post.title}
               variant="card"
               className="h-full w-full object-cover"

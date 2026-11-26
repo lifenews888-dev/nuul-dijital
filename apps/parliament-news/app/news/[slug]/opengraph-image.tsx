@@ -1,5 +1,3 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { postBySlug } from "../../../lib/posts";
 import { palette } from "../../../lib/cover";
@@ -13,13 +11,25 @@ export const alt = "Парламентын мэдээ";
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001";
 
 /**
- * Фонтыг файлын системээс уншина, сүлжээнээс биш: build ба ажиллах үе
- * хоёулаа гадаад хүсэлтээс хамаарахгүй. Кирилл дэмждэг хувилбар —
- * анхдагч фонт нь монгол гарчгийг хоосон дөрвөлжин болгоно.
+ * Фонтыг энэ файлын ХАЖУУГААС уншина, `process.cwd() + "public/..."`-ээс биш.
+ *
+ * Next-ийн build мөрдөгч `public/`-ийг функцийн багцад хуулдаггүй: өмнөх
+ * хувилбарын `.nft.json` нь 73 файл жагсааж байсан ч нэг ч `.ttf` байгаагүй —
+ * Vercel дээр ENOENT болж нийтлэл бүрийн OG зураг 500 болох байсан.
+ * `new URL(..., import.meta.url)` нь статикаар мөрдөгдөж, файл багцад орно.
+ *
+ * Кирилл дэмждэг хувилбар: @vercel/og-ийн анхдагч фонт нь зөвхөн латин тул
+ * монгол гарчиг хоосон дөрвөлжин болно.
  */
+let fontCache: ArrayBuffer | null = null;
+
 async function headFont(): Promise<ArrayBuffer> {
-  const buf = await readFile(join(process.cwd(), "public/fonts/inter-tight-800.ttf"));
-  return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
+  if (fontCache) return fontCache;
+
+  const url = new URL("./inter-tight-800.ttf", import.meta.url);
+  const data = await fetch(url).then((r) => r.arrayBuffer());
+  fontCache = data;
+  return data;
 }
 
 /**
@@ -52,7 +62,14 @@ export default async function OgImage({ params }: { params: { slug: string } }) 
           Парламентын мэдээ
         </div>
       ),
-      size,
+      {
+        ...size,
+        // Энд ч фонт ЗААВАЛ: цорын ганц текст нь монгол, анхдагч латин фонтод
+        // хоосон дөрвөлжин болно
+        fonts: [
+          { name: "Inter Tight", data: await headFont(), weight: 800, style: "normal" },
+        ],
+      },
     );
   }
 

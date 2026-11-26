@@ -49,6 +49,20 @@ export function imageSizes(variant: ImageVariant): string {
  * Зөвшөөрөх нь ЗӨВХӨН: `/`-ээр эхэлсэн дотоод зам (`..`-гүй), эсвэл
  * `image-hosts.js`-ийн жагсаалтад байгаа host руу чиглэсэн https хаяг.
  */
+/**
+ * Дуудагчид «зураг үү, хавтас уу» гэдгийг нэг газраас шийднэ.
+ *
+ * `post.imageUrl` БАЙГАА эсэхээр салаалж болохгүй: зөвшөөрөөгүй host-ын зураг
+ * нь `PostImage`-ийг `null` болгодог тул тэр үед нийтлэлд хоосон `<figure>`,
+ * картад хоосон саарал хайрцаг үлдэнэ. Эргэх зам нь хавтас байх ёстой.
+ */
+export function imageOrCover(
+  url: string | null | undefined,
+): { useImage: true; src: string } | { useImage: false } {
+  const src = safeImageSrc(url);
+  return src ? { useImage: true, src } : { useImage: false };
+}
+
 export function safeImageSrc(url: string | null | undefined): string | null {
   const src = (url ?? "").trim();
   if (!src) return null;

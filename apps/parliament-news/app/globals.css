@@ -15,6 +15,9 @@
   --cob: #0a22e0;
   --red: #e86522;
   --rule: rgba(20, 20, 20, 0.9);
+  /* Tailwind-ийн border-rule/NN нь тунгалаг var()-д alpha нэмж чаддаггүй тул
+     суваг болгон ч өгнө: rgb(var(--rule-rgb) / <alpha-value>) */
+  --rule-rgb: 20 20 20;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   color-scheme: light;
 }
@@ -28,6 +31,7 @@
     --cob: #9aaaff;
     --red: #ff8a4c;
     --rule: rgba(236, 232, 224, 0.75);
+    --rule-rgb: 236 232 224;
     color-scheme: dark;
   }
 }
@@ -40,6 +44,7 @@
   --cob: #9aaaff;
   --red: #ff8a4c;
   --rule: rgba(236, 232, 224, 0.75);
+  --rule-rgb: 236 232 224;
   color-scheme: dark;
 }
 

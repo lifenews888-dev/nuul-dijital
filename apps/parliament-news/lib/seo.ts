@@ -25,8 +25,17 @@ export function xmlEscape(s: string): string {
     .replace(/'/g, "&apos;");
 }
 
-/** Замыг base-тэй залгаж бүтэн хаяг болгоно. Зураас давхардахгүй. */
+/**
+ * Замыг base-тэй залгаж бүтэн хаяг болгоно. Зураас давхардахгүй.
+ *
+ * Аль хэдийн бүтэн хаяг бол хөндөхгүй: Vercel Blob-ийн зураг ҮРГЭЛЖ
+ * `https://…` хэлбэрээр ирдэг тул нөхцөлгүй залгавал JSON-LD-д
+ * `https://parlamentnews.mn/https://…` болж Google зургийг хаяна, OG зураг нь
+ * тэр хаягийг татаж чадахгүй.
+ */
 export function absoluteUrl(path: string, base: string): string {
+  if (/^https?:\/\//i.test(path)) return path;
+
   const root = base.replace(/\/+$/, "");
   const rel = path.startsWith("/") ? path : "/" + path;
   return root + rel;
