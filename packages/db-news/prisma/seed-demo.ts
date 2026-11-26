@@ -357,7 +357,6 @@ async function main() {
       story: p.story ?? false,
       // Стори нь ХУГАЦААТАЙ: `storyUntil` байхгүй бол нүүрний зурваст гарахгүй
       storyUntil: p.story ? new Date(Date.now() + STORY_DAYS * DAY) : null,
-      storyUntil: p.story ? new Date(Date.now() + 7 * DAY) : null,
       status,
       publishedAt,
     };

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { prisma } from "@nuul/db-news";
 import { tenantSlug } from "./tenant";
+import { ubToday } from "./format";
 import { homeData } from "./home-data";
 
 /**
@@ -27,17 +28,24 @@ const S = {
   live: `story-live-${sfx}`,
   expired: `story-expired-${sfx}`,
   draft: `story-draft-${sfx}`,
+  /** Ноорог мэдээ, ХУУЛИЙН ТӨСӨЛТЭЙ — хажуугийн баганад гарах ёсгүй */
+  draftBill: `bill-draft-${sfx}`,
 };
 
 let tenantId: string;
 let savedLive: Record<string, unknown> | null = null;
 
-const utcDay = (offsetDays: number) => {
-  const d = new Date();
-  return new Date(
-    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + offsetDays),
-  );
-};
+/**
+ * Fixture-ийн огноог ҮЙЛДВЭРЛЭЛИЙН кодтой ИЖИЛ хэлхээгээр тавина.
+ *
+ * `homeData()` нь `ubToday()`-ээр шүүдэг (Улаанбаатар, UTC+8). Fixture-ийг
+ * UTC-ийн өдрөөр барьвал 16:00-24:00 UTC (УБ-ын 00:00-08:00) хооронд
+ * `ubToday()` аль хэдийн МАРГААШИЙГ заана: «өнөөдрийн» гурван мөр
+ * харагдахгүй, «маргаашийн» мөр гарч ирнэ. Өдрийн 8 цагт тест улаан болох
+ * байсан — UTC дээр ажилладаг CI-д өдөр бүр.
+ */
+const ubDay = (offsetDays: number) =>
+  new Date(ubToday().getTime() + offsetDays * 86_400_000);
 
 beforeAll(async () => {
   const slug = tenantSlug();
@@ -66,10 +74,10 @@ beforeAll(async () => {
   await prisma.agenda.createMany({
     data: [
       // Зориуд эмх замбараагүй `order`-оор: эрэмбэлэлт ажиллаж байгааг харуулна
-      { tenantId, date: utcDay(0), time: "16:30", text: A.three, order: 3 },
-      { tenantId, date: utcDay(0), time: "10:00", text: A.one, order: 1 },
-      { tenantId, date: utcDay(0), time: "14:00", text: A.two, order: 2 },
-      { tenantId, date: utcDay(1), time: "09:00", text: A.tomorrow, order: 1 },
+      { tenantId, date: ubDay(0), time: "16:30", text: A.three, order: 3 },
+      { tenantId, date: ubDay(0), time: "10:00", text: A.one, order: 1 },
+      { tenantId, date: ubDay(0), time: "14:00", text: A.two, order: 2 },
+      { tenantId, date: ubDay(1), time: "09:00", text: A.tomorrow, order: 1 },
     ],
   });
 
@@ -107,11 +115,34 @@ beforeAll(async () => {
         status: "DRAFT",
         storyUntil: new Date(Date.now() + 86_400_000),
       },
+      {
+        ...common,
+        story: false,
+        slug: S.draftBill,
+        title: `Ноорог хуультай ${sfx}`,
+        status: "DRAFT",
+      },
     ],
+  });
+
+  // Нийтлэгдээгүй мэдээнд хууль холбоно — хаалга үүнийг барих ёстой
+  const draftPost = await prisma.newsPost.findFirst({
+    where: { tenantId, slug: S.draftBill },
+    select: { id: true },
+  });
+  await prisma.bill.create({
+    data: {
+      tenantId,
+      postId: draftPost!.id,
+      title: `Нууц хуулийн төсөл ${sfx}`,
+      stage: 1,
+    },
   });
 });
 
 afterAll(async () => {
+  // Хууль нь мэдээтэй цуг устахгүй (`onDelete: SetNull`) тул эхлээд өөрийг нь
+  await prisma.bill.deleteMany({ where: { title: { contains: sfx } } });
   await prisma.newsPost.deleteMany({ where: { slug: { in: Object.values(S) } } });
   await prisma.tickerAd.deleteMany({ where: { text: { in: Object.values(T) } } });
   await prisma.agenda.deleteMany({ where: { text: { in: Object.values(A) } } });
@@ -186,9 +217,9 @@ describe("homeData", () => {
   });
 
   it("нийтлэгдээгүй мэдээний хуулийн төсөл орохгүй", async () => {
-    const { bills, latest } = await homeData();
-    const visible = new Set(latest.map((p) => p.slug));
-    for (const b of bills) expect(visible.has(b.slug) || true).toBe(true);
-    expect(bills.map((b) => b.slug)).not.toContain(S.draft);
+    const { bills } = await homeData();
+    // Ноорог мэдээнд ЖИНХЭНЭ хууль холбогдсон — гарч ирвэл хаалга эвдэрсэн
+    expect(bills.map((b) => b.slug)).not.toContain(S.draftBill);
+    expect(bills.map((b) => b.title)).not.toContain(`Нууц хуулийн төсөл ${sfx}`);
   });
 });

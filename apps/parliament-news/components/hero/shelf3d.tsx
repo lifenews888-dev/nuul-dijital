@@ -11,15 +11,12 @@ import {
   type ShelfMetrics,
 } from "../../lib/shelf-geometry";
 import { dotTarget, dotStep, nearestIndex, shortestStep } from "../../lib/timeline";
+import { wheelStep, clickAction, dragMoved } from "../../lib/shelf-input";
 import { ShelfCaption } from "./shelf-caption";
 import type { ShelfBook } from "../shelf-model";
 
 /** Тойргийг хаахад шаардагдах хуулбарын тоо (artifact-ийнх) */
 const COPIES = 3;
-/** Чирэхэд нэг ном солигдох зай — номны өргөнөөр хэмжигдэнэ */
-const DRAG_THRESHOLD = 5;
-/** Дугуйны хөдөлгөөнийг номоор хөрвүүлэх коэффициент */
-const WHEEL_SCALE = 0.5;
 /** Дугуй зогссоны дараа хамгийн ойрын ном руу татах хугацаа */
 const WHEEL_SETTLE_MS = 160;
 /** Хөвөх өргөлт ба налалтын амрах хурд */
@@ -62,7 +59,18 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
   // Байрлал: `s` нь одоогийн бутархай, `T` нь зорилго
   const sRef = useRef(0);
   const tRef = useRef(0);
-  const dragRef = useRef<{ x: number; from: number; moved: boolean } | null>(null);
+  /**
+   * Чирэлтийн төлөв. `id` нь artifact-ийнхтэй ижил зорилготой: хоёр дахь
+   * хуруу/заагчийн `pointerdown` эхнийхийнхийг дарж бичвэл тавиур үсэрнэ.
+   */
+  const dragRef = useRef<{
+    id: number;
+    x: number;
+    from: number;
+    moved: boolean;
+  } | null>(null);
+  /** Чирэлтийн дараах `click`-ийг залгих туг */
+  const swallowRef = useRef(false);
   const tiltRef = useRef({ x: 0, y: 0 });
   const pointerRef = useRef({ x: 0, y: 0 });
   const hoverRef = useRef(-1);
@@ -271,46 +279,117 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
     return () => hit.removeEventListener("click", onClick);
   }, [count]);
 
-  // Хуруу/хулганы байрлалыг кадрын давталт уншина
+  /**
+   * Заагчийн хөдөлгөөн БА суллалт хоёулаа ЦОНХОНД сонсогдоно.
+   *
+   * `.shelf` нь дэлгэцийн дунд хэвтээ зурвас (`height: var(--H) + 100px`).
+   * Суллалтыг зөвхөн тэр элемент дээр сонсвол хэрэглэгч чирч яваад гарчиг
+   * эсвэл виджет рүү оролоо гэхэд `pointerup` ирэхгүй: чирэлт цэвэрлэгдэхгүй
+   * үлдэж, товч даралгүй хулгана хөдөлгөхөд тавиур эргэлдсээр байна.
+   * Artifact ч цонхонд сонсдог (index.html:908).
+   */
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
       pointerRef.current = { x: e.clientX, y: e.clientY };
       const d = dragRef.current;
-      if (!d) return;
-      if (Math.abs(e.clientX - d.x) > DRAG_THRESHOLD) d.moved = true;
+      if (!d || d.id !== e.pointerId) return;
+      if (dragMoved(d.x, e.clientX)) d.moved = true;
       if (d.moved) {
         const m = mRef.current;
         tRef.current = d.from - (e.clientX - d.x) / (m.ws + m.gap);
       }
     };
+
+    const onUp = (e: PointerEvent) => {
+      const d = dragRef.current;
+      if (!d || d.id !== e.pointerId) return;
+      dragRef.current = null;
+      if (!d.moved) return;
+      tRef.current = Math.round(tRef.current);
+      /**
+       * Чирэлтийн дараах `click`-ийг залгина. `pointerup` дээрх
+       * `preventDefault()` нь `click`-ийг ЗОГСООДОГГҮЙ (Pointer Events-ийн
+       * нийцлийн дүрэм), харин хавтасны `<a>` нь бүх нүүрийг хучдаг тул
+       * богино чирэлт мэдээг нээчихнэ.
+       */
+      swallowRef.current = true;
+      setTimeout(() => {
+        swallowRef.current = false;
+      }, 0);
+    };
+
     addEventListener("pointermove", onMove);
-    return () => removeEventListener("pointermove", onMove);
+    addEventListener("pointerup", onUp);
+    addEventListener("pointercancel", onUp);
+    return () => {
+      removeEventListener("pointermove", onMove);
+      removeEventListener("pointerup", onUp);
+      removeEventListener("pointercancel", onUp);
+    };
+  }, []);
+
+  /**
+   * Дугуй: React-ийн `onWheel` нь PASSIVE-ээр бүртгэгддэг тул
+   * `preventDefault()` боломжгүй. Artifact-ийн хоёр хамгаалалт
+   * (`lib/shelf-input.ts`) энд хэрэгжинэ — нүүрээс доош гүйлгэхэд тавиур
+   * нэгэн зэрэг эргэлдэхгүй.
+   */
+  useEffect(() => {
+    const shelf = shelfRef.current;
+    if (!shelf) return;
+    const onWheel = (e: WheelEvent) => {
+      const m = mRef.current;
+      const r = shelf.getBoundingClientRect();
+      const step = wheelStep(e, {
+        scrollY: window.scrollY,
+        pointerY: e.clientY,
+        top: r.top,
+        bottom: r.bottom,
+        step: m.ws + m.gap,
+      });
+      if (step === null) return;
+      e.preventDefault();
+      tRef.current += step;
+      if (wheelTimer.current) clearTimeout(wheelTimer.current);
+      wheelTimer.current = setTimeout(() => {
+        tRef.current = Math.round(tRef.current);
+      }, WHEEL_SETTLE_MS);
+    };
+    shelf.addEventListener("wheel", onWheel, { passive: false });
+    return () => shelf.removeEventListener("wheel", onWheel);
   }, []);
 
   if (count === 0) return null;
 
   const onPointerDown = (e: React.PointerEvent) => {
-    dragRef.current = { x: e.clientX, from: tRef.current, moved: false };
+    // Нэг л заагч чирнэ: хоёр дахь нь эхнийхийн эхлэлийг дарж бичвэл үсэрнэ
+    if (dragRef.current) return;
+    dragRef.current = { id: e.pointerId, x: e.clientX, from: tRef.current, moved: false };
   };
 
-  const onPointerUp = (e: React.PointerEvent) => {
-    const d = dragRef.current;
-    dragRef.current = null;
-    if (!d) return;
-    if (d.moved) {
-      tRef.current = Math.round(tRef.current);
+  /**
+   * Ном дээр дарах — artifact-ийн `index.html:906`.
+   *
+   * Урдах ном бол мэдээг нээнэ (хавтасны `<a>` өөрөө хийнэ), хөрш ном бол
+   * түүнийг урагш эргүүлнэ: хөрш дээр дарахад юу ч болохгүй байх нь номын
+   * тавиурын хамгийн ойлгомжтой үйлдлийг үхүүлнэ. Чирэлтийн дараах
+   * `click`-ийг мөн энд залгина.
+   */
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (swallowRef.current) {
       e.preventDefault();
+      e.stopPropagation();
+      return;
     }
-  };
-
-  const onWheel = (e: React.WheelEvent) => {
-    const m = mRef.current;
-    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-    tRef.current += (delta / (m.ws + m.gap)) * WHEEL_SCALE;
-    if (wheelTimer.current) clearTimeout(wheelTimer.current);
-    wheelTimer.current = setTimeout(() => {
-      tRef.current = Math.round(tRef.current);
-    }, WHEEL_SETTLE_MS);
+    const tape = (e.target as HTMLElement | null)?.closest("[data-v]");
+    if (!(tape instanceof HTMLElement)) return;
+    const v = Number(tape.dataset.v);
+    if (!Number.isInteger(v)) return;
+    const action = clickAction(relIndex(v, sRef.current, total));
+    if (action.kind === "open") return; // хавтасны холбоос өөрөө аваачна
+    e.preventDefault();
+    e.stopPropagation();
+    tRef.current = Math.round(tRef.current) + action.by;
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -337,13 +416,17 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
         aria-roledescription="номын тавиур"
         tabIndex={0}
         onPointerDown={onPointerDown}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-        onWheel={onWheel}
+        onClickCapture={onClickCapture}
         onKeyDown={onKeyDown}
         aria-describedby="shelf-hint"
       >
-        <div className="stage" id="stage">
+        {/*
+          Тавиур нь ДҮРСЛЭЛ: тойрог нэг мэдээг гурав агуулдаг тул нуруу,
+          ар талын товч агуулга бүгд хүртээмжийн модонд орвол дэлгэц
+          уншигч нэг гарчгийг гурав уншина. Хүртээмжтэй хувилбар нь доорх
+          `sr-only` холбоос ба `aria-live` гарчгийн блок.
+        */}
+        <div className="stage" id="stage" aria-hidden="true">
           {Array.from({ length: total }, (_, v) => {
             const book = books[v % count];
             return (
@@ -389,17 +472,11 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
                 <div className="f cv" style={{ background: book.bg }}>
                   <img src={book.coverUrl} alt="" width={474} height={900} loading="lazy" decoding="async" />
                   {/*
-                    Хулганы холбоос, гарын биш: тойрог нь ижил мэдээг ГУРАВ
-                    агуулдаг тул tab-аар явбал 36 давхардсан холбоос дамжина.
-                    Гар нь `.shelf` дээр зогсоод сум/Enter-ээр ажиллана.
-                    Хуулбаруудыг дэлгэц уншигчаас мөн нуулаа.
+                    Хулганы холбоос, гарын биш: `.stage` нь бүхэлдээ
+                    `aria-hidden` тул дэлгэц уншигчид хүрэхгүй, гар нь
+                    `.shelf` дээр зогсоод сум/Enter-ээр ажиллана.
                   */}
-                  <a
-                    href={book.href}
-                    aria-label={book.title}
-                    tabIndex={-1}
-                    aria-hidden={v >= count || undefined}
-                  />
+                  <a href={book.href} aria-label={book.title} tabIndex={-1} />
                 </div>
 
                 {/* Ар тал: товч агуулга */}

@@ -70,9 +70,16 @@ export function StoryViewer({ stories }: { stories: StoryItem[] }) {
   /**
    * Нээлттэй үед: ард гүйлт түгжигдэнэ, фокус давхарга дотор орж, хаахад
    * дарсан стори руугаа буцна. Гарнаас гарч чадахгүй давхарга нь урхи.
+   *
+   * Хамаарал нь НЭЭЛТТЭЙ ЭСЭХ, `index` БИШ. `index`-ээр түлхүүрлэвэл стори
+   * солигдох бүрт (6 секунд тутам автоматаар ч) цэвэрлэгээ ажиллаж, фокус
+   * давхаргын АРД байгаа зурвасын дугуй руу үсэрч буцаж ирнэ: «Мэдээг
+   * унших» дээр очсон хүнийг уншиж байтал хаах товч руу чангаана.
    */
+  const open = index !== null;
+
   useEffect(() => {
-    if (index === null) return;
+    if (!open) return;
     const opener = openerRef.current;
     const body = document.body;
     const prevOverflow = body.style.overflow;
@@ -126,7 +133,7 @@ export function StoryViewer({ stories }: { stories: StoryItem[] }) {
       pausedRef.current = false;
       opener?.focus();
     };
-  }, [index, close, step]);
+  }, [open, close, step]);
 
   /**
    * Явцын зураас ба автомат шилжилт.

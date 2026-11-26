@@ -50,6 +50,36 @@ for (const name of ASSETS) {
   });
 }
 
+/*
+ * Фонтын гэр бүлийн нэрсийг next/font-ийн хувьсагч болгоно.
+ *
+ * Artifact нь Google Fonts-оос `"Inter Tight"` гэж шууд нэрээр дуудна. Бид
+ * next/font хэрэглэдэг бөгөөд тэр нь гэр бүлийн нэрийг hash-дна
+ * (`__Inter_Tight_2dee46`) ба ЗӨВХӨН CSS хувьсагчаар гаргана. Тиймээс
+ * artifact-ийн бичсэн нэр ХЭЗЭЭ Ч тохирохгүй: зочны компьютерт тэр фонт
+ * сууснаас л хамаарна, үгүй бол 47 мэдэгдэл ерөнхий fallback ч байхгүй
+ * тул хөтчийн анхдагч (Times) руу унана.
+ *
+ * Энд солих нь `artifact.css`-ийг гараар засахгүй гэсэн дүрмийг
+ * хадгална — дахин задлахад автоматаар дахин үйлчилнэ.
+ */
+const FONT_NAMES = [
+  ["Inter Tight", "var(--font-head)"],
+  ["Noto Serif", "var(--font-body)"],
+  ["PT Serif", "var(--font-title)"],
+];
+
+let fonts = 0;
+for (const [name, repl] of FONT_NAMES) {
+  for (const q of ["'", '"']) {
+    const quoted = q + name + q;
+    while (css.includes(quoted)) {
+      css = css.replace(quoted, repl);
+      fonts += 1;
+    }
+  }
+}
+
 const header = `/*
  * ГАРААР ЗАСАХГҮЙ.
  *
@@ -64,4 +94,22 @@ const header = `/*
 await writeFile(OUT, header + css.trim() + "\n", "utf8");
 
 const rules = (css.match(/\{/g) || []).length;
-console.log(`artifact.css: ${css.length} bytes, ${rules} rules, ${rewritten} asset urls rewritten`);
+console.log(
+  `artifact.css: ${css.length} bytes, ${rules} rules, ` +
+    `${rewritten} asset urls + ${fonts} font families rewritten`,
+);
+
+// Үлдсэн харьцангуй url() байвал зураг чимээгүй алдагдана
+const stray = [...css.matchAll(/url\((['"]?)([^'")]+)\)/g)]
+  .map((m) => m[2])
+  .filter((u) => !u.startsWith(ASSET_PREFIX) && !u.startsWith("data:") && !/^https?:/.test(u));
+if (stray.length > 0) {
+  throw new Error(`Зам нь солигдоогүй url(): ${[...new Set(stray)].join(", ")}`);
+}
+
+// Шууд нэрээр үлдсэн фонт байж болохгүй
+for (const name of ["Inter Tight", "Noto Serif", "PT Serif"]) {
+  if (css.includes(`"${name}"`) || css.includes(`'${name}'`)) {
+    throw new Error(`Фонтын нэр солигдоогүй: ${name}`);
+  }
+}
