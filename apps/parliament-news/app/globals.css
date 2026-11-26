@@ -90,3 +90,17 @@ a {
  * Дахин гаргах: node scripts/extract-artifact-css.mjs
  */
 @import "./artifact.css";
+
+/*
+ * Artifact-ийн `.top` нь position:fixed, 76px өндөр. Hero-гүй хуудас
+ * (нийтлэл, ангилал, таг, хайлт) агуулгаа түүний доороос эхлүүлнэ.
+ * Нүүр нь өөрийн hero-гийн өндрөөр нөхөн тооцно.
+ */
+main {
+  padding-top: 76px;
+}
+@media (max-width: 767px) {
+  main {
+    padding-top: 60px;
+  }
+}

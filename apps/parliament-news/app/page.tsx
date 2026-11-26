@@ -2,6 +2,7 @@ import { listPosts } from "../lib/posts";
 import { shelfBooks } from "../components/shelf-model";
 import { Shelf } from "../components/shelf";
 import { PostCard } from "../components/post-card";
+import { Hero } from "../components/hero/hero";
 
 export const revalidate = 300;
 
@@ -23,7 +24,20 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="mx-auto max-w-page px-4">
+    <>
+      {/* Artifact-ийн hero дүр зураг. Тавиур нь Task 4-т энд орно. */}
+      <Hero />
+
+      {/*
+        Hero-гийн давхаргууд бүгд fixed тул өндөр эзэлдэггүй. Agreement нь
+        artifact-ийнх: агуулга нэг бүтэн дэлгэцийн доороос эхэлж, hero дээр
+        гүйж гарна (`.feed { margin-top: 100svh }`). Task 9-д `.feed`-ийн
+        бүтцээр солигдоно; толгойн 76px-ийг main-ээс хасна.
+      */}
+      <div
+        className="mx-auto max-w-page px-4"
+        style={{ marginTop: "calc(100svh - 76px)" }}
+      >
       {/* Тавиур нь ДҮРСЛЭЛ. Агуулга нь доорх жагсаалтад — JS унтарсан ч,
           хайлтын робот ч мэдээг тэндээс уншина. Жагсаалтыг нуухгүй. */}
       <section aria-label="Сүүлийн мэдээ, номын тавиураар" className="py-6">
@@ -53,6 +67,7 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }
