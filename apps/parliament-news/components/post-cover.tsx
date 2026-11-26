@@ -1,21 +1,6 @@
-import { coverSvg, type CoverInput } from "../lib/cover";
+import { coverSvg } from "../lib/cover";
+import { toCoverInput, coverUrl } from "../lib/cover-input";
 import type { PostListItem } from "../lib/posts";
-
-/** Мэдээг хавтасны оролт болгоно — ЦОРЫН ГАГЦ хөрвүүлэх газар */
-export function toCoverInput(post: PostListItem): CoverInput {
-  return {
-    title: post.title,
-    kicker: post.kicker,
-    lead: post.lead,
-    categoryName: post.categoryName,
-    motif: post.motif,
-    theme: post.theme,
-    look: post.look,
-    imageUrl: post.imageUrl,
-    featured: post.featured,
-    date: post.date,
-  };
-}
 
 /**
  * Номын хавтас inline SVG-гээр.
@@ -38,6 +23,34 @@ export function PostCover({
       className={className}
       aria-hidden="true"
       dangerouslySetInnerHTML={{ __html: coverSvg(toCoverInput(post)) }}
+    />
+  );
+}
+
+/**
+ * Хавтас кэшлэгдэх хаягаар.
+ *
+ * Жагсаалтад ҮҮНИЙГ хэрэглэнэ, `PostCover`-ийг биш: нүүрэнд 8 хавтас шингэвэл
+ * HTML 128 KB болж, хэмжсэн зорилт (100 KB; ikon.mn 59 KB) давна. Нийтлэлийн
+ * хуудсанд ганц хавтас inline байх нь зөв — тэр нь LCP элемент, нэмэлт
+ * хүсэлт хийлгэхгүй.
+ */
+export function PostCoverImage({
+  post,
+  className,
+}: {
+  post: PostListItem;
+  className?: string;
+}) {
+  return (
+    <img
+      src={coverUrl(post.slug)}
+      alt=""
+      width={474}
+      height={900}
+      loading="lazy"
+      decoding="async"
+      className={className}
     />
   );
 }

@@ -1,0 +1,193 @@
+/*
+ * 3D номын тавиур — `site-v2/index.html`-ийн .shelf/.stage/.tape/.f дүрмүүдээс
+ * порт. Хадгалсан тогтмолууд: perspective 1400px, preserve-3d,
+ * .bk радиус 4px 2px 2px 4px, .bkt inset 12% 12% 10% 14%, ease curve.
+ *
+ * Artifact-аас ЗОРИУД зөрсөн зүйлс:
+ *  - .shelf нь position:fixed байхаа больж relative. Artifact нь нэг хуудасны
+ *    SPA байсан; энд тавиур нь нүүрний нэг хэсэг, доороо жагсаалт, хөлтэй.
+ *  - --cy (дэлгэцийн босоо төв) хамаарал хасагдсан.
+ *  - prefers-reduced-motion үед 3D бүрэн унтарч, энгийн хэвтээ гүйдэг
+ *    жагсаалт болно — вестибуляр мэдрэмжтэй уншигчдад.
+ */
+
+/*
+ * Номын өргөн нь ЭНД тодорхойлогдоно, JS-д биш: утсан дээр 190px ном нь
+ * 361px өндөр болж тавиураас халина. JS нь байрлалыг var(--bw)-ийн үржвэрээр
+ * тооцдог тул энэ нэг утга бүгдийг удирдана.
+ */
+.shelf {
+  --bw: clamp(116px, 33vw, 190px);
+  position: relative;
+  /* Ном бүтнээрээ багтана: 900/474 = 1.899 */
+  height: calc(var(--bw) * 1.899 + 28px);
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+  touch-action: pan-y;
+  overflow: hidden;
+  user-select: none;
+}
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tape {
+  position: absolute;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.55s var(--ease);
+}
+
+/* Номын нүүр тал: хавтас */
+.cover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--bw);
+  height: calc(var(--bw) * 1.899); /* 900 / 474 */
+  margin-left: calc(var(--bw) / -2);
+  margin-top: calc(var(--bw) * -0.95);
+  border-radius: 4px 2px 2px 4px;
+  background: var(--bg);
+  box-shadow: 0 18px 38px rgba(10, 10, 12, 0.3);
+  overflow: hidden;
+  transition: box-shadow 0.4s var(--ease);
+}
+
+.cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Нуруу: ангилал, kicker, дугаар, огноо */
+.spine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--bw) * 0.14);
+  height: calc(var(--bw) * 1.899);
+  margin-left: calc(var(--bw) / -2);
+  margin-top: calc(var(--bw) * -0.95);
+  transform-origin: left center;
+  transform: rotateY(-90deg);
+  background: var(--bg);
+  color: var(--fg);
+  border-radius: 2px 0 0 2px;
+  display: grid;
+  align-content: space-between;
+  justify-items: center;
+  padding: 10px 2px;
+  font-family: var(--font-head), system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.spineText {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  white-space: nowrap;
+  overflow: hidden;
+  max-height: 62%;
+}
+
+.plate {
+  font-size: 8px;
+  opacity: 0.75;
+  writing-mode: vertical-rl;
+}
+
+.link {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* Сонгогдсон ном: урагш гарч, арай эргэнэ */
+.tape[data-active="true"] .cover {
+  box-shadow: 0 30px 60px rgba(10, 10, 12, 0.45);
+}
+
+.caption {
+  margin: 14px auto 0;
+  max-width: min(680px, 92%);
+  text-align: center;
+  font-family: var(--font-head), system-ui, sans-serif;
+  min-height: 3.2em;
+}
+
+.captionKicker {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.captionTitle {
+  font-size: clamp(1rem, 2.4vw, 1.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
+ * Хөдөлгөөн багасгах сонголттой уншигчид: 3D бүрэн унтарч, хавтаснууд
+ * хэвтээ гүйдэг жагсаалт болно. Холбоос, агуулга хэвээр.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .shelf {
+    height: auto;
+    perspective: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .stage {
+    position: static;
+    /* Үндсэн дүрмийн width/height: 0-г ЗААВАЛ буцаана: 3D-д stage нь
+       хэмжээгүй цэг байдаг, flex болоход тэр нь хүүхдүүдийг хавчина. */
+    width: auto;
+    height: auto;
+    display: flex;
+    gap: 14px;
+    transform: none !important;
+    padding: 4px;
+  }
+  .tape {
+    position: static;
+    width: var(--bw);
+    height: calc(var(--bw) * 1.899);
+    flex: 0 0 auto;
+    transform: none !important;
+    transition: none;
+  }
+  .cover {
+    position: relative;
+    margin: 0;
+  }
+  .spine {
+    display: none;
+  }
+}
