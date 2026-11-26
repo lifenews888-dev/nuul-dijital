@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   mnDate,
   mnNumericDate,
+  ubToday,
   mnShortDate,
   mnDateTime,
   readMinutes,
@@ -110,5 +111,42 @@ describe("mnNumericDate", () => {
 
   it("UTC-ээр уншина — @db.Date нь UTC шөнө дундад ирдэг", () => {
     expect(mnNumericDate(new Date("2026-03-01T00:00:00Z"))).toBe("2026.03.01");
+  });
+});
+
+/**
+ * Хуваарь нь «ӨНӨӨДӨР» — Улаанбаатарын өдөр. Сервер нь UTC-д ажиллана
+ * (Vercel) тул UTC-ийн өдрөөр уншвал өглөөний 00:00–08:00-д өчигдрийн
+ * хуваарь харагдана.
+ */
+describe("ubToday", () => {
+  it("UB 18:00 — тэр өдөр", () => {
+    expect(ubToday(new Date("2026-11-26T10:00:00Z")).toISOString()).toBe(
+      "2026-11-26T00:00:00.000Z",
+    );
+  });
+
+  it("UB 23:59 — мөн тэр өдөр", () => {
+    expect(ubToday(new Date("2026-11-26T15:59:00Z")).toISOString()).toBe(
+      "2026-11-26T00:00:00.000Z",
+    );
+  });
+
+  it("UB 00:00 — шинэ өдөр, UTC нь хараахан өмнөх өдөр", () => {
+    expect(ubToday(new Date("2026-11-26T16:00:00Z")).toISOString()).toBe(
+      "2026-11-27T00:00:00.000Z",
+    );
+  });
+
+  it("UB 02:00 — шинэ өдөр", () => {
+    expect(ubToday(new Date("2026-11-26T18:00:00Z")).toISOString()).toBe(
+      "2026-11-27T00:00:00.000Z",
+    );
+  });
+
+  it("сар, оны хил дамжина", () => {
+    expect(ubToday(new Date("2026-12-31T16:00:00Z")).toISOString()).toBe(
+      "2027-01-01T00:00:00.000Z",
+    );
   });
 });

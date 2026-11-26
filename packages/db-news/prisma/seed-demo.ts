@@ -18,6 +18,8 @@ import { prisma } from "../src/index";
 const TENANT_SLUG = (process.env.NEWS_TENANT_SLUG || "parlament").toLowerCase();
 
 const DAY = 86_400_000;
+/** Стори хэдэн хоног амьдрах */
+const STORY_DAYS = 3;
 const MOTIFS = ["grid", "hemi", "cols", "bars", "rings", "sun", "wave"];
 
 type Demo = {
@@ -211,6 +213,107 @@ const POSTS: Demo[] = [
   },
 ];
 
+
+/** Artifact-ийн `ST` (site-v2/index.html:714) */
+const BILL_STAGES = [
+  "Өргөн мэдүүлсэн",
+  "Байнгын хороо",
+  "Анхны хэлэлцүүлэг",
+  "Эцсийн хэлэлцүүлэг",
+  "Баталсан",
+];
+
+/** Artifact-ийн «Өнөөдөр хэлэлцэх асуудал» самбарын гурван мөр */
+const AGENDA = [
+  { time: "10:00", text: "Нэгдсэн хуралдаан — төсвийн гүйцэтгэлийн тайлан" },
+  { time: "14:00", text: "Эдийн засгийн байнгын хороо" },
+  { time: "16:30", text: "Ажлын хэсэг — сонгуулийн хууль" },
+];
+
+/**
+ * Гүйдэг мөрийн СУРТАЛЧИЛГАА. Artifact-ийн `buildTicker()` нь мэдээний
+ * гарчгуудыг өөрөө жагсаадаг ба эдгээрийг гурав тутамд нэг оруулдаг —
+ * тиймээс энэ нь мэдээ биш, зар.
+ */
+const TICKER_ADS = [
+  { text: "Эрдэнэт үйлдвэр — 2026 оны нэгдсэн тайлан нээлттэй", url: "https://example.mn/erdenet" },
+  { text: "Монголын хөрөнгийн бирж — өдрийн арилжааны мэдээлэл", url: "https://example.mn/mse" },
+  { text: "Үндэсний статистикийн хороо — макро үзүүлэлт", url: null },
+  { text: "УИХ-ын номын сан — хуулийн эмхэтгэл 2026", url: null },
+];
+
+/** Улаанбаатарын өнөөдөр, UTC шөнө дундаар (`@db.Date`-ийн хэлбэр) */
+function ubToday(): Date {
+  const ymd = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Ulaanbaatar",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  return new Date(ymd + "T00:00:00.000Z");
+}
+
+/**
+ * Нүүрний виджетүүдийн демо өгөгдөл: шууд байдал, өнөөдрийн хуваарь,
+ * гүйдэг мөрийн зар, нэг хуулийн төслийн явц.
+ *
+ * Дахин ажиллуулахад давхардахгүй: хуваарь ба зарыг цэвэрлээд дахин
+ * үүсгэнэ, хууль ба түүний шатууд нь `upsert`.
+ */
+async function seedModules(tenantId: string, budgetPostId: string | null) {
+  await prisma.liveState.upsert({
+    where: { tenantId },
+    update: { attendance: 98, sessionStatus: "Хуралдаж байна", tickerOn: true },
+    create: { tenantId, attendance: 98, sessionStatus: "Хуралдаж байна", tickerOn: true },
+  });
+
+  const today = ubToday();
+  await prisma.agenda.deleteMany({ where: { tenantId, date: today } });
+  await prisma.agenda.createMany({
+    data: AGENDA.map((a, i) => ({ tenantId, date: today, time: a.time, text: a.text, order: i })),
+  });
+
+  await prisma.tickerAd.deleteMany({ where: { tenantId } });
+  await prisma.tickerAd.createMany({
+    data: TICKER_ADS.map((a, i) => ({ tenantId, text: a.text, url: a.url, active: true, order: i })),
+  });
+
+  if (!budgetPostId) return { agenda: AGENDA.length, ads: TICKER_ADS.length, stages: 0 };
+
+  // Төсвийн мэдээ нь «хэлэлцэж эхэллээ» — 3 дахь шат (индекс 2)
+  const CURRENT = 2;
+  const bill = await prisma.bill.upsert({
+    where: { tenantId_postId: { tenantId, postId: budgetPostId } },
+    update: { title: "2027 оны улсын төсвийн тухай хууль", stage: CURRENT },
+    create: {
+      tenantId,
+      postId: budgetPostId,
+      title: "2027 оны улсын төсвийн тухай хууль",
+      stage: CURRENT,
+    },
+  });
+
+  for (const [index, name] of BILL_STAGES.entries()) {
+    const reached = index <= CURRENT;
+    await prisma.billStage.upsert({
+      where: { billId_index: { billId: bill.id, index } },
+      update: {},
+      create: {
+        tenantId,
+        billId: bill.id,
+        index,
+        date: reached ? new Date(Date.now() - (CURRENT - index + 1) * DAY) : null,
+        note: reached
+          ? name + " — 2027 оны улсын төсвийн төслийн хэлэлцүүлгийн " + (index + 1) + " дэх шат."
+          : null,
+        sources: [],
+      },
+    });
+  }
+
+  return { agenda: AGENDA.length, ads: TICKER_ADS.length, stages: BILL_STAGES.length };
+}
+
 async function main() {
   const tenant = await prisma.tenant.findFirst({ where: { slug: TENANT_SLUG } });
   if (!tenant) {
@@ -252,6 +355,8 @@ async function main() {
       theme: index % 3,
       featured: p.featured ?? false,
       story: p.story ?? false,
+      // Стори нь ХУГАЦААТАЙ: `storyUntil` байхгүй бол нүүрний зурваст гарахгүй
+      storyUntil: p.story ? new Date(Date.now() + STORY_DAYS * DAY) : null,
       storyUntil: p.story ? new Date(Date.now() + 7 * DAY) : null,
       status,
       publishedAt,
@@ -283,9 +388,20 @@ async function main() {
     else hidden++;
   }
 
+  const budget = await prisma.newsPost.findFirst({
+    where: { tenantId: tenant.id, slug: "2027-ony-tosviin-toslijg-helelcej-ehellee" },
+    select: { id: true },
+  });
+  const mods = await seedModules(tenant.id, budget?.id ?? null);
+
   console.log(`   нийтлэгдсэн, харагдах ёстой: ${published}`);
   console.log(`   зурагтай: ${withImage}`);
   console.log(`   ЗОРИУД нуугдсан (ноорог + цаг товлосон): ${hidden}`);
+  const stories = POSTS.filter((p) => p.story).length;
+  console.log(`   стори (${STORY_DAYS} хоног амьдрах): ${stories}`);
+  console.log(
+    `   виджет: live 1 · хуваарь ${mods.agenda} · ticker зар ${mods.ads} · хуулийн шат ${mods.stages}`,
+  );
   console.log(`\n✅ ${POSTS.length} демо мэдээ бэлэн.`);
   console.log(
     `   Шалгах: demo-nooreg ба demo-tsag-tovlosson нь нийтийн хуудсанд ГАРАХ ЁСГҮЙ.`,

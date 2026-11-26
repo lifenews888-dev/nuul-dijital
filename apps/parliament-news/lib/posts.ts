@@ -176,6 +176,18 @@ function listWhere(filter: ListFilter): Prisma.NewsPostWhereInput {
 
 const NEWEST_FIRST = { publishedAt: "desc" } as const;
 
+/**
+ * Нийтийн жагсаалтын include ба эрэмбэ, НЭГ газар.
+ *
+ * `home-data.ts` нь нүүрний бүх уншилтыг нэг tenant хаалгаар хийдэг тул
+ * `listPosts`-ийг гурав дуудахын оронд энэ хэсгийг хуваалцана. Нөхцөл нь
+ * `publishedWhere()`-д хэвээр — нийтлээгүй мэдээг хаах шийдвэр нэг газарт.
+ */
+export const PUBLIC_LIST = {
+  include: LIST_INCLUDE,
+  orderBy: NEWEST_FIRST,
+} as const;
+
 export async function listPosts(
   opts: { take?: number; skip?: number; featured?: boolean } = {},
 ): Promise<PostListItem[]> {

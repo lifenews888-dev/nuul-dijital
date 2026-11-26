@@ -111,3 +111,21 @@ export function excerpt(text: string | null, max: number): string {
 
   return cut + "…";
 }
+
+const UB_DAY = new Intl.DateTimeFormat("en-CA", {
+  timeZone: TZ,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/**
+ * Улаанбаатарын хэлхээгээр «өнөөдөр» — UTC шөнө дундаар илэрхийлсэн.
+ *
+ * `@db.Date` талбарууд (хуваарийн `date`) нь UTC шөнө дунд ирдэг тул
+ * харьцуулах утга нь мөн тийм байх ёстой. Сервер UTC-д ажиллана: UTC-ийн
+ * өдрөөр уншвал УБ-ын 00:00–08:00-д өчигдрийн хуваарь гарна.
+ */
+export function ubToday(now: Date = new Date()): Date {
+  return new Date(`${UB_DAY.format(now)}T00:00:00.000Z`);
+}
