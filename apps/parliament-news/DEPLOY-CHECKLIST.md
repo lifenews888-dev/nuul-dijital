@@ -70,7 +70,10 @@
       deploy ч унана**.
 - [ ] Env хувьсагчид Vercel дээр тавигдсан: `NEWS_DATABASE_URL`,
       `NEWS_DIRECT_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`,
-      `BLOB_READ_WRITE_TOKEN`.
+      `BLOB_READ_WRITE_TOKEN`, `NEXT_PUBLIC_SITE_URL`.
+      `NEXT_PUBLIC_SITE_URL` нь `https://parlamentnews.mn` — canonical,
+      Open Graph, sitemap, RSS бүгд үүнээс бүтнэ. Буруу бол хуваалцсан
+      холбоос localhost руу чиглэнэ.
       Vercel дээр `.env` файл байхгүй — env нь dashboard-аас ирнэ.
       `next.config.js` нь `override: false`-тэй уншдаг тул dashboard-ийн
       утгыг дарж бичихгүй. Аль нэг нь тавигдаагүй бол апп 500 буцаана

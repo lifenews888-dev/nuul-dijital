@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { Prisma } from "@nuul/db-news";
-import { tenantData } from "./tenant-db";
+import { forTenant, tenantData } from "./tenant-db";
 import type { TenantClient } from "./tenant-db";
+import { requireTenant } from "./tenant";
 
 /**
  * Tenant-ийн мөр бус тохиргоо (pn_settings дээр JSON).
@@ -52,7 +53,13 @@ function httpsOnly(value: string | undefined): string {
   return /^https:\/\/[^\s"'<>]+$/.test(s) ? s : "";
 }
 
-const plain = z.string().max(200).default("");
+/**
+ * Талбарын урт нь artifact-ийнхтай тохирно: `admin.html`-ийн `maxlength`
+ * (`ft_about` 1500, `ft_policy` 2000) ба `index.html`-ийн `sv()` дуудлагууд
+ * (addr 160, phone 40, email 80, sales 80). Бүгдийг нэг хэмжээгээр
+ * хязгаарлавал «Бидний тухай», «Нууцлалын бодлого» схемд багтахгүй болно.
+ */
+const text = (max: number) => z.string().max(max).default("");
 const social = z.string().optional().transform(normalizeHttps);
 
 export const headerSchema = z.object({
@@ -63,12 +70,12 @@ export const headerSchema = z.object({
 });
 
 export const footerSchema = z.object({
-  addr: plain,
-  phone: plain,
-  email: plain,
-  sales: plain,
-  about: plain,
-  policy: plain,
+  addr: text(160),
+  phone: text(40),
+  email: text(80),
+  sales: text(80),
+  about: text(1500),
+  policy: text(2000),
   fb: social,
   yt: social,
   ig: social,
@@ -136,4 +143,18 @@ export async function putSetting<K extends SettingKey>(
   }
 
   await db.tenantSetting.create({ data: tenantData({ key, value: json }) });
+}
+
+/**
+ * RSC-д зориулсан хялбар хувилбар: tenant-ыг өөрөө олж уншина.
+ *
+ * `getSetting(db, key)` нь хүсэлтийн контексттой дуудагчдад (tRPC procedure,
+ * тэнд `ctx.db` аль хэдийн байдаг). Server component-д тийм ctx байхгүй тул
+ * энэ нь `requireTenant()` → `forTenant()`-ийг өөрөө хийнэ.
+ */
+export async function getSiteSetting<K extends SettingKey>(
+  key: K,
+): Promise<SettingOf<K>> {
+  const tenant = await requireTenant();
+  return getSetting(forTenant(tenant.id), key);
 }

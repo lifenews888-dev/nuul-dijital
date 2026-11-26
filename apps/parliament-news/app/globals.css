@@ -2,7 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Дизайний токен — `site-v2/index.html`-ээс үг дуудлагаар.
+ * Гурван блок нь artifact-ийн хэв маяг: анхдагч цайвар, хөтчийн бараан
+ * сонголт (хэрэглэгч гар аргаар цайвар болгоогүй бол), гар аргаар бараан.
+ */
 :root {
-  --brand: #1d3fe3;
-  --accent: #f26a1b;
+  --paper: #ece8e0;
+  --sheet: #f3f0ea;
+  --ink: #141414;
+  --muted: #6d6a63;
+  --cob: #0a22e0;
+  --red: #e86522;
+  --rule: rgba(20, 20, 20, 0.9);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1426;
+    --sheet: #131b31;
+    --ink: #ece8e0;
+    --muted: #9aa1b6;
+    --cob: #9aaaff;
+    --red: #ff8a4c;
+    --rule: rgba(236, 232, 224, 0.75);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #0e1426;
+  --sheet: #131b31;
+  --ink: #ece8e0;
+  --muted: #9aa1b6;
+  --cob: #9aaaff;
+  --red: #ff8a4c;
+  --rule: rgba(236, 232, 224, 0.75);
+  color-scheme: dark;
+}
+
+/* Дэвсгэр, бэхийг ТОДОРХОЙ авна — хөтчийн анхдагчид найдахгүй */
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body), Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-head), system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+/* Гар, дэлгэц уншигчид фокус үргэлж харагдана */
+:focus-visible {
+  outline: 2px solid var(--cob);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
