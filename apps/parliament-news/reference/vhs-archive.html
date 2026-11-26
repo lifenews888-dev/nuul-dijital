@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Leon Vasari — Film Archive</title>
+
+<!--
+  ЛАВЛАГАА ХУВИЛБАР — үйлдвэрлэлийн код БИШ.
+
+  Энэ бол Parliament News-ийн `site-v2/index.html`-ийн ЭХ дизайн: ижил
+  хөдөлгүүр (U, gap, P, scl, F, B, rotateY, сүүдрийн томьёо бүгд адил),
+  зөвхөн VHS хуурцаг → ном, кобальт #1F3FB0 → #0A22E0 болж өөрчлөгдсөн.
+
+  Үүнийг барих зорилго: механизмыг тусад нь, ажиллаж байгааг нь нүдээр
+  баталгаажуулах. Дараа нь манай номын харьцаа (ws=H·0.25, d=H·0.62) ба
+  дөрвөн тал руу хувиргана.
+
+  Эх тодорхойлолт: хэрэглэгчийн өгсөн "Leon Vasari: Curved VHS Archive".
+  Зориуд зөрүүлсэн ЦОРЫН ГАНЦ зүйл: фонтыг base64-ээр шигтгэхийн оронд
+  Google Fonts-оос ачаална — дүрслэл ижил, файл уншигдахуйц үлдэнэ.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Noto+Sans+JP:wght@500&display=swap" rel="stylesheet">
+<!-- Асар том 映画 / の記憶 — зөвхөн тэр 4 тэмдэгтийн дэд олонлог, font-display:block -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@800&text=%E6%98%A0%E7%94%BB%E3%81%AE%E8%A8%98%E6%86%B6&display=block" rel="stylesheet">
+
+<style>
+:root{
+  --paper:#ECE8E0; --sheet:#F3F0EA; --ink:#141414; --muted:#6D6A63;
+  --cobalt:#1F3FB0; --rule:rgba(20,20,20,.9);
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --H:min(47vh,33vw);
+  --cy:41%;
+}
+@media (max-width:767px){ :root{ --H:min(68vw,40svh); --cy:43%; } }
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  overflow:hidden; user-select:none;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  font-family:"Inter Tight","Noto Sans JP",system-ui,sans-serif;
+}
+@media (pointer:fine){ body{cursor:none} body *{cursor:none} }
+
+.lbl{font-family:"Inter Tight","Noto Sans JP",system-ui,sans-serif;font-weight:600;font-size:10.5px;line-height:1;letter-spacing:.14em;text-transform:uppercase}
+.box{display:inline-flex;align-items:center;height:21px;padding:0 8px;border:1px solid var(--rule)}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0}
+
+/* ---------- цаасны ширхэг ---------- */
+.grain{
+  position:fixed; inset:0; z-index:40; pointer-events:none;
+  mix-blend-mode:multiply; opacity:.6;
+  background-image:url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'>\
+<filter id='n'>\
+<feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/>\
+<feColorMatrix values='0 0 0 0 .45 0 0 0 0 .42 0 0 0 0 .38 0 0 0 .22 0'/>\
+</filter>\
+<rect width='220' height='220' filter='url(%23n)'/></svg>");
+  background-size:220px 220px;
+}
+
+/* ---------- дээд мөр ---------- */
+.top{position:fixed;left:0;right:0;top:0;height:76px;padding:0 36px;display:flex;align-items:center;justify-content:space-between;color:var(--cobalt);z-index:30}
+.top .brand{display:flex;align-items:center;gap:16px}
+.top .brand i{display:block;width:40px;height:1px;background:currentColor}
+.top nav{display:flex;align-items:center;gap:34px}
+.burger{width:26px;height:12px;display:flex;flex-direction:column;justify-content:space-between}
+.burger i{display:block;height:1.5px;background:currentColor}
+@media (max-width:767px){
+  .top{height:60px;padding:0 16px}
+  .top nav a{display:none}
+  .top .brand{font-size:22px}
+  .top .brand i{display:none}
+}
+
+/* ---------- асар том халтон ханз ---------- */
+.kanji{
+  position:fixed; z-index:1; pointer-events:none;
+  writing-mode:vertical-rl;
+  font-family:"Noto Sans JP",sans-serif; font-weight:800;
+  font-size:min(19vh,12.5vw); line-height:1.02; letter-spacing:.02em;
+  color:transparent;
+  -webkit-background-clip:text; background-clip:text;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(64,82,138,.55) 0 36%, transparent 40%),
+    linear-gradient(rgba(110,122,160,.26),rgba(110,122,160,.26));
+  background-size:3px 3px, 100% 100%;
+}
+.kanji.l{left:2.4vw;top:13vh}
+.kanji.r{right:2.4vw;top:9vh}
+@media (max-width:767px){ .kanji{font-size:22vw;opacity:.8} }
+
+/* ---------- шалны сүүдэр ---------- */
+.floor{
+  position:fixed; left:50%; translate:-50% 0;
+  top:calc(var(--cy) + var(--H)*.47);
+  width:min(96vw,calc(var(--H)*3.6)); height:calc(var(--H)*.26);
+  z-index:5; pointer-events:none;
+  background:radial-gradient(50% 50% at 50% 40%, rgba(40,32,20,.30), rgba(40,32,20,.10) 55%, transparent 72%);
+}
+
+/* ---------- тавиур ---------- */
+.shelf{
+  position:fixed; left:0; right:0;
+  top:calc(var(--cy) - var(--H)/2 - 50px);
+  height:calc(var(--H) + 100px);
+  perspective:1400px; perspective-origin:50% 50%;
+  z-index:10; touch-action:pan-y;
+}
+.stage{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.tape{position:absolute;width:0;height:0;transform-style:preserve-3d}
+.f{
+  position:absolute; height:var(--H); top:calc(var(--H)/-2);
+  backface-visibility:hidden; border-radius:2px; overflow:hidden;
+  background-repeat:no-repeat;
+}
+.f::after{content:"";position:absolute;inset:0;background:#000;opacity:var(--shade,0)}
+.cv{box-shadow:0 34px 60px -30px rgba(20,16,10,.6)}
+
+#probe{position:fixed;height:var(--H);width:1px;visibility:hidden;pointer-events:none}
+
+/* ---------- play цагираг ---------- */
+.play{
+  position:fixed; width:42px; height:42px; border-radius:50%;
+  border:1px solid var(--cobalt); background:rgba(236,232,224,.8);
+  display:grid; place-items:center; z-index:20;
+  transform-origin:50% 50%;
+}
+.play svg{width:12px;height:12px;fill:var(--cobalt);margin-left:2px}
+
+/* ---------- гарчгийн блок ---------- */
+.cap{
+  position:fixed; left:50%; translate:-50% 0;
+  top:calc(var(--cy) + var(--H)/2 + 4.2vh);
+  display:grid; justify-items:center; gap:10px; z-index:20; text-align:center;
+}
+.m{overflow:hidden;width:min(80vw,640px);display:grid;justify-items:center}
+.m>span{display:block}
+.ct{font-weight:600;font-size:clamp(28px,3.4vw,46px);letter-spacing:-.015em;color:var(--cobalt);line-height:1.05}
+.cs span{font-weight:600;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--cobalt)}
+.crule{width:18px;height:1px;background:var(--cobalt)}
+.cy span{font-weight:500;font-size:10.5px;letter-spacing:.08em;color:var(--ink)}
+@media (max-width:767px){ .ct{font-size:27px} }
+
+/* ---------- сумнууд ---------- */
+.arw{
+  position:fixed; width:44px; height:44px; display:grid; place-items:center;
+  color:var(--cobalt); z-index:25;
+  top:calc(var(--cy) + var(--H)/2 + 4.2vh);
+}
+.arw.l{left:calc(50% - min(19vw,250px))}
+.arw.r{left:calc(50% + min(19vw,250px))}
+.arw svg{width:24px;height:12px;fill:none;stroke:currentColor;stroke-width:1.2}
+@media (max-width:767px){
+  .arw{top:auto;bottom:118px}
+  .arw.l{left:10px} .arw.r{left:auto;right:10px}
+}
+
+/* ---------- цагийн шугам ---------- */
+.tl{position:fixed;left:36px;right:36px;bottom:64px;height:40px;z-index:20}
+.tl .line{position:absolute;left:0;right:0;top:12px;height:1px;background:var(--cobalt);opacity:.75}
+.tl .tk{position:absolute;top:12px;width:1px;background:var(--cobalt)}
+.tl .ty{position:absolute;top:28px;font-weight:500;font-size:9.5px;letter-spacing:.06em;color:var(--cobalt);translate:-50% 0}
+.tl .ty.first{translate:0 0} .tl .ty.last{translate:-100% 0}
+.tl .dot{position:absolute;top:8px;width:9px;height:9px;border-radius:50%;background:var(--cobalt);translate:-50% 0}
+.tl .hit{position:absolute;inset:-10px 0 -14px}
+@media (max-width:767px){ .tl{left:16px;right:16px;bottom:54px} .tl .ty.odd{display:none} }
+
+/* ---------- хөл ---------- */
+.foot{position:fixed;bottom:24px;color:var(--cobalt);z-index:20}
+.foot.l{left:36px} .foot.r{right:36px;display:flex;gap:10px}
+@media (max-width:767px){ .foot.l{left:16px} .foot.r{right:16px} }
+
+/* ---------- курсор ---------- */
+.cur{position:fixed;width:58px;height:58px;z-index:100;pointer-events:none;translate:-50% -50%;display:grid;place-items:center}
+.cur .ring{position:absolute;inset:0;border:1.5px solid var(--ink);border-radius:50%;transition:transform .5s var(--ease),background-color .4s var(--ease),border-color .4s var(--ease);transform:scale(1)}
+.cur .dot{width:6px;height:6px;border-radius:50%;background:var(--ink);transition:opacity .4s var(--ease)}
+.cur .cl{position:absolute;text-align:center;color:#fff;font-weight:600;font-size:10px;line-height:1.25;opacity:0;transform:scale(.6);transition:opacity .45s var(--ease),transform .45s var(--ease)}
+.cur.open .ring{transform:scale(1.75);background:var(--cobalt);border-color:var(--cobalt)}
+.cur.open .dot{opacity:0}
+.cur.open .cl{opacity:1;transform:scale(1)}
+.cur.spine .ring{transform:scale(.72)}
+.cur.btn .ring{transform:scale(.55)}
+.cur.btn .dot{opacity:0}
+@media (max-width:767px),(pointer:coarse){ .cur{display:none} }
+
+/* ---------- дэлгэрэнгүй хуудас ---------- */
+.detail{
+  position:fixed; inset:0; z-index:60; background:var(--sheet);
+  display:grid; grid-template-columns:1fr 1fr; gap:4vw;
+  padding:110px 6vw 56px 7vw; visibility:hidden;
+}
+.detail.on{visibility:visible}
+.dclose{position:fixed;left:36px;top:28px;z-index:62;color:var(--ink)}
+.dbrand{position:fixed;right:36px;top:30px;z-index:62;color:var(--cobalt);display:flex;align-items:center;gap:16px}
+.dbrand i{display:block;width:40px;height:1px;background:currentColor}
+.dleft{align-self:center;max-width:520px;display:grid;gap:18px}
+.dm{overflow:hidden}
+.dm>*{display:block}
+.dsub{font-weight:600;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--cobalt)}
+.dtitle{font-weight:600;font-size:clamp(44px,5.2vw,80px);letter-spacing:-.03em;color:var(--cobalt);line-height:1.02;margin:0}
+.dmeta{font-weight:500;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.dsyn{font-family:"Newsreader",Georgia,serif;font-size:17px;line-height:1.5;max-width:42ch;margin:0}
+.dcred{font-family:"Newsreader",Georgia,serif;font-style:italic;color:var(--muted);font-size:15px}
+.dbtn{height:44px;padding:0 20px;border:1px solid var(--cobalt);color:var(--cobalt);display:inline-flex;align-items:center;justify-self:start}
+.dright{display:grid;place-items:center}
+.dright svg{height:min(100%,78vh);width:auto}
+@media (max-width:767px){
+  .detail{grid-template-columns:1fr;padding:84px 16px 40px;overflow:auto;gap:24px}
+  .dright{order:-1} .dright svg{height:46svh}
+  .dtitle{font-size:42px}
+  .dclose{left:16px} .dbrand{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div id="probe"></div>
+
+<header class="top">
+  <div class="brand"><a href="#" class="lbl">Leon Vasari</a><i></i><span class="lbl">Film Archive</span></div>
+  <nav>
+    <a href="#" class="lbl">Films</a><a href="#" class="lbl">About</a><a href="#" class="lbl">Journal</a>
+    <button class="burger" aria-label="Menu"><i></i><i></i></button>
+  </nav>
+</header>
+
+<div class="kanji l">映画</div>
+<div class="kanji r">の記憶</div>
+
+<div class="floor"></div>
+
+<section class="shelf" id="shelf" aria-label="Film archive shelf"><div class="stage" id="stage"></div></section>
+
+<button class="play" id="play" aria-label="Play"><svg viewBox="0 0 12 12"><path d="M1 0l10 6-10 6z"/></svg></button>
+
+<div class="cap">
+  <div class="m ct" id="cT"></div>
+  <div class="m cs" id="cS"></div>
+  <div class="crule"></div>
+  <div class="m cy" id="cY"></div>
+</div>
+
+<button class="arw l" id="prev" aria-label="Previous"><svg viewBox="0 0 24 12"><path d="M6 1L1 6l5 5M1 6h23"/></svg></button>
+<button class="arw r" id="next" aria-label="Next"><svg viewBox="0 0 24 12"><path d="M18 1l5 5-5 5M23 6H0"/></svg></button>
+
+<div class="tl" id="tl">
+  <div class="line"></div>
+  <div id="ticks"></div>
+  <div class="dot" id="dot"></div>
+  <div class="hit" id="tlhit"></div>
+</div>
+
+<div class="foot l lbl">© Leon Vasari. All rights reserved.</div>
+<div class="foot r"><a href="#" class="lbl">FB</a><span class="lbl">/</span><a href="#" class="lbl">TW</a></div>
+
+<div class="cur" id="cur"><div class="ring"></div><div class="dot"></div><div class="cl">OPEN<br>開く</div></div>
+
+<section class="detail" id="detail" aria-hidden="true">
+  <button class="dclose box lbl" id="dclose">Close / 閉じる</button>
+  <div class="dbrand"><span class="lbl">Leon Vasari</span><i></i><span class="lbl">Film Archive</span></div>
+  <div class="dleft">
+    <div class="dm"><span class="dsub" id="dsub"></span></div>
+    <div class="dm"><h1 class="dtitle" id="dtitle"></h1></div>
+    <div class="dm"><span class="dmeta" id="dmeta"></span></div>
+    <div class="dm"><p class="dsyn" id="dsyn"></p></div>
+    <div class="dm"><span class="dcred">Written and directed by Leon Vasari. 監督作品</span></div>
+    <div class="dm"><span class="dbtn lbl">Watch the film / 映画を見る</span></div>
+  </div>
+  <div class="dright">
+    <svg viewBox="0 0 474 900" id="poster">
+      <defs>
+        <filter id="ink" x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="7" result="t"/>
+          <feDisplacementMap in="SourceGraphic" in2="t" scale="120" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <clipPath id="pclip"><rect width="474" height="900"/></clipPath>
+        <mask id="pmask">
+          <g filter="url(#ink)" id="blots">
+            <circle cx="150" cy="330" r="0" fill="#fff"/>
+            <circle cx="340" cy="600" r="0" fill="#fff"/>
+            <circle cx="250" cy="120" r="0" fill="#fff"/>
+            <circle cx="90"  cy="760" r="0" fill="#fff"/>
+            <circle cx="400" cy="250" r="0" fill="#fff"/>
+            <circle cx="260" cy="860" r="0" fill="#fff"/>
+            <circle cx="230" cy="470" r="0" fill="#fff"/>
+          </g>
+        </mask>
+      </defs>
+      <g clip-path="url(#pclip)" mask="url(#pmask)">
+        <image id="pimg" preserveAspectRatio="none"/>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ============ өгөгдөл ============ */
+const SHEET = {
+  covers:["https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261029_010644_837e04ca-2418-45c1-b8e0-0233265c4cd5.png&w=1744&q=85",1744,2336],
+  spines:["https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261029_010738_a3e47ead-18f2-4974-9468-06d16a25edc5.png&w=2688&q=85",2688,1152],
+  fix:["https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261029_010831_3ebb874b-93dc-433e-87ed-6299aba720f0.png&w=1520&q=85",1520,2688],
+  fix2:["https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261029_092020_f96bc094-db7b-46de-9298-074a24e0a3b8.png&w=1520&q=85",1520,2688]
+};
+Object.values(SHEET).forEach(s => { const im = new Image(); im.src = s[0]; });
+
+const CROP = {
+  "spine-valley":["spines",266,31,189,1089],   "cover-valley":["covers",497,72,344,659],
+  "spine-bluehour":["spines",492,31,189,1089], "cover-bluehour":["covers",914,72,342,659],
+  "spine-river":["fix",197,54,324,2566],       "cover-river":["covers",1332,72,344,659],
+  "spine-summer":["spines",937,31,188,1089],   "cover-summer":["covers",74,813,344,676],
+  "spine-green":["spines",1157,31,185,1090],   "cover-green":["covers",497,815,344,674],
+  "spine-noon":["spines",44,32,184,1088],      "cover-noon":["covers",74,72,347,659],
+  "spine-observer":["fix2",371,15,349,2655],   "cover-observer":["covers",915,815,342,675],
+  "spine-birds":["spines",1573,31,183,1089],   "cover-birds":["covers",1331,815,345,675],
+  "spine-storm":["fix2",808,15,347,2656],      "cover-storm":["covers",74,1571,345,681],
+  "spine-tide":["spines",2012,31,188,1089],    "cover-tide":["covers",496,1577,343,678],
+  "spine-war":["spines",2236,31,189,1089],     "cover-war":["covers",913,1579,343,676],
+  "spine-door":["spines",2462,31,188,1089],    "cover-door":["covers",1331,1579,344,677]
+};
+
+const FILMS = [
+  {id:"valley",  t:"The Silent Valley", r:"SHIZUKANA TANI", k:"静かな谷",   y:1958, g:"Drama",    m:104, s:"A schoolteacher returns to the mountain village that exiled her father, and finds the valley has kept every one of its secrets."},
+  {id:"bluehour",t:"The Blue Hour",     r:"AO NO TOKI",     k:"青の刻",     y:1962, g:"Romance",  m:97,  s:"Over one long evening in a harbour town, a widow and a stranger trade small lies until the light runs out."},
+  {id:"river",   t:"River of Salt",     r:"SHIO NO KAWA",   k:"塩の川",     y:1964, g:"Drama",    m:121, s:"Two brothers drag a salt barge downriver to a city that no longer wants anything they carry."},
+  {id:"summer",  t:"The Last Summer",   r:"SAIGO NO NATSU", k:"最後の夏",   y:1966, g:"Drama",    m:109, s:"The summer before the dam floods their village, three friends set fire to everything they cannot take with them."},
+  {id:"green",   t:"The Green Road",    r:"MIDORI NO MICHI",k:"緑の道",     y:1969, g:"Mystery",  m:101, s:"A surveyor mapping a forest road keeps finding the same footprints, always one day ahead of him."},
+  {id:"noon",    t:"Noon in Ashes",     r:"HAI NO SHOGO",   k:"灰の正午",   y:1971, g:"Western",  m:112, s:"A rider crosses a white desert to settle an old debt, and learns too late who sent him."},
+  {id:"observer",t:"The Observer",      r:"KANSATSUSHA",    k:"観察者",     y:1973, g:"Thriller", m:96,  s:"A night watchman begins to suspect that the building he guards has started watching him back."},
+  {id:"birds",   t:"The Fallen Birds",  r:"OCHITA TORI",    k:"落ちた鳥",   y:1975, g:"Drama",    m:118, s:"When the birds stop singing over a frontier town, the mayor’s daughter is the only one who goes looking for the reason."},
+  {id:"storm",   t:"Light in the Storm",r:"ARASHI NO HI",   k:"嵐の灯",     y:1978, g:"Drama",    m:127, s:"A lighthouse keeper and his son wait out a three-day storm with a shipwrecked sailor who will not give his name."},
+  {id:"tide",    t:"The Long Tide",     r:"NAGAI SHIO",     k:"長い潮",     y:1981, g:"Drama",    m:99,  s:"A fisherman’s wife counts the tides on the harbour wall while her husband’s boat fails to come home."},
+  {id:"war",     t:"A Quiet War",       r:"SHIZUKANA SENSO",k:"静かな戦争", y:1985, g:"Comedy",   m:103, s:"Two neighbours fight a silent war over a garden wall for thirty years, and neither will say how it began."},
+  {id:"door",    t:"Red Door",          r:"AKAI TOBIRA",    k:"赤い扉",     y:1989, g:"Thriller", m:114, s:"A projectionist follows a reel of unknown film through the corridors of a cinema on its final night."}
+];
+const L = FILMS.length, TOT = L * 3;
+
+/* Нүүрний зураг: хуудасны тэгш өнцөгтийг CSS дэвсгэрээр таслана */
+function faceStyle(el, key){
+  const c = CROP[key]; if(!c) return;
+  const [sid,x,y,w,h] = c, [url,W,H] = SHEET[sid];
+  el.style.backgroundImage = `url("${url}")`;
+  el.style.backgroundSize = `${W/w*100}% ${H/h*100}%`;
+  el.style.backgroundPosition = `${x/(W-w)*100}% ${y/(H-h)*100}%`;
+}
+
+/* ============ тавиур барих ============ */
+const stage = $("stage"), tapes = [];
+for(let v=0; v<TOT; v++){
+  const f = FILMS[v % L];
+  const e = document.createElement("div");
+  e.className = "tape";
+  e.innerHTML = '<div class="f sp"></div><div class="f cv"></div>';
+  const sp = e.children[0], cv = e.children[1];
+  faceStyle(sp, "spine-" + f.id);
+  faceStyle(cv, "cover-" + f.id);
+  e.dataset.v = v;
+  stage.appendChild(e);
+  tapes.push({e, sp, cv, lift:0});
+}
+
+/* ============ геометр ============ */
+let H, ws, d, gap, U, XS = [];
+const P = 1400;
+function measure(){
+  H = $("probe").getBoundingClientRect().height || 1;
+  ws = H * 142/840;
+  d  = H * 474/900;
+  gap = H * .035;
+  U  = H * (innerWidth < 768 ? 1.05 : 1.3);
+  XS = []; let a = 0;
+  for(let u=0; u<=3*U; u+=2){ XS.push(a); a += 2/(1+Math.pow(u/U,1.6)); }
+  for(const t of tapes){
+    t.sp.style.width = ws + "px"; t.sp.style.left = -ws/2 + "px";
+    t.sp.style.transform = `translateZ(${d/2}px)`;
+    t.cv.style.width = d + "px";  t.cv.style.left = -d/2 + "px";
+    t.cv.style.transform = `rotateY(90deg) translateZ(${ws/2}px)`;
+  }
+}
+
+const sm  = x => x*x*(3-2*x);
+const B   = r => Math.abs(r) < 1 ? (r + Math.sin(Math.PI*r)/Math.PI)/2 : Math.sign(r)*.5;
+const F   = r => r*(ws+gap) + (d - ws + 1.4*gap)*B(r);
+const xsc = u => Math.sign(u) * XS[Math.min(XS.length-1, Math.floor(Math.abs(u)/2))];
+const rel = (v,s) => { let r = ((v-s) % TOT + TOT) % TOT; return r >= TOT/2 ? r - TOT : r; };
+
+/* ============ төлөв ============ */
+let s = 5 + L, T = s, act = -1, drag = false, moved = false, dragX = 0, dragT = 0;
+let hov = -1, isOpen = false, mx = innerWidth/2, my = innerHeight/2, tX = 0, tY = 0;
+let dotYear = FILMS[5].y, lt = performance.now(), wheelTimer = 0;
+
+/* ============ цагийн шугам ============ */
+(function buildTicks(){
+  let h = "";
+  for(let y=1955; y<=1990; y++){
+    const major = (y - 1955) % 5 === 0;
+    const left = (y-1955)/35*100;
+    h += `<div class="tk" style="left:${left}%;height:${major?13:7}px;opacity:${major?.75:.4}"></div>`;
+    if(major){
+      const cls = y === 1955 ? "first" : (y === 1990 ? "last" : ((y-1955)/5 % 2 ? "odd" : ""));
+      h += `<div class="ty ${cls}" style="left:${left}%">${y}</div>`;
+    }
+  }
+  $("ticks").innerHTML = h;
+})();
+
+/* ============ гарчгийн солилт (маскаар гулсах) ============ */
+function swap(id, text, dir){
+  const m = $(id), sp = document.createElement("span");
+  sp.textContent = text;
+  const old = [...m.children];
+  m.appendChild(sp);
+  if(RM || dir === 0){ old.forEach(o => o.remove()); return; }
+  const o = {duration:650, easing:"cubic-bezier(.2,.8,.2,1)", fill:"both"};
+  sp.animate([{transform:`translateY(${dir*105}%)`},{transform:"translateY(0)"}], o);
+  old.forEach(e => {
+    const cur = getComputedStyle(e).transform;
+    e.animate([{transform:cur === "none" ? "translateY(0)" : cur},{transform:`translateY(${-dir*105}%)`}], o)
+     .onfinish = () => e.remove();
+  });
+}
+function caption(i, dir){
+  const f = FILMS[i];
+  swap("cT", f.t, dir);
+  swap("cS", `${f.r} / ${f.k}`, dir);
+  swap("cY", `${f.y} — ${f.g.toUpperCase()}`, dir);
+}
+
+/* ============ үндсэн давталт ============ */
+function frame(now){
+  const dt = Math.min(.05, (now - lt)/1000); lt = now;
+  const k = drag ? 18 : 5.2;
+  s = RM && !drag ? T : s + (T - s)*(1 - Math.exp(-k*dt));
+  if(s > TOT){ s -= TOT; T -= TOT; } if(s < 0){ s += TOT; T += TOT; }
+
+  const W = innerWidth, sr = $("shelf").getBoundingClientRect(), scy = sr.top + sr.height/2;
+  const settled = Math.abs(T - s) < .3;
+  const onCover = settled && !isOpen && Math.abs(mx - W/2) < .55*d && Math.abs(my - scy) < .55*H;
+  const e7 = 1 - Math.exp(-7*dt);
+  tY += ((onCover ? (mx - W/2)/(.55*d)*8 : (mx - W/2)/W*4) - tY) * e7;
+  tX += ((onCover ? -(my - scy)/(H/2)*5 : 0) - tX) * e7;
+
+  for(let v=0; v<TOT; v++){
+    const t = tapes[v], r = rel(v, s), o = sm(Math.max(0, 1 - Math.abs(r))), u = F(r);
+    t.lift += ((v === hov && Math.abs(r) > .5 ? 1 : 0) - t.lift) * (RM ? 1 : 1 - Math.exp(-12*dt));
+    if(Math.abs(u) > U*1.95){ t.e.style.display = "none"; continue; }
+    t.e.style.display = "";
+    const sc = 1/(1 + Math.pow(Math.abs(u)/U, 1.6)), kk = 1/sc;
+    const z = P*(1 - kk) + o*H*.1;
+    const x = xsc(u)*kk;
+    const y = (H*.5*(1 - sc)*.42 + o*H*.012 - t.lift*H*.05)*kk;
+    const ry = Math.sign(u)*Math.min(1, Math.abs(u)/U)*26*(1 - o) - 90*o + tY*o;
+    const rx = tX*o;
+    t.e.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    t.e.style.zIndex = Math.round(3000 + z);
+    t.sp.style.setProperty("--shade", Math.min(.6, o*.55 + (1 - sc)*.32));
+    t.cv.style.setProperty("--shade", (1 - o)*.82);
+  }
+
+  const a = ((Math.round(s) % L) + L) % L;
+  if(a !== act){ caption(a, act < 0 ? 0 : (Math.sign(T - s) || 1)); act = a; }
+
+  // цагийн шугамын цэг
+  const fl = Math.floor(s), i0 = ((fl % L) + L) % L, i1 = (i0 + 1) % L, fr = s - fl;
+  let tgt = i0 === L-1 ? (fr < .5 ? FILMS[i0].y : FILMS[i1].y)
+                       : FILMS[i0].y + (FILMS[i1].y - FILMS[i0].y)*fr;
+  dotYear = (RM || Math.abs(tgt - dotYear) > 6) ? tgt
+          : dotYear + (tgt - dotYear)*(1 - Math.exp(-14*dt));
+  $("dot").style.left = ((dotYear - 1955)/35*100) + "%";
+
+  // play цагираг
+  const pv = isOpen ? 0 : sm(Math.max(0, 1 - Math.abs(T - s)*3));
+  const play = $("play");
+  play.style.transform = `scale(${pv})`;
+  play.style.left = (W/2 - d/2 - 6 - 21) + "px";
+  play.style.top  = (scy + .36*H - 21) + "px";
+
+  // курсор
+  cur.x += (mx - cur.x)*(1 - Math.exp(-16*dt));
+  cur.y += (my - cur.y)*(1 - Math.exp(-16*dt));
+  cur.el.style.left = cur.x + "px"; cur.el.style.top = cur.y + "px";
+
+  requestAnimationFrame(frame);
+}
+
+/* ============ курсор ============ */
+const cur = {el:$("cur"), x:mx, y:my};
+addEventListener("pointermove", e => {
+  mx = e.clientX; my = e.clientY;
+  if(drag && !isOpen){
+    if(Math.abs(e.clientX - dragX) > 5) moved = true;
+    if(moved) T = dragT - (e.clientX - dragX)/(ws + gap);
+  }
+  const el = e.target;
+  const btn = el.closest("button,a,.tl");
+  const tape = el.closest(".tape");
+  const W = innerWidth, sr = $("shelf").getBoundingClientRect(), scy = sr.top + sr.height/2;
+  const settled = Math.abs(T - s) < .3;
+  const onCover = settled && !isOpen && Math.abs(mx - W/2) < .55*d && Math.abs(my - scy) < .55*H;
+  cur.el.className = "cur" + (onCover ? " open" : btn ? " btn" : tape ? " spine" : "");
+  hov = tape ? +tape.dataset.v : -1;
+});
+
+/* ============ оролт ============ */
+const shelf = $("shelf");
+shelf.addEventListener("pointerdown", e => { drag = true; moved = false; dragX = e.clientX; dragT = T; shelf.setPointerCapture(e.pointerId); });
+shelf.addEventListener("pointerup", e => {
+  drag = false;
+  if(moved){ T = Math.round(T); shelf.releasePointerCapture(e.pointerId); return; }
+  const tape = e.target.closest(".tape");
+  if(!tape) return;
+  const r = rel(+tape.dataset.v, s);
+  if(Math.abs(r) < .5) openDetail(); else T = Math.round(T + r);
+});
+shelf.addEventListener("pointercancel", () => { drag = false; });
+
+addEventListener("wheel", e => {
+  if(isOpen) return;
+  const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  T += delta/(ws + gap)*.5;
+  clearTimeout(wheelTimer);
+  wheelTimer = setTimeout(() => { T = Math.round(T); }, 160);
+}, {passive:true});
+
+$("prev").onclick = () => { T -= 1; };
+$("next").onclick = () => { T += 1; };
+addEventListener("keydown", e => {
+  if(e.key === "ArrowLeft"){ T -= 1; }
+  else if(e.key === "ArrowRight"){ T += 1; }
+  else if(e.key === "Enter" && !isOpen){ openDetail(); }
+  else if(e.key === "Escape" && isOpen){ closeDetail(); }
+});
+
+$("tlhit").onclick = e => {
+  const b = $("tl").getBoundingClientRect();
+  const year = 1955 + (e.clientX - b.left)/b.width*35;
+  let best = 0, bd = 1e9;
+  FILMS.forEach((f,i) => { const dd = Math.abs(f.y - year); if(dd < bd){ bd = dd; best = i; } });
+  const cu = ((Math.round(T) % L) + L) % L;
+  let step = best - cu; if(step > L/2) step -= L; if(step < -L/2) step += L;
+  T = Math.round(T) + step;
+};
+
+/* ============ дэлгэрэнгүй хуудас ============ */
+const detail = $("detail");
+let detailAnims = [];
+
+function coverRect(){
+  const i = ((Math.round(s) % TOT) + TOT) % TOT;
+  return tapes[i].cv.getBoundingClientRect();
+}
+
+function openDetail(){
+  if(isOpen) return;
+  isOpen = true; T = Math.round(T);
+  const f = FILMS[((Math.round(T) % L) + L) % L];
+
+  $("dsub").textContent = `${f.r} / ${f.k}`;
+  $("dtitle").textContent = f.t;
+  $("dmeta").textContent = `${f.y} / ${f.g} / ${f.m} min`;
+  $("dsyn").textContent = f.s;
+
+  // постерын зургийг хавтасны тайралтаар байрлуулна
+  const [sid,x,y,w,h] = CROP["cover-" + f.id], [url,W,Hh] = SHEET[sid];
+  const img = $("pimg");
+  img.setAttribute("href", url);
+  img.setAttribute("x", -x*474/w); img.setAttribute("y", -y*900/h);
+  img.setAttribute("width", W*474/w); img.setAttribute("height", Hh*900/h);
+
+  const blots = [...$("blots").children];
+  blots.forEach(c => c.setAttribute("r", 0));
+
+  const r = coverRect();
+  detail.classList.add("on");
+  detail.setAttribute("aria-hidden", "false");
+
+  const from = `inset(${r.top}px ${innerWidth - r.right}px ${innerHeight - r.bottom}px ${r.left}px round 3px)`;
+  detailAnims = [];
+  detailAnims.push(detail.animate(
+    [{clipPath:from},{clipPath:"inset(0 round 0)"}],
+    {duration:RM?1:1050, easing:"cubic-bezier(.76,0,.18,1)", fill:"both"}));
+
+  [...detail.querySelectorAll(".dm > *")].forEach((el,i) => {
+    detailAnims.push(el.animate(
+      [{transform:"translateY(110%)"},{transform:"translateY(0)"}],
+      {duration:RM?1:900, delay:RM?0:620 + i*75, easing:"cubic-bezier(.2,.8,.2,1)", fill:"both"}));
+  });
+
+  const DELAY = [0,120,220,300,360,420,180];
+  blots.forEach((c,i) => {
+    detailAnims.push(c.animate([{r:0},{r:720}], {
+      duration:RM?1:1250, delay:RM?0:520 + DELAY[i],
+      easing:"cubic-bezier(.22,1,.36,1)", fill:"both"
+    }));
+  });
+}
+
+function closeDetail(){
+  if(!isOpen) return;
+  const r = coverRect();
+  const to = `inset(${r.top}px ${innerWidth - r.right}px ${innerHeight - r.bottom}px ${r.left}px round 3px)`;
+  const a = detail.animate([{clipPath:"inset(0 round 0)"},{clipPath:to}],
+    {duration:RM?1:850, easing:"cubic-bezier(.76,0,.18,1)", fill:"both"});
+  a.onfinish = () => {
+    detail.classList.remove("on");
+    detail.setAttribute("aria-hidden", "true");
+    detailAnims.forEach(x => x.cancel()); a.cancel();
+    detailAnims = [];
+    isOpen = false;
+  };
+}
+$("dclose").onclick = closeDetail;
+$("play").onclick = () => { if(!isOpen) openDetail(); };
+
+/* ============ эхлэл ============ */
+measure();
+addEventListener("resize", measure);
+requestAnimationFrame(frame);
+
+// Заагчгүйгээр (headless зураг авахад) дэлгэрэнгүйг нээх арга.
+// #open  — анимацитай нээнэ;  #opened — төгсгөлийн байдал руу шууд.
+if(location.hash === "#open" || location.hash === "#opened"){
+  setTimeout(() => {
+    openDetail();
+    if(location.hash === "#opened") detailAnims.forEach(a => a.finish());
+  }, 400);
+}
+</script>
+</body>
+</html>
