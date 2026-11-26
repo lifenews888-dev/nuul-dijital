@@ -14,6 +14,33 @@ const PATHS = {
       fill="currentColor"
     />
   ),
+  bell: (
+    <>
+      <path d="M6 9.5a6 6 0 0 1 12 0c0 5.5 2.5 7 2.5 7h-17S6 15 6 9.5z" />
+      <path d="M10 20a2 2 0 0 0 4 0" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path
+        d="M12 7v5l3 2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </>
+  ),
+  read: (
+    <path
+      d="M4 5h7a3 3 0 0 1 3 3v11a2 2 0 0 0-2-2H4zM20 5h-4a2 2 0 0 0-2 2"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinejoin="round"
+    />
+  ),
 } satisfies Record<string, ReactNode>;
 
 export type IconName = keyof typeof PATHS;

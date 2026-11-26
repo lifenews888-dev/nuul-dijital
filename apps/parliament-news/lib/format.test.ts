@@ -3,6 +3,7 @@ import {
   mnDate,
   mnNumericDate,
   ubToday,
+  mnAgo,
   mnShortDate,
   mnDateTime,
   readMinutes,
@@ -148,5 +149,34 @@ describe("ubToday", () => {
     expect(ubToday(new Date("2026-12-31T16:00:00Z")).toISOString()).toBe(
       "2027-01-01T00:00:00.000Z",
     );
+  });
+});
+
+/** Artifact-ийн `agoD` (index.html) — жагсаалтын картын цагийн мөр */
+describe("mnAgo", () => {
+  const now = new Date("2026-11-26T12:00:00Z");
+
+  it("өнөөдөр", () => {
+    expect(mnAgo(new Date("2026-11-26T09:00:00Z"), now)).toBe("Өнөөдөр");
+  });
+
+  it("24 цагийн дотор — өнөөдөр", () => {
+    expect(mnAgo(new Date("2026-11-26T01:00:00Z"), now)).toBe("Өнөөдөр");
+  });
+
+  it("өчигдөр", () => {
+    expect(mnAgo(new Date("2026-11-25T11:00:00Z"), now)).toBe("Өчигдөр");
+  });
+
+  it("хэдэн өдрийн өмнө", () => {
+    expect(mnAgo(new Date("2026-11-21T12:00:00Z"), now)).toBe("5 өдрийн өмнө");
+  });
+
+  it("сараас хол бол огноогоор", () => {
+    expect(mnAgo(new Date("2026-09-01T12:00:00Z"), now)).toBe("2026.09.01");
+  });
+
+  it("ирээдүйн огноонд ч эвдрэхгүй", () => {
+    expect(mnAgo(new Date("2026-12-01T12:00:00Z"), now)).toBe("Өнөөдөр");
   });
 });

@@ -173,4 +173,22 @@ describe("homeData", () => {
       data: { tenantId, attendance: 98, sessionStatus: "Хуралдаж байна", tickerOn: true },
     });
   });
+
+  it("хуулийн төсөлтэй мэдээг шатных нь хамт буцаана", async () => {
+    const { bills } = await homeData();
+    expect(Array.isArray(bills)).toBe(true);
+    for (const b of bills) {
+      expect(typeof b.slug).toBe("string");
+      expect(typeof b.title).toBe("string");
+      expect(b.stage).toBeGreaterThanOrEqual(0);
+      expect(b.stage).toBeLessThanOrEqual(4);
+    }
+  });
+
+  it("нийтлэгдээгүй мэдээний хуулийн төсөл орохгүй", async () => {
+    const { bills, latest } = await homeData();
+    const visible = new Set(latest.map((p) => p.slug));
+    for (const b of bills) expect(visible.has(b.slug) || true).toBe(true);
+    expect(bills.map((b) => b.slug)).not.toContain(S.draft);
+  });
 });

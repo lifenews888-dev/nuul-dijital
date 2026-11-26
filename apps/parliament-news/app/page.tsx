@@ -1,6 +1,5 @@
 import { homeData } from "../lib/home-data";
 import { shelfBooks } from "../components/shelf-model";
-import { PostCard } from "../components/post-card";
 import { Hero } from "../components/hero/hero";
 import { Shelf3D } from "../components/hero/shelf3d";
 import { Timeline } from "../components/hero/timeline";
@@ -8,14 +7,15 @@ import { Ticker } from "../components/hero/ticker";
 import { WidgetAttendance } from "../components/hero/widget-attendance";
 import { WidgetAgenda } from "../components/hero/widget-agenda";
 import { StoriesRail } from "../components/hero/stories-rail";
+import { HeroFooter } from "../components/hero/hero-footer";
+import { HomeFeed } from "../components/home-feed";
 
 export const revalidate = 300;
 
 export default async function HomePage() {
   // Нүүрний бүх өгөгдөл НЭГ уншилтаар — виджет бүр өөрөө санд очихгүй
-  const { latest, featured, stories, live, agenda, ticker } = await homeData();
-
-  const books = shelfBooks(latest);
+  const data = await homeData();
+  const { latest, stories, live, agenda, ticker } = data;
 
   if (latest.length === 0) {
     return (
@@ -27,6 +27,8 @@ export default async function HomePage() {
       </div>
     );
   }
+
+  const books = shelfBooks(latest);
 
   return (
     <>
@@ -48,42 +50,15 @@ export default async function HomePage() {
           year={latest[0].date.getUTCFullYear()}
           events={books.map((b) => b.fraction)}
         />
+        <HeroFooter />
       </Hero>
 
       {/*
-        Hero-гийн давхаргууд бүгд fixed тул өндөр эзэлдэггүй. Agreement нь
-        artifact-ийнх: агуулга нэг бүтэн дэлгэцийн доороос эхэлж, hero дээр
-        гүйж гарна (`.feed { margin-top: 100svh }`). Task 9-д `.feed`-ийн
-        бүтцээр солигдоно; толгойн 76px-ийг main-ээс хасна.
+        Hero-гийн давхаргууд бүгд fixed тул өндөр эзэлдэггүй. Урсгал нь
+        өөрөө `.feed { margin-top: 100svh }`-ээр нэг бүтэн дэлгэцийн доороос
+        эхэлнэ. `main`-ийн 76px-ийг энд хасахгүй — `.feed` нь өөрөө `main`.
       */}
-      <div
-        className="mx-auto max-w-page px-4"
-        style={{ marginTop: "calc(100svh - 76px)" }}
-      >
-      {featured.length > 0 ? (
-        <section className="border-t border-rule/20 py-10">
-          <h2 className="font-head text-xs font-bold uppercase tracking-widest text-muted">
-            Онцлох
-          </h2>
-          <div className="mt-5 grid gap-8 md:grid-cols-3">
-            {featured.map((post) => (
-              <PostCard key={post.slug} post={post} variant="feature" />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      <section className="border-t border-rule/20 py-10">
-        <h2 className="font-head text-xs font-bold uppercase tracking-widest text-muted">
-          Бүх мэдээ
-        </h2>
-        <div className="mt-5 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
-          {latest.map((post) => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
-      </section>
-      </div>
+      <HomeFeed data={data} />
     </>
   );
 }

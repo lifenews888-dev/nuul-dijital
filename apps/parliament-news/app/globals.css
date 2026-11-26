@@ -147,3 +147,44 @@ a.svgo {
   align-items: center;
   text-decoration: none;
 }
+
+/*
+ * Нүүр нь өөрийн бүтэн дэлгэцийн өндрөөр эхэлнэ (`.feed { margin-top:
+ * 100svh }`). Layout-ийн `<main>`-д 76px нэмбэл урсгал толгойн өндрөөр
+ * доошилж, гүйлгэхэд hero-гийн илүү зурвас үлдэнэ.
+ */
+main:has(> .feed) {
+  padding-top: 0;
+}
+
+/*
+ * Ангиллын сонгогч: artifact-д client талын шүүлтийн `<button>`, энд
+ * `/c/<slug>` руу чиглэсэн холбоос. Сонгогч нь элементээр заагдсан цорын
+ * ганц газар тул хайрцгийг нь давтана.
+ */
+.fcat a {
+  flex: 0 0 auto;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 17px;
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  font: 600 13px "Inter Tight", sans-serif;
+  color: var(--ink);
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.fcat a[aria-current="page"] {
+  background: var(--cob);
+  border-color: var(--cob);
+  color: #fff;
+}
+
+/* Хөлийн текстийн блок — `.sfn` нь жагсаалт хүлээдэг */
+.sfn p {
+  margin: 0 0 18px;
+  font: 400 14px/1.55 "Noto Serif", Georgia, serif;
+  color: #aeb6d0;
+  white-space: pre-line;
+}

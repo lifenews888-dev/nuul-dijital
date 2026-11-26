@@ -24,6 +24,10 @@ import {
 const LATEST_TAKE = 12;
 const FEATURED_TAKE = 3;
 const STORY_TAKE = 12;
+const BILL_TAKE = 5;
+
+/** Artifact-ийн `ST` — таван шат, индекс 0..4 */
+const BILL_STAGE_MAX = 4;
 
 export type LiveInfo = {
   attendance: number;
@@ -38,6 +42,9 @@ export type LiveInfo = {
   breakingSlug: string | null;
 };
 
+/** Хуулийн төслийн явц — хажуугийн баганын блок */
+export type BillBrief = { slug: string; title: string; stage: number };
+
 export type HomeData = {
   latest: PostListItem[];
   featured: PostListItem[];
@@ -45,6 +52,7 @@ export type HomeData = {
   live: LiveInfo | null;
   agenda: { time: string; text: string }[];
   ticker: { text: string; url: string | null }[];
+  bills: BillBrief[];
 };
 
 export async function homeData(): Promise<HomeData> {
@@ -53,7 +61,7 @@ export async function homeData(): Promise<HomeData> {
   const now = new Date();
   const gate = publishedWhere(now);
 
-  const [latest, featured, stories, live, agenda, ticker] = await Promise.all([
+  const [latest, featured, stories, live, agenda, ticker, billRows] = await Promise.all([
     db.newsPost.findMany({ where: gate, ...PUBLIC_LIST, take: LATEST_TAKE }),
     db.newsPost.findMany({
       where: { ...gate, featured: true },
@@ -77,6 +85,17 @@ export async function homeData(): Promise<HomeData> {
       where: { active: true },
       orderBy: { order: "asc" },
       select: { text: true, url: true },
+    }),
+    /**
+     * Хуулийн явц нь МЭДЭЭГЭЭР дамжина, `Bill`-ээс шууд биш: ингэснээр
+     * нийтийн хаалга (`gate`) нэг л удаа бичигдэж, ноорог мэдээний хууль
+     * хажуугийн баганад гарахгүй.
+     */
+    db.newsPost.findMany({
+      where: { ...gate, bill: { isNot: null } },
+      select: { slug: true, bill: { select: { title: true, stage: true } } },
+      orderBy: { publishedAt: "desc" },
+      take: BILL_TAKE,
     }),
   ]);
 
@@ -113,5 +132,15 @@ export async function homeData(): Promise<HomeData> {
       : null,
     agenda,
     ticker,
+    bills: billRows.flatMap((row) =>
+      row.bill
+        ? [{
+            slug: row.slug,
+            title: row.bill.title,
+            // Схем нь ямар ч бүхэл тоо хүлээдэг; дүрслэл нь таван шаттай
+            stage: Math.max(0, Math.min(BILL_STAGE_MAX, row.bill.stage)),
+          }]
+        : [],
+    ),
   };
 }

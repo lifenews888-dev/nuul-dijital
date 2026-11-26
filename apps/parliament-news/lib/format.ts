@@ -129,3 +129,23 @@ const UB_DAY = new Intl.DateTimeFormat("en-CA", {
 export function ubToday(now: Date = new Date()): Date {
   return new Date(`${UB_DAY.format(now)}T00:00:00.000Z`);
 }
+
+/** Нэг хоног миллисекундээр */
+const DAY_MS = 86_400_000;
+/** Хэдэн хоногоос хойш харьцангуй биш, огноогоор харуулах */
+const AGO_MAX_DAYS = 30;
+
+/**
+ * "Өнөөдөр" / "Өчигдөр" / "5 өдрийн өмнө" / "2026.09.01".
+ *
+ * Artifact-ийн `agoD` — жагсаалтын картын цагийн мөр. 24 цагийн хувингаар
+ * тоолно (хуанлийн өдрөөр биш), тул «өчигдөр 23:00» нь 13 цагийн дараа ч
+ * «Өчигдөр» хэвээр. Ирээдүйн огноонд ч эвдрэхгүй — 0-ээс бага нь «Өнөөдөр».
+ */
+export function mnAgo(d: Date, now: Date = new Date()): string {
+  const days = Math.floor((now.getTime() - d.getTime()) / DAY_MS);
+  if (days <= 0) return "Өнөөдөр";
+  if (days === 1) return "Өчигдөр";
+  if (days < AGO_MAX_DAYS) return `${days} өдрийн өмнө`;
+  return mnNumericDate(d);
+}
