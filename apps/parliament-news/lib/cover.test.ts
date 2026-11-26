@@ -260,3 +260,51 @@ describe("coverSvg", () => {
     expect(coverSvg({ ...base, theme: 2 })).toContain('fill="#E86522"');
   });
 });
+
+/**
+ * Стори үзүүлэгчийн дэвсгэрт хавтас орохдоо ТЕКСТГҮЙ байх ёстой: давхарга
+ * өөрөө гарчиг, ангилал, огноог дээр нь хэвлэдэг тул хавтасных давхарлаж,
+ * хоёр гарчиг зөрөн уншигдахгүй болно.
+ */
+describe("coverInner — plain", () => {
+  const input = {
+    title: "Хөдөлмөрийн тухай хуульд нэмэлт",
+    kicker: null,
+    lead: "Товч агуулга",
+    categoryName: "Хуулийн мэдээ",
+    motif: "hemi",
+    theme: 0,
+    look: null,
+    imageUrl: null,
+    featured: true,
+    date: new Date("2026-11-13T00:00:00Z"),
+  };
+
+  it("текстийн нэг ч хэсгийг зурахгүй", () => {
+    const svg = coverInner({ ...input, plain: true });
+    expect(svg).not.toContain("PARLAMENT NEWS");
+    expect(svg).not.toContain("Хөдөлмөрийн");
+    expect(svg).not.toContain("Хуулийн мэдээ");
+    expect(svg).not.toContain("ОНЦЛОХ");
+    expect(svg).not.toContain("2026.11.13");
+    expect(svg).not.toContain("<text");
+  });
+
+  it("дэвсгэр ба хээ нь хэвээр", () => {
+    const svg = coverInner({ ...input, plain: true });
+    expect(svg).toContain(`width="474" height="900"`);
+    expect(svg.length).toBeGreaterThan(100);
+  });
+
+  it("plain биш үед бүх текст байна", () => {
+    const svg = coverInner(input);
+    expect(svg).toContain("PARLAMENT NEWS");
+    expect(svg).toContain("ОНЦЛОХ");
+  });
+
+  it("plain нь зурагтай хавтсанд ч ажиллана", () => {
+    const svg = coverInner({ ...input, plain: true, imageUrl: "https://example.mn/a.jpg" });
+    expect(svg).toContain("<image");
+    expect(svg).not.toContain("<text");
+  });
+});

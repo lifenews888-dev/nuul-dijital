@@ -27,3 +27,14 @@ export function toCoverInput(post: PostListItem): CoverInput {
 export function coverUrl(slug: string): string {
   return `/cover/${encodeURIComponent(slug)}`;
 }
+
+/**
+ * ТЕКСТГҮЙ хавтасны хаяг — сторины бүтэн дэлгэцийн дэвсгэрт.
+ *
+ * Query (`?plain=1`) БИШ, өөрийн зам: Route Handler нь `request.url`-ийг
+ * уншвал динамик болж, `revalidate` ажиллахаа больдог. Тавиурын 12 хавтас
+ * кэшлэгдсэн хэвээр үлдэх ёстой тул энэ нь тусдаа сегмент.
+ */
+export function plainCoverUrl(slug: string): string {
+  return `/cover/${encodeURIComponent(slug)}/plain`;
+}

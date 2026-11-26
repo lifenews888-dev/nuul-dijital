@@ -66,6 +66,14 @@ export type CoverInput = {
   imageUrl: string | null;
   featured: boolean;
   /**
+   * ТЕКСТГҮЙ хавтас — зөвхөн дэвсгэр ба хээ.
+   *
+   * Сторины бүтэн дэлгэцийн давхарга нь гарчиг, ангилал, огноог өөрөө
+   * дээр нь хэвлэдэг. Хавтасных мөн гарч ирвэл хоёр гарчиг зөрж, аль нь
+   * ч уншигдахгүй.
+   */
+  plain?: boolean;
+  /**
    * Хавтасны доод огноо ("2026.11.26"). Брифийн CoverInput-д байгаагүй боловч
    * artifact-ийн хавтас түүнийг `x=37 y=868`-д хэвлэдэг — дизайныг хадгалах
    * зорилтын дагуу нэмэв. Өгөөгүй бол огнооны мөр гарахгүй.
@@ -349,10 +357,15 @@ export function coverInner(input: CoverInput): string {
     ? `<text x="37" y="868" font-size="18" font-weight="600">${dotDate(input.date)}</text>`
     : "";
 
-  return (
+  const ground =
     (usesDefs ? `<defs>${defs}</defs>` : "") +
     `<rect width="${COVER_W}" height="${COVER_H}" fill="${bg}"/>` +
-    art +
+    art;
+
+  if (input.plain) return ground;
+
+  return (
+    ground +
     `<g font-family="Inter Tight,sans-serif" fill="${fg}">` +
     `<text x="37" y="56" font-size="20" font-weight="800" letter-spacing="1">PARLAMENT NEWS</text>` +
     `<rect x="37" y="74" width="400" height="2"/>` +

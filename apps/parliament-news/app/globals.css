@@ -137,3 +137,13 @@ main {
   outline: 2px solid var(--cob);
   outline-offset: -4px;
 }
+
+/*
+ * Сторины «Мэдээг унших» нь artifact-д <button>, бидэнд <a> — JS байхгүй
+ * ч ажиллах холбоос. Товчны текст нь өөрөө голлодог, холбоосных үгүй.
+ */
+a.svgo {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
