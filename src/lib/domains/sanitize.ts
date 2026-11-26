@@ -17,7 +17,7 @@ export function sanitizeDomainLabel(input: string): string | null {
   return clean;
 }
 
-/** Parses `kingwash.mn` into label + `.mn` TLD. */
+/** Parses `example.mn` into label + `.mn` TLD. */
 export function parseFqdn(fqdn: string): { label: string; tld: string } | null {
   const normalized = fqdn.toLowerCase().trim();
   const dot = normalized.lastIndexOf(".");

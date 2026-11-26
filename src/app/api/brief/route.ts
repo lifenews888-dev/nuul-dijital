@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     }
 
     await sendEmail({
-      subject: `🎨 Шинэ загвар сайт хүсэлт — ${d.name}`,
+      subject: `Шинэ төслийн бриф — ${d.name}`,
       replyTo: d.email,
       html: `
         <h2 style="font-family:sans-serif">Шинэ төслийн бриф</h2>

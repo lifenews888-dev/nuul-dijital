@@ -18,6 +18,9 @@ export function TestimonialsSection({ items }: { items?: Item[] }) {
   const go = (dir: number) =>
     setIndex((i) => (i + dir + testimonials.length) % testimonials.length);
 
+  // No real testimonials yet → show nothing rather than placeholders.
+  if (!testimonials.length) return null;
+
   return (
     <section className="py-24 lg:py-32">
       <div className="container-wide">

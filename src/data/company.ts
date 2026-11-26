@@ -2,12 +2,8 @@ export type Stat = { value: number; suffix: string; label: string };
 export type ProcessStep = { icon: string; step: string; title: string; description: string };
 export type Value = { title: string; description: string };
 
-export const stats: Stat[] = [
-  { value: 120, suffix: "+", label: "Амжилттай төсөл" },
-  { value: 50, suffix: "+", label: "Хамтрагч байгууллага" },
-  { value: 5, suffix: " жил", label: "Салбарын туршлага" },
-  { value: 98, suffix: "%", label: "Үйлчлүүлэгчийн ханамж" },
-];
+// Stats are shown only once real, verifiable figures are entered in the admin panel.
+export const stats: Stat[] = [];
 
 export const processSteps: ProcessStep[] = [
   {
@@ -71,24 +67,11 @@ export const values: Value[] = [
 ];
 
 export const team = [
-  { name: "Б. Тэмүүжин", role: "Үүсгэн байгуулагч / CEO", avatar: "" },
-  { name: "Э. Анударь", role: "Бүтээлч захирал", avatar: "" },
-  { name: "Ч. Батбаяр", role: "Технологийн захирал", avatar: "" },
-  { name: "О. Сарангэрэл", role: "Тэргүүлэх дизайнер", avatar: "" },
-  { name: "Б. Мөнхзул", role: "AI инженер", avatar: "" },
-  { name: "Т. Нямбаяр", role: "Төслийн менежер", avatar: "" },
+  { name: "Баянмөнх Мөнхбат", role: "Гүйцэтгэх захирал", avatar: "" },
 ];
 
-export const clients = [
-  "Алтан Банк",
-  "Gobi Cashmere",
-  "MedAssist",
-  "EduMongolia",
-  "TransportFlow",
-  "Нийслэл",
-  "MobiCom",
-  "Shoppy",
-];
+// Real client names are added only with their permission.
+export const clients: string[] = [];
 
 /**
  * Technology stack we build with. `slug` is the Simple Icons slug

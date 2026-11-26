@@ -36,6 +36,11 @@ export default async function CaseStudiesPage({
       />
 
       <section className="container-wide pb-24">
+        {caseStudies.length === 0 && (
+          <p className="rounded-3xl border border-white/10 bg-card p-10 text-center text-muted-foreground">
+            Кейс судалгаанууд удахгүй нэмэгдэнэ.
+          </p>
+        )}
         <div className="flex flex-col gap-8">
           {caseStudies.map((c, i) => (
             <Reveal key={c.slug}>

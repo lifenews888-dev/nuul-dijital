@@ -56,6 +56,7 @@ export default async function AboutPage({
       </section>
 
       {/* Stats */}
+      {stats.length > 0 && (
       <section className="container-wide py-12">
         <div className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/5 lg:grid-cols-4">
           {stats.map((s) => (
@@ -66,6 +67,7 @@ export default async function AboutPage({
           ))}
         </div>
       </section>
+      )}
 
       {/* Values */}
       <section className="container-wide py-16">

@@ -49,10 +49,10 @@
     },
     "domainTeaser": {
       "title": "Find your business domain",
-      "placeholder": "kingwash",
+      "placeholder": "yourbrand",
       "ariaLabel": "Search domain name",
       "search": "Search",
-      "example": "Example: kingwash.mn — Car wash center"
+      "example": "Example: yourbrand.mn — your brand name"
     },
     "services": {
       "label": "Services",
@@ -177,7 +177,7 @@
     "quote": {
       "label": "Quote / Project brief",
       "title": "Bring your project <accent>to life</accent>",
-      "description": "Fill in your project details in a few steps — services, domain, pages, features, budget. We'll review, prepare a mockup and get back to you within 24 hours with a clear quote."
+      "description": "Start from your goal, then pick the solution, infrastructure and post-launch support in a few steps. We'll prepare a phased proposal pricing a first release and the full version separately."
     },
     "domains": {
       "label": "Domains",
@@ -242,27 +242,78 @@
       "termsTitle": "Terms of Service",
       "domainRegistrationTitle": "Domain Registration Terms",
       "privacy": [
-        { "h": "1. What information we collect", "p": "Through contact forms, quote requests and newsletter sign-ups we collect your name, email, phone and company details." },
-        { "h": "2. How we use information", "p": "We use the information we collect only to respond to your request, deliver our services, and — with your consent — send you marketing updates." },
-        { "h": "3. Data security", "p": "We take industry-standard security measures to protect your personal information." },
-        { "h": "4. Third parties", "p": "We do not sell or rent your information to third parties without your consent." },
-        { "h": "5. Contact", "p": "If you have any questions about privacy, contact us at hello@nuul.digital." }
+        {
+          "h": "1. What information we collect",
+          "p": "Through contact forms, quote requests and newsletter sign-ups we collect your name, email, phone and company details."
+        },
+        {
+          "h": "2. How we use information",
+          "p": "We use the information we collect only to respond to your request, deliver our services, and — with your consent — send you marketing updates."
+        },
+        {
+          "h": "3. Data security",
+          "p": "We take industry-standard security measures to protect your personal information."
+        },
+        {
+          "h": "4. Third parties",
+          "p": "We do not sell or rent your information to third parties without your consent."
+        },
+        {
+          "h": "5. Contact",
+          "p": "If you have any questions about privacy, contact us at hello@nuul.digital."
+        }
       ],
       "terms": [
-        { "h": "1. Scope of services", "p": "Nuul Digital provides digital services such as web development, design, AI and automation on a contractual basis." },
-        { "h": "2. Payment", "p": "Project fees, schedules and terms are governed by the agreement made between the parties." },
-        { "h": "3. Intellectual property", "p": "Intellectual property rights in delivered work transfer to the client once payment is made in full." },
-        { "h": "4. Liability", "p": "We strive to deliver our services to a high professional standard but are not liable for indirect damages." },
-        { "h": "5. Contact", "p": "If you have any questions about these terms, contact us at hello@nuul.digital." }
+        {
+          "h": "1. Scope of services",
+          "p": "Nuul Digital provides digital services such as web development, design, AI and automation on a contractual basis."
+        },
+        {
+          "h": "2. Payment",
+          "p": "Project fees, schedules and terms are governed by the agreement made between the parties."
+        },
+        {
+          "h": "3. Intellectual property",
+          "p": "Intellectual property rights in delivered work transfer to the client once payment is made in full."
+        },
+        {
+          "h": "4. Liability",
+          "p": "We strive to deliver our services to a high professional standard but are not liable for indirect damages."
+        },
+        {
+          "h": "5. Contact",
+          "p": "If you have any questions about these terms, contact us at hello@nuul.digital."
+        }
       ],
       "domainRegistration": [
-        { "h": "1. Scope of service", "p": "Nuul Digital acts as your agent to register, renew, and transfer domain names. Authoritative registry rights remain with registry.mn / NIC.MN." },
-        { "h": "2. Registrant obligations", "p": "You must provide accurate identity information and submit required documents within 3 business days of ordering. False information may result in cancellation." },
-        { "h": "3. .mn domain policy", "p": "Use, prohibited content, and dispute resolution for .mn domains are governed by official NIC.MN policy. See https://registry.mn" },
-        { "h": "4. Renewal and expiry", "p": "Domains are typically registered for 1 year. Renewal reminders are sent by email. Grace periods after expiry are defined by the registry." },
-        { "h": "5. Refunds", "p": "No refunds after a domain has been successfully registered. If registration fails, we offer a full refund or an alternative domain name." },
-        { "h": "6. Nuul Digital liability", "p": "We aim to activate your domain within 24 hours of confirmed payment. We are not liable for delays caused by third-party registry systems." },
-        { "h": "7. Contact", "p": "For domain disputes or questions, contact hello@nuul.digital." }
+        {
+          "h": "1. Scope of service",
+          "p": "Nuul Digital acts as your agent to register, renew, and transfer domain names. Authoritative registry rights remain with registry.mn / NIC.MN."
+        },
+        {
+          "h": "2. Registrant obligations",
+          "p": "You must provide accurate identity information and submit required documents within 3 business days of ordering. False information may result in cancellation."
+        },
+        {
+          "h": "3. .mn domain policy",
+          "p": "Use, prohibited content, and dispute resolution for .mn domains are governed by official NIC.MN policy. See https://registry.mn"
+        },
+        {
+          "h": "4. Renewal and expiry",
+          "p": "Domains are typically registered for 1 year. Renewal reminders are sent by email. Grace periods after expiry are defined by the registry."
+        },
+        {
+          "h": "5. Refunds",
+          "p": "No refunds after a domain has been successfully registered. If registration fails, we offer a full refund or an alternative domain name."
+        },
+        {
+          "h": "6. Nuul Digital liability",
+          "p": "We aim to activate your domain within 24 hours of confirmed payment. We are not liable for delays caused by third-party registry systems."
+        },
+        {
+          "h": "7. Contact",
+          "p": "For domain disputes or questions, contact hello@nuul.digital."
+        }
       ]
     }
   },
@@ -322,10 +373,10 @@
     }
   },
   "wizard": {
-    "step0": "Services",
-    "step1": "Project details",
-    "step2": "Pages & features",
-    "step3": "Budget & timeline",
+    "step0": "Goal",
+    "step1": "Solution",
+    "step2": "Infrastructure",
+    "step3": "Support & budget",
     "step4": "Contact",
     "back": "Back",
     "next": "Continue",
@@ -334,8 +385,8 @@
     "remove": "Remove",
     "yes": "Yes",
     "no": "No",
-    "doneTitle": "Request sent successfully! 🎉",
-    "doneText": "Thank you, {name}. Our team will review your brief, prepare a mockup and get back to you within 24 hours. We'll then finalize the visuals, copy and features together.",
+    "doneTitle": "Brief received",
+    "doneText": "Thank you, {name}. We will study your goals and prepare a phased proposal pricing a first release (MVP) and the full version separately, then get in touch shortly.",
     "friend": "there",
     "step0Title": "Which services are you interested in?",
     "step0Hint": "You can pick several.",
@@ -350,23 +401,38 @@
     "pagesTitle": "Pages you need",
     "pagesHint": "Pick from the list, or add your own.",
     "pagesAdd": "Add another page",
-    "featuresTitle": "Features you need",
+    "featuresTitle": "Features",
     "featuresAdd": "Add another feature",
     "authTitle": "Do you need user accounts / login?",
     "budgetTitle": "Budget range",
-    "timelineTitle": "Timeline",
-    "refsTitle": "Sites you like",
+    "timelineTitle": "Preferred timeline",
+    "refsTitle": "Sites or systems you like (optional)",
     "refsHint": "Add links as references.",
-    "refsAdd": "Add another site",
+    "refsAdd": "Add another link",
     "colorsLabel": "Preferred color palette",
     "colorsPlaceholder": "e.g. \"White, deep grey, bright red\"",
-    "contactTitle": "Contact & project details",
+    "contactTitle": "Contact",
     "aboutLabel": "About your business",
-    "aboutPlaceholder": "What does your business do...",
+    "aboutPlaceholder": "What does your organisation do...",
     "goalLabel": "Main goal of the site",
     "goalPlaceholder": "e.g. online sales, bookings, showcase...",
     "notesLabel": "Additional notes",
-    "notesPlaceholder": "Anything else you'd like to tell us..."
+    "notesPlaceholder": "Anything else we should know...",
+    "outcomeTitle": "What should this project change for your business?",
+    "outcomeHint": "We start from the outcome. Pick as many as apply.",
+    "startTitle": "Where are you today?",
+    "currentUrlPlaceholder": "Current website or system URL",
+    "industryTitle": "Industry",
+    "solutionTitle": "What do you need built?",
+    "solutionHint": "Pick as many as you need — one team owns all of it.",
+    "featuresHint": "Tap once for “Now”, again for “Later”. Separating launch must-haves keeps price and timeline realistic.",
+    "now": "Now",
+    "later": "Later",
+    "addonsTitle": "Add-on services",
+    "addonsHint": "One contract, one invoice — in MNT with VAT.",
+    "supportTitle": "Who runs it after launch?",
+    "supportHint": "Most systems stall after launch. We can run yours.",
+    "error": "Something went wrong. Please retry or call 8080-1677."
   },
   "checkoutAuth": {
     "title": "Sign in required",
@@ -386,7 +452,7 @@
     "linkHint": "New here? The email link creates your account on first sign-in."
   },
   "domains": {
-    "searchPlaceholder": "Domain name (e.g. kingwash)",
+    "searchPlaceholder": "Domain name (e.g. yourbrand)",
     "searchButton": "Search",
     "searchAria": "Search domain name",
     "invalidChars": "Use letters (a-z), numbers (0-9), and hyphens (-) only",
@@ -634,29 +700,66 @@
     "hostingPlans": {
       "starter": {
         "name": "Starter",
-        "features": ["5 GB SSD", "1 website", "Free SSL", "Daily backups", "Email support"]
+        "features": [
+          "5 GB SSD",
+          "1 website",
+          "Free SSL",
+          "Daily backups",
+          "Email support"
+        ]
       },
       "pro": {
         "name": "Pro",
-        "features": ["20 GB SSD", "5 websites", "Free SSL", "Daily backups", "24/7 support", "cPanel access"]
+        "features": [
+          "20 GB SSD",
+          "5 websites",
+          "Free SSL",
+          "Daily backups",
+          "24/7 support",
+          "cPanel access"
+        ]
       },
       "business": {
         "name": "Business",
-        "features": ["50 GB SSD", "10 websites", "Free SSL", "Daily backups", "Priority support", "Static IP"]
+        "features": [
+          "50 GB SSD",
+          "10 websites",
+          "Free SSL",
+          "Daily backups",
+          "Priority support",
+          "Static IP"
+        ]
       }
     },
     "emailPlans": {
       "basic": {
         "name": "Basic",
-        "features": ["1 mailbox", "5 GB storage", "Webmail access", "Spam protection"]
+        "features": [
+          "1 mailbox",
+          "5 GB storage",
+          "Webmail access",
+          "Spam protection"
+        ]
       },
       "pro": {
         "name": "Pro",
-        "features": ["5 mailboxes", "25 GB storage", "IMAP / SMTP", "Calendar sync", "Spam protection"]
+        "features": [
+          "5 mailboxes",
+          "25 GB storage",
+          "IMAP / SMTP",
+          "Calendar sync",
+          "Spam protection"
+        ]
       },
       "team": {
         "name": "Team",
-        "features": ["20 mailboxes", "100 GB storage", "Group aliases", "Admin panel", "24/7 support"]
+        "features": [
+          "20 mailboxes",
+          "100 GB storage",
+          "Group aliases",
+          "Admin panel",
+          "24/7 support"
+        ]
       }
     }
   },
