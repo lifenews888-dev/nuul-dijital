@@ -10,7 +10,7 @@ export const siteConfig = {
   locale: "mn_MN",
   email: "hello@nuul.digital",
   phone: "+976 8080 1677",
-  address: "Сүхбаатар дүүрэг, Улаанбаатар, Монгол улс",
+  address: "Чингэлтэй дүүрэг, 6-р хороо, Лааганы гудамж, Логос төв, 7 давхар, 701 тоот, Улаанбаатар",
   social: {
     facebook: "https://facebook.com/nuuldigital",
     instagram: "https://instagram.com/nuuldigital",
