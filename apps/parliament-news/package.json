@@ -9,7 +9,7 @@
     "lint": "eslint app lib server middleware.ts --ext .ts,.tsx",
     "test": "vitest run --exclude \"**/*.db.test.ts\"",
     "test:unit": "vitest run lib --exclude \"**/*.db.test.ts\"",
-    "test:db": "vitest run lib/tenant-db.db.test.ts"
+    "test:db": "vitest run .db.test.ts"
   },
   "dependencies": {
     "@nuul/db-news": "workspace:*",
