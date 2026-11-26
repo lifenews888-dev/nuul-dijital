@@ -57,6 +57,20 @@
     @apply border-border;
   }
 
+  /* Native controls (select lists, date pickers, scrollbars) follow the theme,
+     so dropdown options are not light text on a white list. */
+  html.dark {
+    color-scheme: dark;
+  }
+  html.light {
+    color-scheme: light;
+  }
+  select option,
+  select optgroup {
+    background-color: hsl(var(--card));
+    color: hsl(var(--foreground));
+  }
+
   html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
@@ -113,8 +127,9 @@
    * keeps contrast independent of whatever happens to be underneath.
    */
   .surface-overlay {
-    @apply border border-white/10 backdrop-blur-2xl;
-    background: hsl(var(--card) / 0.97);
+    @apply border border-white/10;
+    /* Fully opaque: at 0.97 large page headings bled through the menu panel. */
+    background: hsl(var(--card));
   }
 
   /*

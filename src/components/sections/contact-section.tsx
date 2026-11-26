@@ -17,7 +17,7 @@ export async function ContactSection() {
   return (
     <section id="contact" className="py-24 lg:py-32">
       <div className="container-wide">
-        <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <div>
             <SectionHeading
               label={t("label")}

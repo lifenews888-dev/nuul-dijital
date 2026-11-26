@@ -57,7 +57,7 @@ export function InstantEstimate({ services }: { services: Service[] }) {
         />
 
         <div className="mx-auto mt-14 max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-card">
-          <div className="grid lg:grid-cols-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
             {/* Picker */}
             <div className="border-b border-white/10 p-7 lg:border-b-0 lg:border-r">
               <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
