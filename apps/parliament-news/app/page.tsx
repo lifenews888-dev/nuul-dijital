@@ -1,17 +1,19 @@
-import { listPosts } from "../lib/posts";
+import { homeData } from "../lib/home-data";
 import { shelfBooks } from "../components/shelf-model";
 import { PostCard } from "../components/post-card";
 import { Hero } from "../components/hero/hero";
 import { Shelf3D } from "../components/hero/shelf3d";
 import { Timeline } from "../components/hero/timeline";
+import { Ticker } from "../components/hero/ticker";
+import { WidgetAttendance } from "../components/hero/widget-attendance";
+import { WidgetAgenda } from "../components/hero/widget-agenda";
+import { StoriesRail } from "../components/hero/stories-rail";
 
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const [latest, featured] = await Promise.all([
-    listPosts({ take: 12 }),
-    listPosts({ featured: true, take: 3 }),
-  ]);
+  // Нүүрний бүх өгөгдөл НЭГ уншилтаар — виджет бүр өөрөө санд очихгүй
+  const { latest, featured, stories, live, agenda, ticker } = await homeData();
 
   const books = shelfBooks(latest);
 
@@ -29,7 +31,12 @@ export default async function HomePage() {
   return (
     <>
       {/* Artifact-ийн hero дүр зураг, дотор нь 3D номын тавиур */}
-      <Hero>
+      <Hero live={live}>
+        <Ticker posts={latest} ads={ticker} on={live?.tickerOn ?? false} />
+        <StoriesRail stories={stories} />
+        <WidgetAttendance live={live} />
+        <WidgetAgenda agenda={agenda} />
+
         <Shelf3D books={books} />
         {/*
           Шугамын он нь хамгийн шинэ мэдээний он — 12 сарын хуваарь нь

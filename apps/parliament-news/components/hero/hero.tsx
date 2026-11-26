@@ -13,8 +13,17 @@
  *   nav2 … (толгойг layout зурна, `.top` нь fixed z 58)
  *   .grain  цаасны ширхэг (z 40)
  *   #probe  --H-ийн бодит px утгыг хэмжих элемент
+ *   #mstat  утсан дээрх нэг мөрийн төлөв (өргөн дэлгэцэд CSS нуудаг)
  */
-export function Hero({ children }: { children?: React.ReactNode }) {
+import { MobileStatus } from "./mobile-status";
+import type { LiveInfo } from "../../lib/home-data";
+export function Hero({
+  live,
+  children,
+}: {
+  live?: LiveInfo | null;
+  children?: React.ReactNode;
+}) {
   return (
     <>
       <div className="hero" aria-hidden="true" />
@@ -23,6 +32,8 @@ export function Hero({ children }: { children?: React.ReactNode }) {
       {/* Толгойг layout зурна — artifact-д ч `.top` нь position:fixed, z 58
           тул бүх хуудсанд нэг л удаа байх ёстой. */}
       <nav className="nav2 lbl" id="nav2" aria-label="Ангилал" />
+
+      <MobileStatus live={live ?? null} />
 
       {/* Хотын дүрс: 3D тайз, агуулгыг нь тавиурын rAF давталт барина */}
       <div className="cityw" aria-hidden="true">
