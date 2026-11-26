@@ -273,3 +273,12 @@ export async function categoryBySlug(
 export function allPublishedForFeed(limit: number): Promise<PostListItem[]> {
   return listBy({}, { take: limit, skip: 0 });
 }
+
+/** Sitemap-д: цэсэнд байгаа эсэхээс үл хамааран БҮХ ангилал */
+export async function allCategories(): Promise<{ slug: string; name: string }[]> {
+  const db = await gate();
+  return db.newsCategory.findMany({
+    select: { slug: true, name: true },
+    orderBy: { order: "asc" },
+  });
+}

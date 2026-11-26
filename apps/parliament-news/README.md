@@ -80,6 +80,23 @@ curl -s -o /dev/null -w '%{content_type} %{size_download}
 # Хүлээгдэх: image/avif, 120000 байтаас бага
 ```
 
+### 5. Нийтийн замууд (2-р шат)
+
+| Зам | Тайлбар |
+|---|---|
+| `/` | Нүүр — 3D номын тавиур + бүх мэдээний жагсаалт |
+| `/news/<slug>` | Нийтлэл, `NewsArticle` JSON-LD, хуучин хаягаас 308 |
+| `/c/<slug>` | Ангилал (байхгүй бол 404) |
+| `/tag/<tag>` | Шошго (кирилл дэмжинэ, байхгүй нь алдаа биш) |
+| `/search?q=` | Хайлт (кэшлэхгүй) |
+| `/cover/<slug>` | Номын хавтасны SVG, кэшлэгдэнэ |
+| `/rss.xml` | RSS 2.0 (редакц тохиргооноос хааж болно) |
+| `/sitemap.xml`, `/robots.txt` | Next-ийн metadata route |
+| `/news/<slug>/opengraph-image` | 1200×630 OG зураг |
+
+Ноорог ба цаг товлосон мэдээ эдгээрийн АЛЬ НЭГЭНД ч гарахгүй — шалгах:
+`curl -s localhost:3001/sitemap.xml | grep -c demo-nooreg` → `0`.
+
 Нээлтээс өмнө: `DEPLOY-CHECKLIST.md`.
 
 ---

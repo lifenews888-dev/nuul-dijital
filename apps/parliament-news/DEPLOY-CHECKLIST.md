@@ -115,6 +115,19 @@
       curl -s https://parlamentnews.mn/rss.xml > /tmp/r.xml
       python -c "import xml.dom.minidom as m; m.parse('/tmp/r.xml'); print('OK')"
       ```
+- [ ] **ЗААВАЛ: Open Graph зураг үнэхээр үүсч байгааг deploy-ийн дараа шалга.**
+      `next/og` (Satori) нь Windows дээр ажиллахгүй — Next 14.2.35-ийн багцалсан
+      `@vercel/og` нь өөрийн нөөц фонтоо `.\file:\C:\...` гэсэн хүчингүй URL-ээр
+      ачаалж `ERR_INVALID_URL` өгдөг. Linux (Vercel) дээр энэ зам өөр тул
+      асуудал гарах ёсгүй, ГЭХДЭЭ хөгжүүлэлтийн явцад ТУРШИГДААГҮЙ.
+      ```bash
+      curl -s -o /dev/null -w '%{http_code} %{content_type} %{size_download}\n' \
+        https://parlamentnews.mn/news/<slug>/opengraph-image
+      ```
+      Хүлээгдэх: `200 image/png` ба 0-ээс их хэмжээ. Хоёр тохиолдлыг хоёуланг
+      нь шалга: **зурагтай** мэдээ ба **зураггүй** мэдээ (сүүлийнх нь палитрын
+      геометрээр эргэнэ). 500 эсвэл хоосон бол `app/news/[slug]/opengraph-image.tsx`
+      ажиллахгүй байна гэсэн үг — хуваалцсан холбоос зураггүй гарна.
 - [ ] Мэдээ хуваалцахад Facebook дээр зураг, гарчиг зөв (Open Graph).
       Шалгах: developers.facebook.com/tools/debug/ дээр нэг нийтлэлийн хаягаар.
 - [ ] **`NewsArticle` JSON-LD нийтлэл бүрт байна.** Шалгасан 4 сайтаас gogo.mn
