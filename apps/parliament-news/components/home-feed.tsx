@@ -2,18 +2,10 @@ import { mnAgo, mnDate, ubToday } from "../lib/format";
 import { imageOrCover } from "../lib/images";
 import { coverUrl } from "../lib/cover-input";
 import { calendarUrl } from "../lib/calendar";
+import { BILL_STAGES } from "../lib/bill-stages";
 import { Icon } from "./icon";
 import type { HomeData } from "../lib/home-data";
 import type { PostListItem } from "../lib/posts";
-
-/** Artifact-ийн `ST` — хуулийн төслийн таван шат */
-const BILL_STAGES = [
-  "Өргөн мэдүүлсэн",
-  "Байнгын хороо",
-  "Анхны хэлэлцүүлэг",
-  "Эцсийн хэлэлцүүлэг",
-  "Баталсан",
-];
 
 /** Онцлохын торонд хэдэн карт (эхнийх нь хоёр мөр эзэлнэ) */
 const FEATURE_CARDS = 5;

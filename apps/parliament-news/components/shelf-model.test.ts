@@ -124,4 +124,20 @@ describe("shelfBooks", () => {
     expect(shelfBooks([post({ featured: true })])[0].featured).toBe(true);
     expect(shelfBooks([post({ featured: false })])[0].featured).toBe(false);
   });
+
+  /** Гарчгийн блокийн «Баталсан» тэмдэг — хуулийн төслийн шат */
+  it("хуулийн шат өгөгдвөл номонд дамжина", () => {
+    const b = shelfBooks([post({ slug: "huuli" })], { huuli: 4 })[0];
+    expect(b.stage).toBe(4);
+  });
+
+  it("шатгүй мэдээнд null", () => {
+    expect(shelfBooks([post({ slug: "huuli" })], { ooр: 2 })[0].stage).toBeNull();
+    expect(shelfBooks([post({ slug: "huuli" })])[0].stage).toBeNull();
+  });
+
+  it("хүрээнээс гадуур шатыг таслана", () => {
+    expect(shelfBooks([post({ slug: "a" })], { a: 9 })[0].stage).toBe(4);
+    expect(shelfBooks([post({ slug: "a" })], { a: -3 })[0].stage).toBe(0);
+  });
 });

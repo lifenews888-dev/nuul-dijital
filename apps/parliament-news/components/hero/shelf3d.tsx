@@ -1,9 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   metrics,
   bookPose,
+  smoothstep,
   springStep,
   relIndex,
   type ShelfMetrics,
@@ -45,6 +47,7 @@ type Tape = {
  * шууд бичнэ — 36 номыг секундэд 60 удаа дахин рендерлэх нь тавиурыг зогсооно.
  */
 export function Shelf3D({ books }: { books: ShelfBook[] }) {
+  const router = useRouter();
   /**
    * Идэвхтэй мэдээ ба хэдийш хөдөлсөн чиглэл. Чиглэл нь гарчгийн блокийн
    * гүйлгэх тал — artifact-ийн `caption(a, Math.sign(T-s)||1)`.
@@ -52,6 +55,7 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
   const [active, setActive] = useState({ i: 0, dir: 0 });
 
   const shelfRef = useRef<HTMLElement | null>(null);
+  const playRef = useRef<HTMLAnchorElement | null>(null);
   const tapesRef = useRef<Tape[]>([]);
   const mRef = useRef<ShelfMetrics>(metrics(1, 1280));
 
@@ -210,6 +214,22 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
         setActive({ i: a, dir });
       }
 
+      /**
+       * Нээх цагираг (artifact-ийн `.play`): идэвхтэй хавтасны зүүн доод
+       * буланд, тавиур ТОГТСОН үед л томорно. Байрлал нь дэлгэцийн өргөн,
+       * номын гүнээс хамаардаг тул кадр бүрт бичигдэнэ.
+       */
+      const play = playRef.current;
+      if (play) {
+        const ps = smoothstep(
+          Math.max(0, Math.min(1, 1 - Math.abs(tRef.current - sRef.current) * 3)),
+        );
+        play.style.left = `${W / 2 - m.d / 2 - 6}px`;
+        play.style.top = `${cy + 0.36 * m.H}px`;
+        play.style.transform = `translate(-50%,-50%) scale(${ps})`;
+        play.style.visibility = ps < 0.05 ? "hidden" : "visible";
+      }
+
       // Цагийн шугамын цэг — React-гүйгээр шууд DOM руу
       const dot = document.getElementById("dot");
       if (dot) {
@@ -296,6 +316,12 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowLeft") { e.preventDefault(); tRef.current -= 1; }
     else if (e.key === "ArrowRight") { e.preventDefault(); tRef.current += 1; }
+    else if (e.key === "Enter" || e.key === " ") {
+      // Гараар тавиурыг эргүүлсэн хүн мэдээг нээх ёстой — хулганаар
+      // хавтас дээр дарахтай ижил
+      e.preventDefault();
+      router.push(books[activeRef.current % count].href);
+    }
   };
 
   const activeBook = books[active.i];
@@ -315,6 +341,7 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
         onPointerCancel={onPointerUp}
         onWheel={onWheel}
         onKeyDown={onKeyDown}
+        aria-describedby="shelf-hint"
       >
         <div className="stage" id="stage">
           {Array.from({ length: total }, (_, v) => {
@@ -361,7 +388,18 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
                 {/* Хавтас: кэшлэгдэх SVG (Phase 2-ийн /cover/<slug>) */}
                 <div className="f cv" style={{ background: book.bg }}>
                   <img src={book.coverUrl} alt="" width={474} height={900} loading="lazy" decoding="async" />
-                  <a href={book.href} aria-label={book.title} />
+                  {/*
+                    Хулганы холбоос, гарын биш: тойрог нь ижил мэдээг ГУРАВ
+                    агуулдаг тул tab-аар явбал 36 давхардсан холбоос дамжина.
+                    Гар нь `.shelf` дээр зогсоод сум/Enter-ээр ажиллана.
+                    Хуулбаруудыг дэлгэц уншигчаас мөн нуулаа.
+                  */}
+                  <a
+                    href={book.href}
+                    aria-label={book.title}
+                    tabIndex={-1}
+                    aria-hidden={v >= count || undefined}
+                  />
                 </div>
 
                 {/* Ар тал: товч агуулга */}
@@ -384,6 +422,16 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
         </div>
       </section>
 
+      {/* Нээх цагираг — хавтас дээр дарахтай ижил, зүгээр л томоор */}
+      <a
+        className="play"
+        id="play"
+        ref={playRef}
+        href={activeBook.href}
+        aria-label={`Мэдээг нээх: ${activeBook.title}`}
+        tabIndex={-1}
+      />
+
       <ShelfCaption book={activeBook} dir={active.dir} />
 
       <button className="arr p" type="button" id="prev" aria-label="Өмнөх мэдээ" onClick={nudge(-1)}>
@@ -401,6 +449,9 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
       <a className="sr-only" href={activeBook.href}>
         {activeBook.title}
       </a>
+      <span className="sr-only" id="shelf-hint">
+        Зүүн, баруун сумаар мэдээ сольж, Enter дарж нээнэ.
+      </span>
     </>
   );
 }

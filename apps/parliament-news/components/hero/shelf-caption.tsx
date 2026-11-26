@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "../icon";
+import { BILL_STAGES } from "../../lib/bill-stages";
 import type { ShelfBook } from "../shelf-model";
 
 /** Artifact-ийн `swap()` (index.html:785) */
@@ -28,7 +29,12 @@ function lines(b: ShelfBook): Lines {
         {b.spineLabel.toUpperCase()} · PARLIAMENT NEWS
       </span>
     ),
-    y: `${b.dateFull} — ${b.spineLabel}`,
+    y: (
+      <>
+        {b.dateFull} — {b.spineLabel}
+        {b.stage !== null ? <span className="stg">{BILL_STAGES[b.stage]}</span> : null}
+      </>
+    ),
     l: b.lead,
   };
 }

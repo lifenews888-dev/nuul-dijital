@@ -2,6 +2,7 @@ import { palette, isLight } from "../lib/cover";
 import { mnNumericDate, mnShortDate, excerpt } from "../lib/format";
 import { yearFraction } from "../lib/timeline";
 import { coverUrl } from "../lib/cover-input";
+import { BILL_STAGE_MAX } from "../lib/bill-stages";
 import type { PostListItem } from "../lib/posts";
 
 /**
@@ -12,6 +13,7 @@ export const SPINE_TEXT_MAX = 42;
 
 /** Artifact-ийн нурууны дугаарлалт "№ 141"-ээс эхэлдэг */
 export const SHELF_FIRST_NUMBER = 141;
+
 
 export type ShelfBook = {
   href: string;
@@ -46,6 +48,13 @@ export type ShelfBook = {
   light: boolean;
   /** Гарчгийн блокийн шар "ОНЦЛОХ" тэмдэг */
   featured: boolean;
+  /**
+   * Хуулийн төслийн шат (0..4) эсвэл null.
+   *
+   * Гарчгийн блокийн огнооны ард улаан хүрээтэй тэмдэг болж гарна
+   * (artifact-ийн `.stg`). Мэдээнд хууль холбоогүй бол null.
+   */
+  stage: number | null;
 };
 
 /**
@@ -54,8 +63,16 @@ export type ShelfBook = {
  * `shelf.tsx`-ээс тусдаа байгаа нь зориуд: client component-ийг рендерлэхгүйгээр
  * тавиурын логикийг тестлэх боломж (репод React рендерлэх тест байхгүй).
  */
-export function shelfBooks(posts: PostListItem[]): ShelfBook[] {
+export function shelfBooks(
+  posts: PostListItem[],
+  stages: Record<string, number> = {},
+): ShelfBook[] {
   return posts.map((post, index) => {
+    const raw = stages[post.slug];
+    const stage =
+      typeof raw === "number" && Number.isFinite(raw)
+        ? Math.max(0, Math.min(BILL_STAGE_MAX, Math.round(raw)))
+        : null;
     const [bg, fg] = palette(post.theme, post.look);
     return {
       href: `/news/${post.slug}`,
@@ -72,6 +89,7 @@ export function shelfBooks(posts: PostListItem[]): ShelfBook[] {
       fg,
       light: isLight(bg),
       featured: post.featured,
+      stage,
     };
   });
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSiteSetting } from "../lib/settings";
 import { menuCategories } from "../lib/posts";
 import { headerModel } from "./site-chrome";
+import { ThemeButton } from "./theme-button";
 
 /**
  * Сайтын толгой — artifact-ийн `header.top`-ийн бүтэц, ангиллын нэрс.
@@ -10,8 +11,9 @@ import { headerModel } from "./site-chrome";
  * уриа, логоны хэмжээ бүгд `headerModel()`-ээр дамжина. `site-chrome.ts`-ийн
  * загвар өөрчлөгдөөгүй тул түүний 11 тест хэвээр ногоон.
  *
- * `#thm` (өдөр/шөнө) ба `#burger` (цэс)-ийн зан төлөв Task 10-д — одоо тэд
- * байрлалдаа байна, дарахад юу ч болохгүй.
+ * `#thm` нь өөрийн client компонент; `#burger` нь энд серверийн товч
+ * хэвээр бөгөөд `SiteMenu` (layout-д) түүнд сонсогч залгана — толгойг
+ * client болгохгүйн тулд.
  */
 export async function SiteHeader() {
   const [setting, categories] = await Promise.all([
@@ -41,11 +43,7 @@ export async function SiteHeader() {
           ))}
         </span>
 
-        <button className="thm" id="thm" type="button" aria-label="Өдөр, шөнийн горим">
-          <svg className="ic0" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
-          </svg>
-        </button>
+        <ThemeButton />
 
         <Link className="live" href="/c/video" id="live">
           Шууд

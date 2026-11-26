@@ -12,6 +12,7 @@
 import { requireTenant } from "./tenant";
 import { forTenant } from "./tenant-db";
 import { ubToday } from "./format";
+import { BILL_STAGE_MAX } from "./bill-stages";
 import {
   publishedWhere,
   toListItem,
@@ -25,9 +26,6 @@ const LATEST_TAKE = 12;
 const FEATURED_TAKE = 3;
 const STORY_TAKE = 12;
 const BILL_TAKE = 5;
-
-/** Artifact-ийн `ST` — таван шат, индекс 0..4 */
-const BILL_STAGE_MAX = 4;
 
 export type LiveInfo = {
   attendance: number;

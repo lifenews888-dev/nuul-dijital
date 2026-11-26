@@ -3,6 +3,19 @@ import { Inter_Tight, Noto_Serif, PT_Serif } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "../components/site-header";
 import { SiteFooter } from "../components/site-footer";
+import { SiteMenu } from "../components/site-menu";
+import { menuCategories } from "../lib/posts";
+
+/**
+ * Хадгалсан горимыг БУДАХААС ӨМНӨ тавина.
+ *
+ * `<body>`-гийн эхний элемент тул хөтөч үүнийг ажиллуулж дуусахаас нааш
+ * юу ч будахгүй: цайвар горимтой хүн бараан дэвсгэрийг нэг кадр ч харахгүй.
+ * `localStorage` нь хувийн цонхонд шиддэг — `try/catch`.
+ */
+const THEME_BOOT =
+  "try{var t=localStorage.getItem('pn_theme');if(t==='dark'||t==='light')" +
+  "document.documentElement.dataset.theme=t}catch(e){}";
 
 /** Гарчиг, шошго — artifact-ийн `Inter Tight` */
 const head = Inter_Tight({
@@ -41,11 +54,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const categories = await menuCategories();
+
   return (
     <html lang="mn" className={`${head.variable} ${body.variable} ${title.variable}`}>
       {/* flex багана: агуулга богино байсан ч хөл нь доод ирмэгт наалдана */}
       <body className="flex min-h-screen flex-col">
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-cob focus:px-3 focus:py-2 focus:text-paper"
@@ -57,6 +73,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <SiteFooter />
+        {/* Цэс нь `header.top`-ийн ГАДНА — тэр нь өөрийн давхаргын хүрээтэй */}
+        <SiteMenu categories={categories} />
       </body>
     </html>
   );

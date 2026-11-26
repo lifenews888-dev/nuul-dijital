@@ -28,7 +28,9 @@ export default async function HomePage() {
     );
   }
 
-  const books = shelfBooks(latest);
+  // Хуулийн шатыг slug-аар — гарчгийн блокийн «Баталсан» тэмдэг
+  const stages = Object.fromEntries(data.bills.map((b) => [b.slug, b.stage]));
+  const books = shelfBooks(latest, stages);
 
   return (
     <>
