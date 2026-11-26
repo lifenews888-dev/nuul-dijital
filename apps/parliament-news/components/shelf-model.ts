@@ -1,7 +1,13 @@
 import { palette, isLight } from "../lib/cover";
-import { mnShortDate } from "../lib/format";
+import { mnShortDate, excerpt } from "../lib/format";
 import { coverUrl } from "../lib/cover-input";
 import type { PostListItem } from "../lib/posts";
+
+/**
+ * Нурууны текстийн дээд урт. Нуруу нь номын зузаан (ws = H·0.25) төдий нарийн
+ * тул урт гарчиг эргэж орохдоо халина.
+ */
+export const SPINE_TEXT_MAX = 42;
 
 /** Artifact-ийн нурууны дугаарлалт "№ 141"-ээс эхэлдэг */
 export const SHELF_FIRST_NUMBER = 141;
@@ -45,7 +51,7 @@ export function shelfBooks(posts: PostListItem[]): ShelfBook[] {
       href: `/news/${post.slug}`,
       title: post.title,
       spineLabel: post.categoryName,
-      kicker: post.kicker ?? post.title,
+      kicker: excerpt(post.kicker ?? post.title, SPINE_TEXT_MAX),
       number: `№ ${SHELF_FIRST_NUMBER + index}`,
       date: mnShortDate(post.date),
       coverUrl: coverUrl(post.slug),

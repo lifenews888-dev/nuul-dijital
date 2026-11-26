@@ -1,8 +1,8 @@
 import { listPosts } from "../lib/posts";
 import { shelfBooks } from "../components/shelf-model";
-import { Shelf } from "../components/shelf";
 import { PostCard } from "../components/post-card";
 import { Hero } from "../components/hero/hero";
+import { Shelf3D } from "../components/hero/shelf3d";
 
 export const revalidate = 300;
 
@@ -25,8 +25,10 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Artifact-ийн hero дүр зураг. Тавиур нь Task 4-т энд орно. */}
-      <Hero />
+      {/* Artifact-ийн hero дүр зураг, дотор нь 3D номын тавиур */}
+      <Hero>
+        <Shelf3D books={shelfBooks(latest)} />
+      </Hero>
 
       {/*
         Hero-гийн давхаргууд бүгд fixed тул өндөр эзэлдэггүй. Agreement нь
@@ -38,12 +40,6 @@ export default async function HomePage() {
         className="mx-auto max-w-page px-4"
         style={{ marginTop: "calc(100svh - 76px)" }}
       >
-      {/* Тавиур нь ДҮРСЛЭЛ. Агуулга нь доорх жагсаалтад — JS унтарсан ч,
-          хайлтын робот ч мэдээг тэндээс уншина. Жагсаалтыг нуухгүй. */}
-      <section aria-label="Сүүлийн мэдээ, номын тавиураар" className="py-6">
-        <Shelf books={shelfBooks(latest)} />
-      </section>
-
       {featured.length > 0 ? (
         <section className="border-t border-rule/20 py-10">
           <h2 className="font-head text-xs font-bold uppercase tracking-widest text-muted">

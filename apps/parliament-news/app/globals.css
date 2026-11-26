@@ -104,3 +104,36 @@ main {
     padding-top: 60px;
   }
 }
+
+/*
+ * ГҮҮР: artifact-ийн CSS нь зарим газар тодорхой элемент хүлээдэг, бидний
+ * markup өөр байхад л энд дүрэм нэмнэ. Эдгээр нь artifact-ийн дүрмийг
+ * дарахгүй — зөвхөн тэнд байхгүй сонгогчид.
+ */
+
+/*
+ * Хавтас: artifact-д inline <svg>, бидэнд кэшлэгдэх <img> (/cover/<slug>).
+ * object-fit: contain нь artifact-ийн preserveAspectRatio="xMidYMid meet"-тэй
+ * тэнцүү. Хавтас нь 474×900 (харьцаа 0.527), нүүр нь d×H (0.62) тул cover
+ * сонгосон бол доод тал — огноо, motif — тасарна. Үлдэх зайг .cv-гийн ижил
+ * дэвсгэр дүүргэнэ, artifact дээрх шиг заагдахгүй.
+ */
+.cv img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Хавтас дээрх холбоос — ном дарахад мэдээ нээгдэнэ */
+.cv a {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* Тавиур нь гарын фокусыг харуулна */
+.shelf:focus-visible {
+  outline: 2px solid var(--cob);
+  outline-offset: -4px;
+}

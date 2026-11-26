@@ -83,4 +83,22 @@ describe("shelfBooks", () => {
   it("alt-д зориулсан гарчиг үлдэнэ", () => {
     expect(shelfBooks([post()])[0].title).toBe("Төсөв батлагдлаа");
   });
+
+  /**
+   * Нуруу нь номын зузаан (ws = H·0.25) төдий нарийн — урт текст халина.
+   * artifact нь kicker-ийг богино гэж үздэг; гарчгаар эргэх үед урт болно.
+   */
+  it("нуруунд хэт урт текст багтахаар тайрагдана", () => {
+    const b = shelfBooks([post({ kicker: null, title: "Үг ".repeat(80).trim() })])[0];
+    expect(b.kicker.length).toBeLessThanOrEqual(42);
+    expect(b.kicker.endsWith("…")).toBe(true);
+  });
+
+  it("богино kicker хөндөгдөхгүй", () => {
+    expect(shelfBooks([post({ kicker: "ЧУУЛГАН" })])[0].kicker).toBe("ЧУУЛГАН");
+  });
+
+  it("ангилалгүй мэдээнд нурууны шошго «Мэдээ»", () => {
+    expect(shelfBooks([post({ categoryName: "Мэдээ" })])[0].spineLabel).toBe("Мэдээ");
+  });
 });
