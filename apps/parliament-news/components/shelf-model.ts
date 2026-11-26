@@ -1,5 +1,6 @@
 import { palette, isLight } from "../lib/cover";
-import { mnShortDate, excerpt } from "../lib/format";
+import { mnNumericDate, mnShortDate, excerpt } from "../lib/format";
+import { yearFraction } from "../lib/timeline";
 import { coverUrl } from "../lib/cover-input";
 import type { PostListItem } from "../lib/posts";
 
@@ -20,8 +21,15 @@ export type ShelfBook = {
   kicker: string;
   /** "№ 141" */
   number: string;
-  /** "11.26" */
+  /** "11.26" — нурууны доод талд */
   date: string;
+  /** "2026.11.26" — гарчгийн блокт, artifact-ийн fmt-ээр */
+  dateFull: string;
+  /**
+   * Огнооны байрлал жилийн дотор (0..1) — доорх цагийн шугамын цэг.
+   * Серверт тооцоод явуулж байгаа нь client талд Thu Nov 26 18:39:12 UST 2026 дахин задлахгүйн тул.
+   */
+  fraction: number;
   /**
    * Хавтасны SVG-ийн ХАЯГ, агуулга нь биш.
    *
@@ -36,6 +44,8 @@ export type ShelfBook = {
   bg: string;
   fg: string;
   light: boolean;
+  /** Гарчгийн блокийн шар "ОНЦЛОХ" тэмдэг */
+  featured: boolean;
 };
 
 /**
@@ -54,11 +64,14 @@ export function shelfBooks(posts: PostListItem[]): ShelfBook[] {
       kicker: excerpt(post.kicker ?? post.title, SPINE_TEXT_MAX),
       number: `№ ${SHELF_FIRST_NUMBER + index}`,
       date: mnShortDate(post.date),
+      dateFull: mnNumericDate(post.date),
+      fraction: yearFraction(post.date),
       coverUrl: coverUrl(post.slug),
       lead: post.lead ?? "",
       bg,
       fg,
       light: isLight(bg),
+      featured: post.featured,
     };
   });
 }

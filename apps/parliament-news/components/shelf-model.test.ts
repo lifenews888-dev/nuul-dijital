@@ -101,4 +101,27 @@ describe("shelfBooks", () => {
   it("ангилалгүй мэдээнд нурууны шошго «Мэдээ»", () => {
     expect(shelfBooks([post({ categoryName: "Мэдээ" })])[0].spineLabel).toBe("Мэдээ");
   });
+
+  /** Цагийн шугамын цэг нь энэ утгаар хөдөлнө */
+  it("оны хувь нь цагийн шугамд зориулж тооцогдоно", () => {
+    const b = shelfBooks([post({ date: new Date("2026-07-02T00:00:00Z") })])[0];
+    expect(b.fraction).toBeCloseTo(0.5, 2);
+  });
+
+  it("оны эхэн ба төгсгөл", () => {
+    expect(shelfBooks([post({ date: new Date("2026-01-01T00:00:00Z") })])[0].fraction).toBeCloseTo(0, 3);
+    expect(shelfBooks([post({ date: new Date("2026-12-31T00:00:00Z") })])[0].fraction).toBeCloseTo(1, 2);
+  });
+
+  /** Гарчгийн блок нь artifact-ийн fmt-ээр, нуруу нь зөвхөн "11.26"-г */
+  it("гарчгийн блокт бүтэн огноо байна", () => {
+    const b = shelfBooks([post({ date: new Date("2026-11-26T00:00:00Z") })])[0];
+    expect(b.dateFull).toBe("2026.11.26");
+    expect(b.date).toBe("11.26");
+  });
+
+  it("онцлох тугийг дамжуулна — гарчгийн блокийн ОНЦЛОХ тэмдэг", () => {
+    expect(shelfBooks([post({ featured: true })])[0].featured).toBe(true);
+    expect(shelfBooks([post({ featured: false })])[0].featured).toBe(false);
+  });
 });

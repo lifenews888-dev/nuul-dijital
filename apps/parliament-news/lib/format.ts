@@ -50,6 +50,17 @@ export function mnDate(d: Date): string {
   return `${year} оны ${month} ${MONTH_ORDINAL[month]} сарын ${day}`;
 }
 
+/**
+ * "2026.11.26" — нүүрний гарчгийн блок.
+ *
+ * Artifact-ийн `fmt` (index.html:726) нь `${y}.${m}.${dd}`. Нүүр нь
+ * artifact-тай яг тэнцүү байх ёстой тул урт монгол хэлбэрийг (`mnDate`)
+ * тэнд хэрэглэхгүй — тэр нь нийтлэлийн хуудсанд үлдэнэ.
+ */
+export function mnNumericDate(d: Date): string {
+  return `${d.getUTCFullYear()}.${pad2(d.getUTCMonth() + 1)}.${pad2(d.getUTCDate())}`;
+}
+
 /** "11.26" — тавиурын нурууны шошго */
 export function mnShortDate(d: Date): string {
   return `${pad2(d.getUTCMonth() + 1)}.${pad2(d.getUTCDate())}`;

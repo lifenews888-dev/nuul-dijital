@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   metrics,
   bookPose,
@@ -8,6 +8,8 @@ import {
   relIndex,
   type ShelfMetrics,
 } from "../../lib/shelf-geometry";
+import { dotTarget, dotStep, nearestIndex, shortestStep } from "../../lib/timeline";
+import { ShelfCaption } from "./shelf-caption";
 import type { ShelfBook } from "../shelf-model";
 
 /** Тойргийг хаахад шаардагдах хуулбарын тоо (artifact-ийнх) */
@@ -43,7 +45,11 @@ type Tape = {
  * шууд бичнэ — 36 номыг секундэд 60 удаа дахин рендерлэх нь тавиурыг зогсооно.
  */
 export function Shelf3D({ books }: { books: ShelfBook[] }) {
-  const [active, setActive] = useState(0);
+  /**
+   * Идэвхтэй мэдээ ба хэдийш хөдөлсөн чиглэл. Чиглэл нь гарчгийн блокийн
+   * гүйлгэх тал — artifact-ийн `caption(a, Math.sign(T-s)||1)`.
+   */
+  const [active, setActive] = useState({ i: 0, dir: 0 });
 
   const shelfRef = useRef<HTMLElement | null>(null);
   const tapesRef = useRef<Tape[]>([]);
@@ -57,6 +63,16 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
   const pointerRef = useRef({ x: 0, y: 0 });
   const hoverRef = useRef(-1);
   const wheelTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /**
+   * Цагийн шугамын цэг. `fracRef` нь кадрын давталтад props уншихгүйн тул:
+   * `books` сольвол шинэ массив ирэхэд давталт дахин эхлэхгүй.
+   */
+  const fractions = useMemo(() => books.map((b) => b.fraction), [books]);
+  const fracRef = useRef(fractions);
+  fracRef.current = fractions;
+  const dpRef = useRef(fractions[0] ?? 0);
+  const activeRef = useRef(0);
 
   const count = books.length;
   /**
@@ -187,7 +203,22 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
       }
 
       const a = ((Math.round(sRef.current) % count) + count) % count;
-      setActive((prev) => (prev === a ? prev : a));
+      if (a !== activeRef.current) {
+        // Чиглэл: пүршийн явж байгаа тал (artifact-ийн `Math.sign(T-s)||1`)
+        const dir = Math.sign(tRef.current - sRef.current) || 1;
+        activeRef.current = a;
+        setActive({ i: a, dir });
+      }
+
+      // Цагийн шугамын цэг — React-гүйгээр шууд DOM руу
+      const dot = document.getElementById("dot");
+      if (dot) {
+        const target = dotTarget(fracRef.current, sRef.current);
+        dpRef.current = reduced
+          ? target
+          : dotStep(dpRef.current, target, Math.min(0.05, dt));
+        dot.style.left = `${dpRef.current * 100}%`;
+      }
 
       raf = requestAnimationFrame(step);
     };
@@ -199,6 +230,26 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
       if (wheelTimer.current) clearTimeout(wheelTimer.current);
     };
   }, [count, total, measure, reduced]);
+
+  /**
+   * Цагийн шугам дээр дарахад хамгийн ойрын мэдээ руу, тойргийн богино
+   * замаар (artifact index.html:972). `#hit` нь серверээс ирсэн элемент тул
+   * `id`-аар холбоно — `Timeline` нь client component болгохгүй.
+   */
+  useEffect(() => {
+    const hit = document.getElementById("hit");
+    const tl = document.getElementById("tl");
+    if (!hit || !tl) return;
+    const onClick = (e: MouseEvent) => {
+      const r = tl.getBoundingClientRect();
+      if (r.width === 0) return;
+      const f = (e.clientX - r.left) / r.width;
+      const j = nearestIndex(fracRef.current, f);
+      tRef.current = Math.round(tRef.current) + shortestStep(activeRef.current, j, count);
+    };
+    hit.addEventListener("click", onClick);
+    return () => hit.removeEventListener("click", onClick);
+  }, [count]);
 
   // Хуруу/хулганы байрлалыг кадрын давталт уншина
   useEffect(() => {
@@ -247,7 +298,8 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
     else if (e.key === "ArrowRight") { e.preventDefault(); tRef.current += 1; }
   };
 
-  const activeBook = books[active];
+  const activeBook = books[active.i];
+  const nudge = (step: number) => () => { tRef.current = Math.round(tRef.current) + step; };
 
   return (
     <>
@@ -331,6 +383,19 @@ export function Shelf3D({ books }: { books: ShelfBook[] }) {
           })}
         </div>
       </section>
+
+      <ShelfCaption book={activeBook} dir={active.dir} />
+
+      <button className="arr p" type="button" id="prev" aria-label="Өмнөх мэдээ" onClick={nudge(-1)}>
+        <svg width="24" height="12" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true">
+          <path d="M6 1L1 6l5 5M1 6h23" />
+        </svg>
+      </button>
+      <button className="arr n" type="button" id="next" aria-label="Дараах мэдээ" onClick={nudge(1)}>
+        <svg width="24" height="12" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true">
+          <path d="M18 1l5 5-5 5M23 6H0" />
+        </svg>
+      </button>
 
       {/* Идэвхтэй мэдээ рүү очих — дэлгэц уншигч ба гарт зориулсан */}
       <a className="sr-only" href={activeBook.href}>

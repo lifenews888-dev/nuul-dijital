@@ -3,6 +3,7 @@ import { shelfBooks } from "../components/shelf-model";
 import { PostCard } from "../components/post-card";
 import { Hero } from "../components/hero/hero";
 import { Shelf3D } from "../components/hero/shelf3d";
+import { Timeline } from "../components/hero/timeline";
 
 export const revalidate = 300;
 
@@ -11,6 +12,8 @@ export default async function HomePage() {
     listPosts({ take: 12 }),
     listPosts({ featured: true, take: 3 }),
   ]);
+
+  const books = shelfBooks(latest);
 
   if (latest.length === 0) {
     return (
@@ -27,7 +30,17 @@ export default async function HomePage() {
     <>
       {/* Artifact-ийн hero дүр зураг, дотор нь 3D номын тавиур */}
       <Hero>
-        <Shelf3D books={shelfBooks(latest)} />
+        <Shelf3D books={books} />
+        {/*
+          Шугамын он нь хамгийн шинэ мэдээний он — 12 сарын хуваарь нь
+          дэлгэцэнд байгаа мэдээг хүрээлнэ. Огноо бүр ӨӨРИЙН оны хувиар
+          тавигдана (`yearFraction`), тул өмнөх оны мэдээ ч өөрийн сард
+          бууна, шугамын хилд овоорохгүй.
+        */}
+        <Timeline
+          year={latest[0].date.getUTCFullYear()}
+          events={books.map((b) => b.fraction)}
+        />
       </Hero>
 
       {/*

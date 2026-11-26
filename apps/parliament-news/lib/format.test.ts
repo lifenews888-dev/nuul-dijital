@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   mnDate,
+  mnNumericDate,
   mnShortDate,
   mnDateTime,
   readMinutes,
@@ -91,5 +92,23 @@ describe("excerpt", () => {
     const out = excerpt("а".repeat(400), 155);
     expect(out.length).toBe(156);
     expect(out.endsWith("…")).toBe(true);
+  });
+});
+
+/**
+ * Artifact-ийн `fmt` (index.html:726) нь `${y}.${m}.${dd}` — нүүрний
+ * гарчгийн блок түүнтэй яг таарах ёстой.
+ */
+describe("mnNumericDate", () => {
+  it("artifact-ийн хэлбэр: 2026.11.26", () => {
+    expect(mnNumericDate(new Date("2026-11-26T00:00:00Z"))).toBe("2026.11.26");
+  });
+
+  it("сар, өдрийг хоёр оронтой болгоно", () => {
+    expect(mnNumericDate(new Date("2026-01-05T00:00:00Z"))).toBe("2026.01.05");
+  });
+
+  it("UTC-ээр уншина — @db.Date нь UTC шөнө дундад ирдэг", () => {
+    expect(mnNumericDate(new Date("2026-03-01T00:00:00Z"))).toBe("2026.03.01");
   });
 });
