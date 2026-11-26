@@ -38,11 +38,74 @@
 
 Дизайн бичиг нь юу хийх ёстойг хэлдэг, тааралдах бүх оролтыг хэлдэггүй. Доорх 5 нь түүний далд шаардлага боловч ямар ч даалгаврын тест өөрөө хөндөхгүй байж магадгүй зүйлс — хүнд хамгийн их хоруулж болох дарааллаар. Мөр бүрийн тестийг эзэн даалгаварт нэмсэн.
 
-1. **Нийтлээгүй мэдээг шууд slug-аар гуйх.** `DRAFT`/`REVIEW`/`APPROVED`/`RETURNED` мэдээ, эсвэл `publishedAt` нь ирээдүйд байгаа (цаг товлосон) мэдээг `/news/<slug>`-аар гуйвал **404** — рендерлэх нь редакцын дотоод материалыг нийтэд тараана. → Task 3 (query), Task 5 (хуудас).
-2. **Slug нь хуучин утга руугаа буцсан (A→B→A).** `NewsSlugRedirect` нь `fromSlug → postId` хадгалдаг тул гинж байхгүй, гэхдээ мэдээний **одоогийн** slug-тай тэнцэх redirect мөр үлдвэл хуудас өөр дээрээ 301 хийж тэнцвэргүй цикл үүснэ. Шийд: гуйсан slug нь олдсон мэдээний одоогийн slug-тай тэнцвэл **redirect хийхгүй, рендерлэнэ**. → Task 5.
-3. **Кирилл болон percent-encoded таг/хайлтын үг.** `/tag/Чуулган`, `/search?q=хууль%20төсөл` зэрэг нь 500 буцаахгүй, зөв decode хийгдэж query-д орно. Хоосон эсвэл зөвхөн зайтай `q` → хоосон үр дүнгийн хуудас, бүх мэдээг буцаахгүй. 200 тэмдэгтээс урт `q` → хайлт хийхгүй, хоосон үр дүн. → Task 3 (хайлт), Task 7 (хуудас).
-4. **RSS ба sitemap-д зөвхөн нийтлэгдсэн мэдээ, зөв escape.** Гарчигт `&`, `<`, `"` байвал XML хугарахгүй; цаг товлосон мэдээ sitemap-д орохгүй; `lastmod` нь `updatedAt`. → Task 8.
-5. **Зураггүй мэдээний OG зураг.** Media байхгүй мэдээнд `cover()` нь `motif`-оор эргэж, OG зураг 1200×630-д хүчинтэй PNG/SVG гаргана — хоосон эсвэл 500 болохгүй. Мөн 200 тэмдэгтийн гарчиг 5 мөрөөр тасарна. → Task 2 (cover), Task 8 (OG).
+1. **Нийтлээгүй мэдээг шууд slug-аар гуйх.** `DRAFT`/`REVIEW`/`APPROVED`/`RETURNED` мэдээ, эсвэл `publishedAt` нь ирээдүйд байгаа (цаг товлосон) мэдээг `/news/<slug>`-аар гуйвал **404** — рендерлэх нь редакцын дотоод материалыг нийтэд тараана. → Task 3 (query), Task 7 (хуудас).
+2. **Slug нь хуучин утга руугаа буцсан (A→B→A).** `NewsSlugRedirect` нь `fromSlug → postId` хадгалдаг тул гинж байхгүй, гэхдээ мэдээний **одоогийн** slug-тай тэнцэх redirect мөр үлдвэл хуудас өөр дээрээ 301 хийж тэнцвэргүй цикл үүснэ. Шийд: гуйсан slug нь олдсон мэдээний одоогийн slug-тай тэнцвэл **redirect хийхгүй, рендерлэнэ**. → Task 7.
+3. **Кирилл болон percent-encoded таг/хайлтын үг.** `/tag/Чуулган`, `/search?q=хууль%20төсөл` зэрэг нь 500 буцаахгүй, зөв decode хийгдэж query-д орно. Хоосон эсвэл зөвхөн зайтай `q` → хоосон үр дүнгийн хуудас, бүх мэдээг буцаахгүй. 200 тэмдэгтээс урт `q` → хайлт хийхгүй, хоосон үр дүн. → Task 3 (хайлт), Task 9 (хуудас).
+4. **RSS ба sitemap-д зөвхөн нийтлэгдсэн мэдээ, зөв escape.** Гарчигт `&`, `<`, `"` байвал XML хугарахгүй; цаг товлосон мэдээ sitemap-д орохгүй; `lastmod` нь `updatedAt`. → Task 10.
+5. **Зураггүй мэдээний OG зураг.** Media байхгүй мэдээнд `cover()` нь `motif`-оор эргэж, OG зураг 1200×630-д хүчинтэй PNG/SVG гаргана — хоосон эсвэл 500 болохгүй. Мөн 200 тэмдэгтийн гарчиг 5 мөрөөр тасарна. → Task 2 (cover), Task 10 (OG).
+
+---
+
+## Хэмжигдэх зорилт — Монголын мэдээний сайтуудтай харьцуулсан
+
+2026-11-26-нд Улаанбаатараас хэмжсэн. Эдгээр нь бодит тоо, таамаг биш: нийтлэлийн
+хуудас татаж, `og:image`-ийг `Accept: image/webp` -тэй ба түүнгүй хоёр удаа гуйж,
+TTFB-г гурван удаа дундажлав.
+
+| | ikon.mn | gogo.mn | news.mn | eagle.mn | **бидний зорилт** |
+|---|---|---|---|---|---|
+| Технологи | өөрийн | Next.js | WordPress | Next.js | Next.js |
+| TTFB (нүүр) | 93 мс | 68 мс | 1244 мс | 439 мс | **< 150 мс** |
+| HTML (нийтлэл) | 59 KB | 207 KB | 900 KB | 82 KB | **< 100 KB** |
+| `<script>` тоо | 5 | 30 | 34 | 32 | **< 12** |
+| Гол зураг | 296 KB JPEG | 335 KB JPEG | 466 KB JPEG | — | **< 120 KB WebP** |
+| `Accept: webp` дээр WebP? | үгүй | үгүй | үгүй | үгүй | **тийм** |
+| `srcset` | 0 | 14 | 48 | 4 | **бүх зурагт** |
+| JSON-LD (нийтлэл) | 0 | 2 | 1 | 0 | **1 (`NewsArticle`)** |
+
+**Юуг нь уншиж байна:**
+
+- **ikon.mn бол хурдны хэмжүүр**, news.mn биш. 93 мс TTFB, 59 KB HTML, ердөө 5
+  script. Биднийх Next.js App Router тул First Load JS аль хэдийн ~87 KB —
+  хүнд client сан нэмэх боломж бага. Script-ийн тоог 12-оос доогуур барина.
+- **Зургийн давуу тал бол хамгийн хямд, хамгийн том.** Дөрвүүлэнгийн хэн нь ч
+  WebP үйлчлэхгүй, `Vary: Accept` header ч тавихгүй — хүсэлт нь WebP гуйсан ч
+  300–470 KB JPEG буцаана. `next/image` нь WebP/AVIF-ийн content negotiation ба
+  responsive `srcset`-ийг автоматаар хийдэг тул гурав дахин жижиг зураг нь
+  framework-ээс үнэгүй ирнэ. Монголын мэдээний хөдөлгөөний дийлэнх нь
+  мобайл дээр байдаг тул энэ нь уншигчид бодитоор мэдрэгдэх зөрүү. → Task 6.
+- **JSON-LD-ийн талаарх анхны дүгнэлт буруу байсан:** нүүр хуудсыг шалгаж
+  «хэн ч JSON-LD хийдэггүй» гэж бодсон. Нийтлэлийн хуудсыг хэмжихэд gogo.mn 2,
+  news.mn 1 байна. Энэ нь хоосон зай биш, зөв хийх ёстой зүйл — ikon.mn,
+  eagle.mn-д байхгүй тул дээд хагаст орох боломж байна.
+- **WordPress-ийн төлбөр харагдаж байна:** news.mn 900 KB HTML, 1244 мс TTFB.
+  Гэхдээ SEO-ийн тэмдэглэгээгээр (48 `srcset`, 10 OG, JSON-LD) тэр л хамгийн
+  бүрэн — плагин нь түүнийг автоматаар хийж байна. Бидний давуу тал framework
+  сонголтоос биш, Task 6 ба Task 10-ийн ажлыг үнэхээр хийснээс гарна.
+
+**Хостингийн сануулга (архитектурын эрсдэл, Task-ийн гадна):**
+`montsame.mn` нь Vercel дээр, Монголоос **385 мс TTFB** (кэш оногдсон байхад ч) —
+`X-Vercel-Id: hkg1`, өөрөөр хэлбэл хамгийн ойрын edge нь Хонг Конг. Дотоодод
+байршсан ikon.mn 93 мс, gogo.mn 68 мс. Зөвхөн Vercel дээр бол бид 4 дахин хоцрох
+болно.
+
+Cloudflare-д **Улаанбаатарт POP байна** (`colo=ULN`, `loc=MN` — шалгасан).
+Нийтийн хуудсууд бүгд ISR/статик, хэрэглэгчээр хувьсдаггүй тул CDN-ийн edge-д
+кэшлэгдэж чадна — нэг сайт болгож `/`-ийг статик болгосны бодит үнэ цэн нь энэ.
+Cloudflare-ийг Vercel-ийн урд тавьж HTML-ийг ULN дээр кэшлэвэл Монголын
+уншигчид ~50 мс-д хүрнэ.
+
+Анхаар: zarig.mn, eagle.mn хоёул Cloudflare дээр байгаа боловч
+`cf-cache-status: DYNAMIC` — HTML кэшлэгдэхгүй тул хүсэлт бүр origin хүртэл явж
+байна (188 мс, 439 мс). Cloudflare-ийг зүгээр урд тавих нь хүрэлцэхгүй, HTML-ийг
+кэшлэх дүрэм зориуд бичих шаардлагатай.
+
+Энэ нь **хоёр давхар кэшийн хүчингүй болголтын** асуудал үүсгэнэ: нийтлэхэд
+Vercel-ийн ISR ба Cloudflare-ийн кэш хоёуланг нь цэвэрлэх ёстой. Тиймээс
+2-р шатад Cloudflare-ийг HTML кэштэйгээр тавихгүй — редакцын нийтлэх үйлдэл
+гарч ирэх 3-р шатад, cache purge-тэй хамт нэг хянагдах өөрчлөлтөд оруулна.
+2-р шатны TTFB-ийн зорилтыг Vercel-ийн hkg1-ээс хэмжиж, 385 мс-ийг эхлэлийн
+тоо гэж тэмдэглэнэ.
 
 ---
 
@@ -60,10 +123,14 @@ apps/parliament-news/
     format.test.ts
     seo.ts            metadata, canonical, RSS/sitemap-ийн XML (цэвэр)
     seo.test.ts
+    images.ts         зургийн хувилбар, sizes, safeImageSrc (цэвэр)
+    images.test.ts
+    image-hosts.js    зөвшөөрөгдөх host — next.config.js БА images.ts хоёул уншина
   components/
     site-header.tsx   лого, цэс, шуурхай мөр — getSetting("header")-ээс
     site-footer.tsx   getSetting("footer")-ээс
     post-card.tsx     жагсаалтын нэгж (нүүр, ангилал, таг, хайлтад дахин хэрэглэнэ)
+    post-image.tsx    next/image-ийн бүрхүүл — WebP/AVIF, srcset, хавтас руу эргэх
     article-body.tsx  нийтлэлийн биет
     shelf.tsx         3D тавиур (client) — SSR жагсаалтын дээр hydrate
     shelf.module.css  тавиурын 3D CSS (artifact-аас порт)
@@ -82,6 +149,8 @@ apps/parliament-news/
     sitemap.ts
     robots.ts
   tailwind.config.ts  ЗАСНА: токенууд
+  next.config.js      ЗАСНА: images (WebP/AVIF, remotePatterns)
+  public/demo/        демо зураг (site-v2-ээс хуулсан)
 packages/db-news/
   prisma/seed-demo.ts ДЕМО контент (нийтийн сайтыг харахад)
 ```
@@ -840,7 +909,215 @@ git commit -m "feat(news): artifact design tokens, fonts, and settings-driven he
 
 ---
 
-## Task 6: `/news/<slug>` — нийтлэлийн хуудас, 301, metadata
+## Task 6: Зургийн шугам — WebP/AVIF ба responsive srcset
+
+Хэмжсэн өрсөлдөгчид (дээрх хүснэгт): ikon.mn 296 KB, gogo.mn 335 KB, news.mn
+466 KB — гурвуулаа JPEG, `Accept: image/webp` гуйсан ч JPEG, `Vary` header ч
+байхгүй. `next/image` нь WebP/AVIF ба `srcset`-ийг автоматаар хийдэг тул энэ
+даалгавар нь хамгийн бага кодоор хамгийн том уншигдах зөрүү гаргана.
+
+Нийтлэлийн хуудас (Task 7) ба картууд (Task 8) хоёул зураг зурна, тиймээс
+энэ нь тэднээс ӨМНӨ орно — хоёр газар `<img>` бичээд дараа нь солих нь дахин
+ажил.
+
+**Files:**
+- Modify: `apps/parliament-news/next.config.js` — `images` тохиргоо
+- Create: `apps/parliament-news/lib/images.ts`
+- Create: `apps/parliament-news/lib/images.test.ts`
+- Create: `apps/parliament-news/components/post-image.tsx`
+- Create: `apps/parliament-news/public/demo/` — `site-v2/img/flag.jpg`,
+  `site-v2/img/palace.jpg`, `site-v2/media/poster.jpg` гурвыг хуулна
+- Modify: `packages/db-news/prisma/seed-demo.ts` — 4 мэдээнд зураг оноох
+
+**Interfaces:**
+- Consumes: `coverSvg` (Task 2) — зураг үйлчлэх боломжгүй үед эргэх зам.
+- Produces:
+  ```ts
+  export type ImageVariant = "hero" | "card" | "shelf";
+  export function imageSizes(variant: ImageVariant): string;
+  export function imageDims(variant: ImageVariant): { width: number; height: number };
+  /**
+   * next/image үйлчилж чадах эх хаяг эсэхийг шалгана. Чадахгүй бол null —
+   * тэр үед дуудагч нь эвдэрсэн зураг биш, хавтасны SVG-г зурна.
+   */
+  export function safeImageSrc(url: string | null | undefined): string | null;
+  ```
+  `<PostImage variant={ImageVariant} src={string} alt={string} priority?={boolean} />`
+
+- [ ] **Step 1: Write the failing tests** — `lib/images.test.ts`
+
+```ts
+describe("imageDims", () => {
+  it("hero нь 16:9", () => {
+    const d = imageDims("hero");
+    expect(d.width / d.height).toBeCloseTo(16 / 9, 2);
+  });
+  it("card нь 3:2", () => {
+    const d = imageDims("card");
+    expect(d.width / d.height).toBeCloseTo(3 / 2, 2);
+  });
+  it("shelf нь хавтасны 474:900", () => {
+    expect(imageDims("shelf")).toEqual({ width: 474, height: 900 });
+  });
+});
+
+describe("imageSizes", () => {
+  it("hero нь мобайлд бүтэн, дэлгэцэд хязгаартай", () => {
+    expect(imageSizes("hero")).toBe("(max-width: 768px) 100vw, 800px");
+  });
+  it("card нь мобайлд бүтэн, дэлгэцэд гуравны нэг", () => {
+    expect(imageSizes("card")).toBe("(max-width: 768px) 100vw, 33vw");
+  });
+  it("хувилбар бүр өөр", () => {
+    const all = (["hero", "card", "shelf"] as const).map(imageSizes);
+    expect(new Set(all).size).toBe(3);
+  });
+});
+
+describe("safeImageSrc", () => {
+  it("дотоод зам нь зөвшөөрөгдөнө", () => {
+    expect(safeImageSrc("/demo/palace.jpg")).toBe("/demo/palace.jpg");
+  });
+  it("зөвшөөрсөн host нь дамжина", () => {
+    expect(safeImageSrc("https://abc.public.blob.vercel-storage.com/a.jpg"))
+      .toBe("https://abc.public.blob.vercel-storage.com/a.jpg");
+  });
+  it("зөвшөөрөөгүй host → null (эвдэрсэн зураг биш, хавтас зурагдана)", () => {
+    expect(safeImageSrc("https://example.com/a.jpg")).toBeNull();
+  });
+  it("javascript: ба data: → null", () => {
+    expect(safeImageSrc("javascript:alert(1)")).toBeNull();
+    expect(safeImageSrc("data:image/svg+xml,<svg onload=alert(1)>")).toBeNull();
+  });
+  it("хоосон, null, undefined, хэлбэр нь бус мөр → null", () => {
+    for (const v of ["", "   ", null, undefined, "://", "http://"]) {
+      expect(safeImageSrc(v)).toBeNull();
+    }
+  });
+  it("протоколгүй // хаяг → null", () => {
+    expect(safeImageSrc("//evil.com/a.jpg")).toBeNull();
+  });
+});
+```
+
+- [ ] **Step 2: Run tests to verify they fail**
+
+Run: `cd apps/parliament-news && pnpm exec vitest run lib/images.test.ts`
+Expected: FAIL — `imageDims is not a function`
+
+- [ ] **Step 3: Implement `lib/images.ts`**
+
+`ALLOWED_IMAGE_HOSTS` нь `next.config.js`-ийн `remotePatterns`-тай нэг эх
+сурвалжаас гарна: `lib/images.ts`-д массив болгон тодорхойлж, `next.config.js`
+түүнийг `require`-ээр уншина — хоёр газар бичвэл зөрж, тест ногоон байхад
+production-д зураг 400 буцаана. (`next.config.js` нь CommonJS тул `lib/images.ts`
+биш, `lib/image-hosts.js` гэсэн жижиг CJS файлд host-ийн жагсаалтыг тавьж,
+`lib/images.ts` ба `next.config.js` хоёул түүнийг уншина.)
+
+v1-ийн зөвшөөрөгдөх host: `*.public.blob.vercel-storage.com` (Vercel Blob,
+3-р шатны байршуулалт) ба дотоод зам. Бусад бүх гадаад host татгалзана.
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+Run: `cd apps/parliament-news && pnpm exec vitest run lib/images.test.ts`
+Expected: PASS
+
+- [ ] **Step 5: Configure `next.config.js` and add the demo images**
+
+```js
+images: {
+  formats: ["image/avif", "image/webp"],
+  remotePatterns: require("./lib/image-hosts.js").REMOTE_PATTERNS,
+  minimumCacheTTL: 2592000,
+}
+```
+
+Демо зургийг хуулна:
+```bash
+mkdir -p apps/parliament-news/public/demo
+cp apps/parliament-news/site-v2/img/flag.jpg apps/parliament-news/public/demo/
+cp apps/parliament-news/site-v2/img/palace.jpg apps/parliament-news/public/demo/
+cp apps/parliament-news/site-v2/media/poster.jpg apps/parliament-news/public/demo/
+```
+
+`seed-demo.ts`-д 4 мэдээнд `NewsMedia` мөр нэмнэ (`url: "/demo/palace.jpg"` гэх
+мэт). Үлдсэн 10 нь зураггүй хэвээр — `cover()`-ийн motif-ийн эргэлт бодит
+хуудсан дээр шалгагдана.
+
+- [ ] **Step 6: Implement `<PostImage>`**
+
+`next/image`-ийг `safeImageSrc` ба `imageSizes`/`imageDims`-тэй хамт зөөлөн
+бүрхүүлнэ. `safeImageSrc` null буцаавал компонент нь `null` буцаана — дуудагч
+(Task 7, Task 8) тэр үед `coverSvg`-г зурна. `alt` нь **шаардлагатай** prop;
+`caption` байвал түүнийг, байхгүй бол гарчгийг alt болгоно (хоосон alt-тай
+мэдээний зураг нь дэлгэц уншигчид мэдээлэлгүй).
+
+`priority` нь зөвхөн нийтлэлийн гол зурагт `true` — бусад бүх зураг lazy
+(`next/image`-ийн анхдагч). Жагсаалтын 12 зураг бүгд priority байвал
+мобайлын сүлжээг гацуулна.
+
+- [ ] **Step 7: Measure against the competitor numbers — энэ бол хаалга**
+
+Run:
+```bash
+pnpm exec next dev -p 3005
+# WebP-ийн content negotiation
+curl -s -o /dev/null -w 'webp гуйсан:  %{content_type}  %{size_download} байт\n' \
+  -H 'Accept: image/avif,image/webp,image/*' \
+  'http://localhost:3005/_next/image?url=%2Fdemo%2Fpalace.jpg&w=1200&q=75'
+# WebP дэмжихгүй хөтөч
+curl -s -o /dev/null -w 'webp гуйгаагүй: %{content_type}  %{size_download} байт\n' \
+  -H 'Accept: image/*' \
+  'http://localhost:3005/_next/image?url=%2Fdemo%2Fpalace.jpg&w=1200&q=75'
+# мобайлын өргөн
+curl -s -o /dev/null -w 'мобайл 640px:  %{content_type}  %{size_download} байт\n' \
+  -H 'Accept: image/avif,image/webp,image/*' \
+  'http://localhost:3005/_next/image?url=%2Fdemo%2Fpalace.jpg&w=640&q=75'
+```
+Expected:
+- `webp гуйсан` нь `image/webp` эсвэл `image/avif`, **120000 байтаас бага**
+  (ikon.mn-ийн 296 KB, news.mn-ийн 466 KB-тай харьцуул)
+- `webp гуйгаагүй` нь `image/jpeg` — хуучин хөтөч эвдрэхгүй
+- `мобайл 640px` нь 1200px-ийнхээс мэдэгдэхүйц жижиг
+
+Хэрэв `webp гуйсан` нь JPEG буцаавал `formats` тохиргоо хүчин төгөлдөр
+болоогүй — `next dev`-ийг дахин эхлүүл (`next.config.js` нь зөвхөн эхлэхэд
+уншигдана).
+
+- [ ] **Step 8: Prove `srcset` reaches the HTML**
+
+`<PostImage variant="card">`-ийг түр нүүрэнд тавьж (эсвэл Task 8-д) :
+```bash
+curl -s localhost:3005/ | grep -o 'srcset="[^"]\{0,80\}' | head -2
+curl -s localhost:3005/ | grep -c 'loading="lazy"'
+```
+Expected: `srcset` нь хэд хэдэн өргөнтэй (`&w=640`, `&w=750`, …); `loading="lazy"`
+нь гол зургаас бусдад.
+
+- [ ] **Step 9: Run the suite, lint and build**
+
+Run: `cd apps/parliament-news && pnpm test && pnpm test:db && pnpm lint && pnpm build`
+Expected: бүгд PASS
+
+- [ ] **Step 10: Record the measured numbers**
+
+Хэмжсэн гурван тооны үр дүнг `README.md`-ийн шинэ «Хэмжигдэх зорилт» хэсэгт
+бич — дараа шатуудад регресс гарвал харьцуулах суурь болно.
+
+- [ ] **Step 11: Commit**
+
+```bash
+git add apps/parliament-news/lib/images.ts apps/parliament-news/lib/images.test.ts \
+        apps/parliament-news/lib/image-hosts.js apps/parliament-news/next.config.js \
+        apps/parliament-news/components/post-image.tsx \
+        apps/parliament-news/public/demo packages/db-news/prisma/seed-demo.ts \
+        apps/parliament-news/README.md
+git commit -m "feat(news): WebP/AVIF image pipeline — 300-470KB JPEG down to under 120KB"
+```
+
+---
+
+## Task 7: `/news/<slug>` — нийтлэлийн хуудас, 301, metadata
 
 **Files:**
 - Create: `apps/parliament-news/app/news/[slug]/page.tsx`
@@ -849,7 +1126,7 @@ git commit -m "feat(news): artifact design tokens, fonts, and settings-driven he
 - Create: `apps/parliament-news/lib/article.test.ts`
 
 **Interfaces:**
-- Consumes: `postBySlug`, `postIdByRedirect` (Task 3); `mnDate`, `readMinutes`, `metaDescription` (Task 1); `coverSvg` (Task 2).
+- Consumes: `postBySlug`, `postIdByRedirect` (Task 3); `mnDate`, `readMinutes`, `metaDescription` (Task 1); `coverSvg` (Task 2); `<PostImage/>` ба `safeImageSrc` (Task 6).
 - Produces:
   - `resolveSlugTarget(requested: string, found: { slug: string } | null): { kind: "render" } | { kind: "redirect"; to: string } | { kind: "notFound" }`
   - `paragraphs(body: string | null): string[]`
@@ -953,7 +1230,7 @@ git commit -m "feat(news): article page with permanent slug redirects and metada
 
 ---
 
-## Task 7: Нүүр — SSR жагсаалт + 3D номын тавиур
+## Task 8: Нүүр — SSR жагсаалт + 3D номын тавиур
 
 **Files:**
 - Modify: `apps/parliament-news/app/page.tsx`
@@ -964,7 +1241,7 @@ git commit -m "feat(news): article page with permanent slug redirects and metada
 - Create: `apps/parliament-news/components/shelf.module.css`
 
 **Interfaces:**
-- Consumes: `listPosts` (Task 3), `coverSvg` (Task 2), `mnShortDate` (Task 1).
+- Consumes: `listPosts` (Task 3), `coverSvg` (Task 2), `mnShortDate` (Task 1), `<PostImage/>` (Task 6).
 - Produces:
   - `type ShelfBook = { href: string; spineLabel: string; kicker: string; number: string; date: string; coverSvg: string; lead: string; bg: string; fg: string; light: boolean }`
   - `shelfBooks(posts: PostListItem[], opts?: { startNumber?: number }): ShelfBook[]`
@@ -1084,7 +1361,7 @@ git commit -m "feat(news): home page — SSR article list with the 3D shelf hydr
 
 ---
 
-## Task 8: Ангилал, таг, хайлт
+## Task 9: Ангилал, таг, хайлт
 
 **Files:**
 - Create: `apps/parliament-news/app/c/[slug]/page.tsx`
@@ -1095,7 +1372,7 @@ git commit -m "feat(news): home page — SSR article list with the 3D shelf hydr
 - Create: `apps/parliament-news/lib/paging.test.ts`
 
 **Interfaces:**
-- Consumes: `postsByCategory`, `postsByTag`, `searchPosts`, `countPosts`, `searchTerm` (Task 3); `<PostCard/>` (Task 7).
+- Consumes: `postsByCategory`, `postsByTag`, `searchPosts`, `countPosts`, `searchTerm` (Task 3); `<PostCard/>` (Task 8).
 - Produces: `pageParams(raw: string | string[] | undefined, perPage: number, total: number): { page: number; skip: number; take: number; pages: number }`
 
 - [ ] **Step 1: Write the failing tests** — `lib/paging.test.ts`
@@ -1182,7 +1459,7 @@ git commit -m "feat(news): category, tag and search pages with safe paging"
 
 ---
 
-## Task 9: sitemap, RSS, robots, Open Graph зураг
+## Task 10: sitemap, RSS, robots, Open Graph зураг
 
 **Files:**
 - Create: `apps/parliament-news/app/sitemap.ts`
@@ -1319,4 +1596,4 @@ git commit -m "feat(news): sitemap, RSS, robots and per-article Open Graph image
 - Шуурхай мэдээний гүйдэг мөр, ханш, цаг агаар — `TickerAd`/`FxRate`/`weather` тохиргоо нь 4-р шат
 - Баннер, сурталчилгааны байр (`Banner`, `AdRate`) — 4-р шат
 - Логоны SVG symbol (Task 2-ийн кодын тайлбарт тэмдэглэсэн)
-- `body`-г HTML болгох эсэх ба sanitize (Task 6-ийн кодын тайлбарт тэмдэглэсэн)
+- `body`-г HTML болгох эсэх ба sanitize (Task 7-ийн кодын тайлбарт тэмдэглэсэн)

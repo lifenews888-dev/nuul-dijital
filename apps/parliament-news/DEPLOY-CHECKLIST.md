@@ -82,9 +82,41 @@
 ## 5. Нээлтийн өмнө
 
 - [ ] Cloudflare: WAF, DDoS, rate limit.
+- [ ] **Хоцролт Монголоос хэмжсэн.** Vercel-ийн хамгийн ойрын edge нь Хонг Конг
+      (`hkg1`) тул Улаанбаатараас ~385 мс — `montsame.mn` дээр хэмжсэн тоо.
+      Дотоодод байршсан `ikon.mn` 93 мс, `gogo.mn` 68 мс. Нээлтийн дараа
+      шалгах:
+      ```bash
+      for i in 1 2 3; do curl -s -o /dev/null -w '%{time_starttransfer}\n' \
+        https://parlamentnews.mn; done
+      ```
+      300 мс-ээс дээш бол Cloudflare-ийн HTML кэшийг ULN дээр тавих шийдвэрийг
+      гарга (Cloudflare-д Улаанбаатарт POP байна: `colo=ULN`, `loc=MN`).
+      Анхаар: Cloudflare-ийг зүгээр урд тавих нь хүрэлцэхгүй —
+      `cf-cache-status: HIT` болтол HTML кэшлэх дүрэм бичнэ, мөн нийтлэхэд
+      Vercel-ийн ISR ба Cloudflare хоёуланг цэвэрлэх purge шаардлагатай.
+- [ ] **Нийтлэлийн хуудасны биет хэмжээ зорилтод нь байна:**
+      HTML < 100 KB (ikon.mn 59 KB, news.mn 900 KB), `<script>` < 12
+      (ikon.mn 5, gogo.mn 30), гол зураг < 120 KB WebP
+      (ikon.mn 296 KB, gogo.mn 335 KB, news.mn 466 KB — хэн ч WebP үйлчилдэггүй).
+      ```bash
+      curl -s https://parlamentnews.mn/news/<slug> | wc -c
+      curl -s https://parlamentnews.mn/news/<slug> | grep -c '<script'
+      curl -s -o /dev/null -w '%{content_type} %{size_download}\n' \
+        -H 'Accept: image/avif,image/webp,image/*' '<гол зургийн _next/image хаяг>'
+      ```
 - [ ] Ачааллын тест (чуулганы шууд дамжуулалтын үеийн оргил).
-- [ ] `robots.txt`, `sitemap.xml`, `rss.xml` зөв гарч байгаа (2-р шат).
-- [ ] Мэдээ хуваалцахад Facebook дээр зураг, гарчиг зөв (Open Graph, 2-р шат).
+- [ ] `robots.txt`, `sitemap.xml`, `rss.xml` зөв гарч байгаа. Parser-ээр шалга,
+      нүдээр биш:
+      ```bash
+      curl -s https://parlamentnews.mn/rss.xml > /tmp/r.xml
+      python -c "import xml.dom.minidom as m; m.parse('/tmp/r.xml'); print('OK')"
+      ```
+- [ ] Мэдээ хуваалцахад Facebook дээр зураг, гарчиг зөв (Open Graph).
+      Шалгах: developers.facebook.com/tools/debug/ дээр нэг нийтлэлийн хаягаар.
+- [ ] **`NewsArticle` JSON-LD нийтлэл бүрт байна.** Шалгасан 4 сайтаас gogo.mn
+      (2) ба news.mn (1) л хийдэг, ikon.mn ба eagle.mn-д байхгүй — Google News,
+      Discover-ийн rich result үүнээс хамаардаг.
 - [ ] Хэрэв захиалагч байгууллага гарч ирсэн бол «платформ нь Нүүл
       Дижиталынх, өгөгдөл нь захиалагчийнх» гэдгийг бичгээр тохирсон.
 - [ ] Hosting, Cloudflare, Vercel, Supabase-ийн зардлыг хэн хариуцахыг
