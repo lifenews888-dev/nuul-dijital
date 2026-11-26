@@ -34,6 +34,11 @@ type Demo = {
   status?: "DRAFT" | "PUBLISHED";
   featured?: boolean;
   story?: boolean;
+  /**
+   * `public/demo/`-ийн зураг. Зөвхөн хэдэн мэдээнд — үлдсэнд нь хавтасны
+   * `motif` эргэлт бодит хуудсан дээр шалгагдана.
+   */
+  image?: { url: string; caption: string };
 };
 
 const POSTS: Demo[] = [
@@ -48,6 +53,7 @@ const POSTS: Demo[] = [
     reporter: "Б.Отгонбаяр",
     daysAgo: 1,
     featured: true,
+    image: { url: "/demo/palace.jpg", caption: "Төрийн ордон" },
   },
   {
     slug: "bolovsrolyn-tuhai-huuliin-shinechilsen-nairuulga",
@@ -60,6 +66,7 @@ const POSTS: Demo[] = [
     reporter: "Д.Сарангэрэл",
     daysAgo: 2,
     featured: true,
+    image: { url: "/demo/flag.jpg", caption: "Монгол Улсын төрийн далбаа" },
   },
   {
     slug: "baingiin-khoroo-eruul-mendiin-daatgal",
@@ -83,6 +90,7 @@ const POSTS: Demo[] = [
     reporter: "С.Батзориг",
     daysAgo: 4,
     story: true,
+    image: { url: "/demo/poster.jpg", caption: "Хэлэлцээрийн ёслол" },
   },
   {
     slug: "calin-tetgevriin-nemegdel",
@@ -106,6 +114,7 @@ const POSTS: Demo[] = [
     reporter: "Д.Сарангэрэл",
     daysAgo: 7,
     featured: true,
+    image: { url: "/demo/palace.jpg", caption: "Чуулганы танхим" },
   },
   {
     slug: "negdsen-huraldaanaar-hoyor-tosol",
@@ -223,6 +232,7 @@ async function main() {
 
   let published = 0;
   let hidden = 0;
+  let withImage = 0;
 
   for (const [index, p] of POSTS.entries()) {
     const when = new Date(Date.now() - p.daysAgo * DAY);
@@ -247,17 +257,34 @@ async function main() {
       publishedAt,
     };
 
-    await prisma.newsPost.upsert({
+    const post = await prisma.newsPost.upsert({
       where: { tenantId_slug: { tenantId: tenant.id, slug: p.slug } },
       update: data,
       create: { ...data, tenantId: tenant.id, slug: p.slug },
     });
+
+    // Медиад давтагдахгүй түлхүүр байхгүй тул цэвэрлээд дахин үүсгэнэ
+    await prisma.newsMedia.deleteMany({ where: { postId: post.id } });
+    if (p.image) {
+      await prisma.newsMedia.create({
+        data: {
+          tenantId: tenant.id,
+          postId: post.id,
+          kind: "image",
+          url: p.image.url,
+          caption: p.image.caption,
+          order: 0,
+        },
+      });
+      withImage++;
+    }
 
     if (status === "PUBLISHED" && p.daysAgo > 0) published++;
     else hidden++;
   }
 
   console.log(`   нийтлэгдсэн, харагдах ёстой: ${published}`);
+  console.log(`   зурагтай: ${withImage}`);
   console.log(`   ЗОРИУД нуугдсан (ноорог + цаг товлосон): ${hidden}`);
   console.log(`\n✅ ${POSTS.length} демо мэдээ бэлэн.`);
   console.log(

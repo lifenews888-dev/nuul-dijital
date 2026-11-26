@@ -53,6 +53,33 @@ pnpm test:db     # tenant тусгаарлалт — ажиллаж байгаа
 pnpm lint        # $queryRaw/$executeRaw хориотой
 ```
 
+### 4. Хэмжигдэх зорилт
+
+Монголын мэдээний сайтуудтай харьцуулсан суурь тоо ба дахин хэмжих командууд:
+`docs/superpowers/specs/2026-11-26-mn-news-benchmark.md`.
+
+**Зураг** (2026-11-26-нд локал дээр хэмжсэн, эх зураг 1028×778, 67 KB JPEG):
+
+| Өргөн | Формат | Хэмжээ |
+|---|---|---|
+| 384px (утас) | AVIF | **5.5 KB** |
+| 640px | AVIF | 8.3 KB |
+| 828px | AVIF | 10.9 KB |
+| 1080px (дэлгэц) | AVIF | 15.6 KB |
+| 1080px, WebP дэмжихгүй хөтөч | JPEG | 38.9 KB |
+
+Харьцуулалт: ikon.mn 296 KB, gogo.mn 335 KB, news.mn 466 KB — гурвуулаа JPEG,
+`Accept: image/webp` гуйсан ч JPEG буцаана, `Vary: Accept` ч тавихгүй.
+Бидний хариу `Vary: Accept` -тай.
+
+Регресс гарсан эсэхийг шалгах:
+
+```bash
+curl -s -o /dev/null -w '%{content_type} %{size_download}
+'   -H 'Accept: image/avif,image/webp,image/*'   'http://localhost:3001/_next/image?url=%2Fdemo%2Fflag.jpg&w=1080&q=75'
+# Хүлээгдэх: image/avif, 120000 байтаас бага
+```
+
 Нээлтээс өмнө: `DEPLOY-CHECKLIST.md`.
 
 ---
