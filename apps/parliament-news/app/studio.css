@@ -1,0 +1,128 @@
+/*
+ * Редакцын студийн дизайны токен.
+ *
+ * Эх сурвалж: `site-v2/admin.html:289` — «РЕДАКЦЫН КОНСОЛЬ, шинэ дизайн»
+ * гэсэн ХОЁР ДАХЬ блок. Эхний блок (:16) нь хуучирсан, доорх нь түүнийг
+ * дарж бичдэг тул бодит админ ИЙМ харагдана.
+ *
+ * Яагаад `admin.html`-ийн CSS-ийг бүтнээр нь гаргаж аваагүй вэ:
+ * `index.html`-тэй 40 классын нэр давхцдаг (`.btn`, `.side`, `.fl`, `.pr`,
+ * `.toast`, `.note`, `.dot`, `.live` …). Хоёуланг нь глобалаар ачаалбал
+ * аль нь ялахыг ачааллын дараалал шийднэ — нийтийн хуудас ч, студи ч
+ * тайлбарлахад бэрх байдлаар эвдэрнэ. Тиймээс токеныг `.studio` дэд модонд
+ * хязгаарлаж, хэлбэрийг нь Tailwind-ээр барина.
+ *
+ * Эдгээр токен нийтийн хуудсанд ОРШИХГҮЙ: `bg-pan`, `border-line` гэх
+ * утилитууд зөвхөн энэ дэд модны дотор л утгатай.
+ */
+
+.studio {
+  --paper: #f4f3ef;
+  --pan: #ffffff;
+  --ink: #14161c;
+  --muted: #6b6f7b;
+  --line: #e6e3dc;
+  --cob: #0a22e0;
+  --soft: #eef0fd;
+  --inp: #fbfaf8;
+  --ok: #11795a;
+  --warn: #9a6a00;
+  --red: #e86522;
+  /* Хажуугийн зурвас нь ХОЁР ГОРИМД Ч бараан — admin.html-ийн `--rail` */
+  --rail: #0b1230;
+  --rail-ink: #c9d0ea;
+  --rail-dim: #aeb7d6;
+  --r: 14px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .studio {
+    --paper: #0a0f1e;
+    --pan: #111934;
+    --ink: #e9ecf5;
+    --muted: #8e97b3;
+    --line: #1f2947;
+    --cob: #8fa2ff;
+    --soft: #18224a;
+    --inp: #0c1328;
+    --ok: #5fd3a8;
+    --warn: #f1c15b;
+    --red: #ff8a4c;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] .studio {
+  --paper: #0a0f1e;
+  --pan: #111934;
+  --ink: #e9ecf5;
+  --muted: #8e97b3;
+  --line: #1f2947;
+  --cob: #8fa2ff;
+  --soft: #18224a;
+  --inp: #0c1328;
+  --ok: #5fd3a8;
+  --warn: #f1c15b;
+  --red: #ff8a4c;
+  color-scheme: dark;
+}
+
+/*
+ * Төлөвийн чип — admin.html-ийн `.pill.<status>`.
+ *
+ * `color-mix` нь Tailwind-ийн утилит болж хувирдаггүй, React-ийн `style`
+ * нь объект шаарддаг тул мөрөөр дамжуулж ч болохгүй. Иймд дүрэм нь энд,
+ * компонент нь `data-status` л тавина. Ашиг: бараан горим нь токенуудаар
+ * өөрөө дагана, нэмэлт код хэрэггүй.
+ */
+.studio [data-status] {
+  display: inline-block;
+  white-space: nowrap;
+  border-radius: 20px;
+  padding: 5px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.studio [data-status="DRAFT"] {
+  background: color-mix(in srgb, var(--muted) 18%, transparent);
+  color: var(--muted);
+}
+
+.studio [data-status="REVIEW"] {
+  background: color-mix(in srgb, var(--warn) 20%, transparent);
+  color: var(--warn);
+}
+
+.studio [data-status="APPROVED"] {
+  background: color-mix(in srgb, var(--cob) 14%, transparent);
+  color: var(--cob);
+}
+
+.studio [data-status="PUBLISHED"] {
+  background: color-mix(in srgb, var(--ok) 16%, transparent);
+  color: var(--ok);
+}
+
+.studio [data-status="RETURNED"] {
+  background: color-mix(in srgb, #c0392b 14%, transparent);
+  color: #c0392b;
+}
+
+/*
+ * Идэвхтэй холбоосын улбар шар зураас — admin.html-ийн `.nv.on::before`.
+ * Tailwind-ийн утилитаар бичиж болох ч, `::before`-ийн байрлалыг дөрвөн
+ * утилитаар тараавал уншихад хэцүү болно.
+ */
+.studio-nav-item[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: #e86522;
+}

@@ -1,8 +1,8 @@
 import { ImageResponse } from "next/og";
-import { postBySlug } from "../../../lib/posts";
-import { palette } from "../../../lib/cover";
-import { mnDate } from "../../../lib/format";
-import { absoluteUrl } from "../../../lib/seo";
+import { postBySlug } from "../../../../lib/posts";
+import { palette } from "../../../../lib/cover";
+import { mnDate } from "../../../../lib/format";
+import { absoluteUrl } from "../../../../lib/seo";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

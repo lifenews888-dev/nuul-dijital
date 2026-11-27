@@ -1,10 +1,20 @@
 import type { Metadata } from "next";
 import { Inter_Tight, Noto_Serif, PT_Serif } from "next/font/google";
 import "./globals.css";
-import { SiteHeader } from "../components/site-header";
-import { SiteFooter } from "../components/site-footer";
-import { SiteMenu } from "../components/site-menu";
-import { menuCategories } from "../lib/posts";
+
+/**
+ * ҮНДСЭН бүрхүүл — ЗӨВХӨН `<html>`, `<body>`, фонт, горим.
+ *
+ * Нийтийн сайтын толгой, хөл, цэс нь `(site)/layout.tsx`-д, редакцын
+ * студийн бүрхүүл нь `(studio)/layout.tsx`-д. Хоёулаа энэ файлын дотор
+ * орших ба тус тусын хүрээгээ өөрсдөө зурна: студид нийтийн толгой,
+ * гүйдэг мөр, хөл ХЭРЭГГҮЙ, нийтийн хуудсанд студийн хажуугийн самбар
+ * хэрэггүй.
+ *
+ * Фонт ба горимыг энд нэг удаа тавьсан нь хоёр бүрхүүлд хуулагдахаас
+ * хамгаална: `next/font` нь нэр бүрийг хэш болгодог тул хоёр дахин
+ * дуудвал хоёр өөр хувилбар татагдана.
+ */
 
 /**
  * Хадгалсан горимыг БУДАХААС ӨМНӨ тавина.
@@ -54,27 +64,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const categories = await menuCategories();
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="mn" className={`${head.variable} ${body.variable} ${title.variable}`}>
       {/* flex багана: агуулга богино байсан ч хөл нь доод ирмэгт наалдана */}
       <body className="flex min-h-screen flex-col">
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-cob focus:px-3 focus:py-2 focus:text-paper"
-        >
-          Үндсэн агуулга руу очих
-        </a>
-        <SiteHeader />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <SiteFooter />
-        {/* Цэс нь `header.top`-ийн ГАДНА — тэр нь өөрийн давхаргын хүрээтэй */}
-        <SiteMenu categories={categories} />
+        {children}
       </body>
     </html>
   );

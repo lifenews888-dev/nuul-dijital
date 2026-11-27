@@ -2,6 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "@nuul/db-news";
+import { newsAuthSecret, cookieName } from "./auth-env";
 
 declare module "next-auth" {
   interface Session {
@@ -26,6 +27,12 @@ declare module "next-auth/jwt" {
  * nuul.mn-ийн users хүснэгттэй хуваалцахгүй. Эрх нь session-д байхгүй,
  * tenant тус бүрээр TenantMember-ээс tRPC context дээр шийдэгдэнэ.
  */
+/**
+ * `__Secure-` угтвар ба `secure` туг. `NEXTAUTH_URL`-ээр шийдэхгүй: тэр нь
+ * nuul.mn-ийнх бөгөөд парламентын домэйныг заадаггүй.
+ */
+const SECURE = process.env.NODE_ENV === "production";
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -65,6 +72,33 @@ export const authOptions: NextAuthOptions = {
   ],
 
   session: { strategy: "jwt" },
+
+  /**
+   * nuul.mn-ээс ТУСДАА түлхүүр. `undefined` бол NextAuth нь
+   * `NEXTAUTH_SECRET` руу унана — production-д `newsAuthSecret` өөрөө
+   * зогсооно.
+   */
+  secret: newsAuthSecret(),
+
+  /**
+   * Cookie-ийн нэр ч тусдаа. Хөгжүүлэлтэд хоёр апп `localhost`-ийг
+   * хуваалцдаг тул анхдагч нэрээр явбал нэгэнд нэвтрэх нь нөгөөгийнхийг
+   * дарж бичнэ.
+   */
+  cookies: {
+    sessionToken: {
+      name: cookieName("session-token", SECURE),
+      options: { httpOnly: true, sameSite: "lax", path: "/", secure: SECURE },
+    },
+    csrfToken: {
+      name: cookieName("csrf-token", SECURE),
+      options: { httpOnly: true, sameSite: "lax", path: "/", secure: SECURE },
+    },
+    callbackUrl: {
+      name: cookieName("callback-url", SECURE),
+      options: { sameSite: "lax", path: "/", secure: SECURE },
+    },
+  },
 
   pages: {
     signIn: "/studio/signin",
