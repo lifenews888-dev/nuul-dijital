@@ -11,7 +11,6 @@ import {
   canDelete,
   canAct,
   canSetStatusManually,
-  visibleStatuses,
   canEditSettings,
   type Actor,
   type PostRef,
@@ -250,20 +249,6 @@ describe("canSetStatusManually", () => {
     expect(canSetStatusManually(act("SUPER"))).toBe(true);
     expect(canSetStatusManually(act("CHIEF"))).toBe(false);
     expect(canSetStatusManually(act("REVIEWER"))).toBe(false);
-  });
-});
-
-describe("visibleStatuses", () => {
-  it("медиа редактор нийтлэгдсэнийг харахгүй", () => {
-    expect(visibleStatuses(act("MEDIA"))).not.toContain("PUBLISHED");
-  });
-
-  it("супер админ бүгдийг харна", () => {
-    expect(visibleStatuses(act("SUPER"))).toHaveLength(5);
-  });
-
-  it("шинжээч зөвхөн нийтлэгдсэнийг", () => {
-    expect(visibleStatuses(act("ANALYST"))).toEqual(["PUBLISHED"]);
   });
 });
 

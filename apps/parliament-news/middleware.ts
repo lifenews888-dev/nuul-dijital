@@ -28,7 +28,16 @@ export async function middleware(request: NextRequest) {
 
   if (!token) {
     const signInUrl = new URL("/studio/signin", request.url);
-    signInUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+    /**
+     * Зам ба хайлтын мөрийг ХОЁУЛАНГ нь: `safeCallbackUrl` нь query
+     * string-ийг зориуд хадгалдаг тул зөвхөн `pathname` дамжуулбал
+     * `/studio/news?status=REVIEW&mine=1` гэсэн гүн холбоос нэвтэрсний
+     * дараа шүүлтгүй жагсаалт болж хувирна.
+     */
+    signInUrl.searchParams.set(
+      "callbackUrl",
+      request.nextUrl.pathname + request.nextUrl.search,
+    );
     return NextResponse.redirect(signInUrl);
   }
 

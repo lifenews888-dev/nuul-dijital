@@ -207,16 +207,79 @@ describe("studioNews.act — эрхийн хаалга", () => {
     expect(await statusOf(ids.foreign)).toBe("APPROVED");
   });
 
+  /**
+   * ЭРХИЙН хаалгыг барих тул оролт нь бусад талаар ХҮЧИНТЭЙ байх ёстой:
+   * `return`-д тайлбар өгөхгүй бол татгалзалт нь zod-оос ирж, эрхийн
+   * шалгалт хүрэхгүйг нь бид мэдэхгүй болно.
+   */
   it("эрхгүй үүрэг БҮХ үйлдэлд татгалзана", async () => {
     const actions = ["submit", "approve", "return", "publish", "unpublish"] as const;
-    for (const role of ["ANALYST", "LIVE", "SOCIAL", "LEGAL"] as NewsRole[]) {
+    for (const role of ["ANALYST", "LIVE", "SOCIAL", "LEGAL", "MEDIA", "CONTRIBUTOR"] as NewsRole[]) {
       for (const action of actions) {
+        /** CONTRIBUTOR нь өөрийн ноорог дээр submit хийж ЧАДНА — тэр нь энэ тестийн гадна */
+        if (role === "CONTRIBUTOR" && action === "submit") continue;
         await expect(
-          caller(role).studioNews.act({ id: ids.review, action }),
+          caller(role).studioNews.act({ id: ids.review, action, note: "тайлбар" }),
+          `${role} / ${action}`,
         ).rejects.toThrow(/эрх/);
       }
     }
     expect(await statusOf(ids.review)).toBe("REVIEW");
+  });
+
+  /** Хяналтын #8 — матрицын хоёр цоорхой */
+  it("медиа редактор, зочин зохиогч ч урсгалыг хөдөлгөхгүй", async () => {
+    await expect(
+      caller("MEDIA").studioNews.act({ id: ids.draft, action: "submit" }),
+    ).rejects.toThrow(/эрх/);
+    await expect(
+      caller("CONTRIBUTOR").studioNews.act({ id: ids.other, action: "submit" }),
+    ).rejects.toThrow(/эрх/);
+    await expect(
+      caller("CONTRIBUTOR").studioNews.act({ id: ids.approved, action: "publish" }),
+    ).rejects.toThrow(/эрх/);
+  });
+});
+
+/**
+ * Хяналтын #1 — буцаалтын тайлбар нь СЕРВЕРТ шаардагдана.
+ *
+ * `admin.html:1220` нь хоосон тайлбарыг татгалзана, README нь «Тайлбар нь
+ * ЗААВАЛ» гэж бичсэн, формын textarea нь `required`. Гэтэл procedure-ийг
+ * гараар дуудаж болно: `{"action":"return"}` гэж илгээвэл мэдээ
+ * «Буцаасан» болж, сэтгүүлч юу засахаа ХЭЗЭЭ Ч мэдэхгүй — бүртгэлийн
+ * мөр ч хэлэхгүй. Энэ нь «UI-д нуух нь хамгаалалт биш» гэдгийн яг тэр
+ * хэлбэр, урсгалын цорын нэг заавал талбар дээр.
+ */
+describe("studioNews.act — буцаалтын тайлбар", () => {
+  it("тайлбаргүй буцаалтыг татгалзана", async () => {
+    await expect(
+      caller("REVIEWER").studioNews.act({ id: ids.review, action: "return" }),
+    ).rejects.toThrow(/тайлбар/i);
+    expect(await statusOf(ids.review)).toBe("REVIEW");
+  });
+
+  it("зөвхөн хоосон зайтай тайлбарыг ч татгалзана", async () => {
+    await expect(
+      caller("REVIEWER").studioNews.act({ id: ids.review, action: "return", note: "   " }),
+    ).rejects.toThrow(/тайлбар/i);
+    expect(await statusOf(ids.review)).toBe("REVIEW");
+  });
+
+  it("тайлбартай бол явна", async () => {
+    const res = await caller("REVIEWER").studioNews.act({
+      id: ids.review,
+      action: "return",
+      note: "Эх сурвалж дутуу",
+    });
+    expect(res.status).toBe("RETURNED");
+  });
+
+  /** Бусад үйлдэл тайлбар ШААРДАХГҮЙ — зөвхөн буцаалт */
+  it("бусад үйлдэл тайлбаргүйгээр явна", async () => {
+    await expect(
+      caller("REVIEWER").studioNews.act({ id: ids.review, action: "approve" }),
+    ).resolves.toEqual({ status: "APPROVED" });
   });
 });
 

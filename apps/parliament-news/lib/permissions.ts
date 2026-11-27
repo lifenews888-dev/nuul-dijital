@@ -106,23 +106,6 @@ export const FLOW: { status: NewsStatus; label: string }[] = [
   { status: "PUBLISHED", label: "Нийтлэгдсэн" },
 ];
 
-const EVERY_STATUS: NewsStatus[] = ["DRAFT", "REVIEW", "APPROVED", "PUBLISHED", "RETURNED"];
-const UNPUBLISHED: NewsStatus[] = ["DRAFT", "REVIEW", "APPROVED", "RETURNED"];
-
-/** Жагсаалтад ямар төлөвүүд харагдах вэ */
-const VISIBLE: Record<NewsRole, NewsStatus[]> = {
-  SUPER: EVERY_STATUS,
-  CHIEF: EVERY_STATUS,
-  REVIEWER: EVERY_STATUS,
-  REPORTER: EVERY_STATUS,
-  CONTRIBUTOR: EVERY_STATUS,
-  MEDIA: UNPUBLISHED,
-  LEGAL: UNPUBLISHED,
-  SOCIAL: ["APPROVED", "PUBLISHED"],
-  LIVE: ["PUBLISHED"],
-  ANALYST: ["PUBLISHED"],
-};
-
 /** admin.html-ийн `canNew` */
 const CAN_CREATE: NewsRole[] = ["SUPER", "CHIEF", "REVIEWER", "REPORTER", "CONTRIBUTOR"];
 
@@ -224,11 +207,6 @@ export function canAct(actor: Actor, post: PostRef, action: WorkflowAction): boo
 /** admin.html: `$('stwrap').hidden = !is('super')` — төлөвийг гараар солих */
 export function canSetStatusManually(actor: Actor): boolean {
   return actor.role === "SUPER";
-}
-
-/** Мэдээний жагсаалтад харагдах төлөвүүд */
-export function visibleStatuses(actor: Actor): NewsStatus[] {
-  return [...VISIBLE[actor.role]];
 }
 
 /** admin.html-ийн `navSet` — сайтын тохиргоо */
