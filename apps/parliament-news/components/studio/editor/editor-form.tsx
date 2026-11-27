@@ -20,6 +20,7 @@ import { SectionSrc } from "./section-src";
 import { SectionBill } from "./section-bill";
 import { SectionPub } from "./section-pub";
 import { SectionLook } from "./section-look";
+import { SectionMedia } from "./section-media";
 import { CoverPreview } from "./cover-preview";
 
 /**
@@ -152,6 +153,14 @@ export function EditorForm({
               autoFormat={autoFormat}
               onAutoFormatChange={setAutoFormat}
             />
+          ) : null}
+
+          {allowed.has("photos") ? (
+            <SectionMedia postId={post?.id ?? null} media={post?.media ?? []} kind="image" />
+          ) : null}
+
+          {allowed.has("video") ? (
+            <SectionMedia postId={post?.id ?? null} media={post?.media ?? []} kind="video" />
           ) : null}
 
           {allowed.has("look") ? (

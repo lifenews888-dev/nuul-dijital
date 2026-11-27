@@ -7,6 +7,7 @@ import { logActivity, NOTE_MAX } from "@/lib/activity";
 import { postInputSchema, pickEditable, storyUntilFrom } from "@/lib/studio-post-input";
 import { nextSlug } from "@/lib/slug";
 import { parseLook } from "@/lib/cover";
+import { sectionsFor, type Section } from "@/lib/permissions";
 
 /**
  * РЕДАКЦЫН УРСГАЛ — сервер талын хаалга.
@@ -40,6 +41,25 @@ function revalidatePublic(slug: string): void {
   revalidatePath(`/news/${slug}`);
   revalidatePath("/rss.xml");
   revalidatePath("/sitemap.xml");
+}
+
+/**
+ * Медиагийн URL нь МАНАЙ blob-ийнх мөн үү.
+ *
+ * Энэ мутаци файл хүлээж авдаггүй — холбоос л бичнэ. Дурын хаяг
+ * зөвшөөрвөл редакцын эрхтэй хэн ч манай нийтлэл дотор гадны сервер
+ * рүү заасан зураг тавьж чадна: тэр сервер нь уншигчийн IP-г цуглуулах,
+ * эсвэл хожим зургийг нь сольж өөр зүйл харуулах боломжтой болно.
+ */
+const BLOB_HOST = /^https:\/\/[a-z0-9-]+\.public\.blob\.vercel-storage\.com\//i;
+
+function assertBlobUrl(url: string): void {
+  if (!BLOB_HOST.test(url)) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Зөвхөн сайтдаа байршуулсан файлыг холбоно",
+    });
+  }
 }
 
 export const studioNewsRouter = router({
@@ -363,6 +383,115 @@ export const studioNewsRouter = router({
       revalidatePublic(post.slug);
 
       return { status };
+    }),
+
+  /**
+   * Байршуулсан файлыг мэдээнд холбоно.
+   *
+   * Файл нь хөтчөөс blob руу ШУУД явсан байна; энд зөвхөн холбоосыг
+   * бичнэ. Хоёр хаалга: `photos`/`video` хэсгийн эрх, ба хаяг нь манай
+   * blob-ийнх эсэх.
+   */
+  attachMedia: editorialProcedure
+    .input(
+      z.object({
+        postId: z.string().min(1),
+        url: z.string().url(),
+        kind: z.enum(["image", "video"]),
+        caption: z.string().trim().max(200).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const actor = ctxActor(ctx);
+      assertBlobUrl(input.url);
+
+      const post = await ctx.db.newsPost.findFirst({
+        where: { id: input.postId },
+        select: { id: true, slug: true, status: true, authorId: true },
+      });
+      if (!post) throw new TRPCError({ code: "NOT_FOUND", message: "Мэдээ олдсонгүй" });
+
+      const need: Section = input.kind === "image" ? "photos" : "video";
+      if (!sectionsFor(actor, post).includes(need)) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Энэ хэсгийг засах эрх алга" });
+      }
+
+      /** Шинэ файл төгсгөлд — эхнийх нь хавтас хэвээр үлдэнэ */
+      const last = await ctx.db.newsMedia.findFirst({
+        where: { postId: post.id },
+        orderBy: { order: "desc" },
+        select: { order: true },
+      });
+
+      const row = await ctx.db.newsMedia.create({
+        data: {
+          postId: post.id,
+          url: input.url,
+          kind: input.kind,
+          caption: input.caption || null,
+          order: last ? last.order + 1 : 0,
+        },
+        select: { id: true },
+      });
+
+      if (post.status === "PUBLISHED") revalidatePublic(post.slug);
+
+      return { id: row.id };
+    }),
+
+  removeMedia: editorialProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const actor = ctxActor(ctx);
+
+      const media = await ctx.db.newsMedia.findFirst({
+        where: { id: input.id },
+        select: { id: true, kind: true, postId: true },
+      });
+      if (!media) throw new TRPCError({ code: "NOT_FOUND", message: "Файл олдсонгүй" });
+
+      const post = await ctx.db.newsPost.findFirst({
+        where: { id: media.postId },
+        select: { id: true, slug: true, status: true, authorId: true },
+      });
+      if (!post) throw new TRPCError({ code: "NOT_FOUND", message: "Мэдээ олдсонгүй" });
+
+      const need: Section = media.kind === "video" ? "video" : "photos";
+      if (!sectionsFor(actor, post).includes(need)) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Энэ хэсгийг засах эрх алга" });
+      }
+
+      await ctx.db.newsMedia.deleteMany({ where: { id: media.id } });
+
+      if (post.status === "PUBLISHED") revalidatePublic(post.slug);
+
+      return { ok: true as const };
+    }),
+
+  /** Дараалал — ЭХНИЙХ нь хавтас болно, тиймээс энэ нь дизайны шийдвэр */
+  reorderMedia: editorialProcedure
+    .input(z.object({ postId: z.string().min(1), ids: z.array(z.string().min(1)).max(40) }))
+    .mutation(async ({ ctx, input }) => {
+      const actor = ctxActor(ctx);
+
+      const post = await ctx.db.newsPost.findFirst({
+        where: { id: input.postId },
+        select: { id: true, slug: true, status: true, authorId: true },
+      });
+      if (!post) throw new TRPCError({ code: "NOT_FOUND", message: "Мэдээ олдсонгүй" });
+
+      if (!sectionsFor(actor, post).includes("photos")) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Энэ хэсгийг засах эрх алга" });
+      }
+
+      /** `updateMany` нь postId-гаар хязгаарлагдана — өөр мэдээний файл хөдлөхгүй */
+      for (const [order, id] of input.ids.entries()) {
+        await ctx.db.newsMedia.updateMany({ where: { id, postId: post.id }, data: { order } });
+      }
+
+      if (post.status === "PUBLISHED") revalidatePublic(post.slug);
+
+      return { ok: true as const };
     }),
 
   remove: editorialProcedure

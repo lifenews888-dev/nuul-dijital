@@ -128,6 +128,7 @@ async function dropFixtures(): Promise<void> {
   });
   await prisma.billStage.deleteMany({ where: { billId: { in: bills.map((b) => b.id) } } });
   await prisma.bill.deleteMany({ where: { postId: { in: postIds } } });
+  await prisma.newsMedia.deleteMany({ where: { postId: { in: postIds } } });
   await prisma.newsActivity.deleteMany({ where: { postId: { in: postIds } } });
   await prisma.newsPost.deleteMany({ where: { slug: { in: Object.values(S) } } });
 }
@@ -511,6 +512,135 @@ describe("studioNews.save — хуулийн төсөл", () => {
     });
     const bill = await prisma.bill.findFirst({ where: { postId: ids.draft } });
     expect(bill?.title).toBe("Tusgai huuliin tosol");
+  });
+});
+
+/**
+ * Медиа — зураг, видео.
+ *
+ * Файл нь blob руу ШУУД явдаг тул сервер нь түүнийг хардаггүй; энэ
+ * мутаци нь ЗӨВХӨН холбоосыг санд бичнэ. Иймд хоёр зүйл чухал:
+ * эрхийн хаалга (`photos`/`video` хэсэг) ба URL нь манай blob-ийнх
+ * мөн эсэх — дурын хаягийг бичиж болбол энэ нь нээлттэй зураг
+ * холбогч болно.
+ */
+describe("studioNews — медиа", () => {
+  const IMG = "https://example.public.blob.vercel-storage.com/a-123.jpg";
+
+  it("зураг нэмнэ, дараалал нь төгсгөлд", async () => {
+    await caller("MEDIA").studioNews.attachMedia({
+      postId: ids.draft,
+      url: IMG,
+      kind: "image",
+    });
+    await caller("MEDIA").studioNews.attachMedia({
+      postId: ids.draft,
+      url: IMG.replace("a-123", "b-456"),
+      kind: "image",
+    });
+
+    const rows = await prisma.newsMedia.findMany({
+      where: { postId: ids.draft },
+      orderBy: { order: "asc" },
+    });
+    expect(rows).toHaveLength(2);
+    expect(rows.map((r) => r.order)).toEqual([0, 1]);
+  });
+
+  it("эрхгүй үүрэг зураг нэмэхгүй", async () => {
+    await expect(
+      caller("SOCIAL").studioNews.attachMedia({ postId: ids.draft, url: IMG, kind: "image" }),
+    ).rejects.toThrow(/эрх/);
+  });
+
+  it("медиа редактор НИЙТЛЭГДСЭН мэдээнд хүрэхгүй", async () => {
+    await expect(
+      caller("MEDIA").studioNews.attachMedia({ postId: ids.published, url: IMG, kind: "image" }),
+    ).rejects.toThrow(/эрх/);
+  });
+
+  it("өөр tenant-ийн мэдээнд хүрэхгүй", async () => {
+    await expect(
+      caller("SUPER").studioNews.attachMedia({ postId: ids.foreign, url: IMG, kind: "image" }),
+    ).rejects.toThrow();
+  });
+
+  /** Дурын хаяг бичиж болбол энэ нь нээлттэй зураг холбогч болно */
+  it("манай blob-ийн биш хаягийг татгалзана", async () => {
+    await expect(
+      caller("MEDIA").studioNews.attachMedia({
+        postId: ids.draft,
+        url: "https://evil.mn/a.jpg",
+        kind: "image",
+      }),
+    ).rejects.toThrow();
+  });
+
+  it("http хаягийг татгалзана", async () => {
+    await expect(
+      caller("MEDIA").studioNews.attachMedia({
+        postId: ids.draft,
+        url: "http://example.public.blob.vercel-storage.com/a.jpg",
+        kind: "image",
+      }),
+    ).rejects.toThrow();
+  });
+
+  it("тайлбарыг хадгална", async () => {
+    await caller("MEDIA").studioNews.attachMedia({
+      postId: ids.draft,
+      url: IMG,
+      kind: "image",
+      caption: "Чуулганы танхим",
+    });
+    const row = await prisma.newsMedia.findFirst({ where: { postId: ids.draft } });
+    expect(row?.caption).toBe("Чуулганы танхим");
+  });
+
+  it("устгана", async () => {
+    await caller("MEDIA").studioNews.attachMedia({ postId: ids.draft, url: IMG, kind: "image" });
+    const row = await prisma.newsMedia.findFirst({ where: { postId: ids.draft } });
+    await caller("MEDIA").studioNews.removeMedia({ id: row!.id });
+    expect(await prisma.newsMedia.count({ where: { postId: ids.draft } })).toBe(0);
+  });
+
+  it("эрхгүй үүрэг устгахгүй", async () => {
+    await caller("MEDIA").studioNews.attachMedia({ postId: ids.draft, url: IMG, kind: "image" });
+    const row = await prisma.newsMedia.findFirst({ where: { postId: ids.draft } });
+    await expect(caller("SOCIAL").studioNews.removeMedia({ id: row!.id })).rejects.toThrow(/эрх/);
+  });
+
+  it("дарааллыг солино — эхнийх нь хавтас болно", async () => {
+    await caller("MEDIA").studioNews.attachMedia({ postId: ids.draft, url: IMG, kind: "image" });
+    await caller("MEDIA").studioNews.attachMedia({
+      postId: ids.draft,
+      url: IMG.replace("a-123", "b-456"),
+      kind: "image",
+    });
+    const rows = await prisma.newsMedia.findMany({
+      where: { postId: ids.draft },
+      orderBy: { order: "asc" },
+    });
+
+    await caller("MEDIA").studioNews.reorderMedia({
+      postId: ids.draft,
+      ids: [rows[1].id, rows[0].id],
+    });
+
+    const after = await prisma.newsMedia.findMany({
+      where: { postId: ids.draft },
+      orderBy: { order: "asc" },
+    });
+    expect(after[0].id).toBe(rows[1].id);
+  });
+
+  it("нийтлэгдсэн мэдээний зураг солиход кэш шинэчлэгдэнэ", async () => {
+    await caller("CHIEF").studioNews.attachMedia({
+      postId: ids.published,
+      url: IMG,
+      kind: "image",
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/");
   });
 });
 
