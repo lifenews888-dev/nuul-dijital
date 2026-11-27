@@ -385,6 +385,28 @@ try {
     check("C1 нийтлэл дээр курсортой", article.cursor !== "none", `cursor: ${article.cursor}`);
   }
 
+  // ---- Студи нь хаалгатай ------------------------------------------------
+  /*
+   * E1-E2: засварлагчийн замууд нэвтрээгүй хүнд НЭЭГДЭХГҮЙ.
+   *
+   * Формын өөрийн зан төлөв (талбар дүүрэх, хавтас шинэчлэгдэх,
+   * хадгалах) нь жинхэнэ сесс шаарддаг тул энд биш — тэр нь
+   * редакцын гишүүнээр нэвтэрч шалгадаг тусдаа скриптэд.
+   */
+  for (const [name, path] of [
+    ["E1 шинэ мэдээ хаалгатай", "/studio/news/new"],
+    ["E2 засварлагч хаалгатай", "/studio/news/some-id"],
+  ]) {
+    const landed = await guard(name, async () => {
+      await page.goto(path);
+      return page.evaluate(`location.pathname`);
+    });
+    check(name, landed === "/studio/signin", `буусан зам: ${landed}`);
+  }
+
+  // Нийтийн нүүрэнд буцаж ирэх — доорх утасны шалгуур түүнээс хамаарна
+  await page.goto("/");
+
   // ---- Утас --------------------------------------------------------------
   await page.goto("/", { width: 390, height: 844 });
   const phone = await page.evaluate(

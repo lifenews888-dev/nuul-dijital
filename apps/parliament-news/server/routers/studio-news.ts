@@ -8,6 +8,7 @@ import { postInputSchema, pickEditable, storyUntilFrom } from "@/lib/studio-post
 import { nextSlug } from "@/lib/slug";
 import { parseLook } from "@/lib/cover";
 import { sectionsFor, type Section } from "@/lib/permissions";
+import { tenantData } from "@/lib/tenant-db";
 
 /**
  * РЕДАКЦЫН УРСГАЛ — сервер талын хаалга.
@@ -212,14 +213,16 @@ export const studioNewsRouter = router({
       id = existing.id;
     } else {
       const created = await ctx.db.newsPost.create({
-        data: {
+        /** `tenantId`-г forTenant тавина; төрөл нь түүнийг мэдэхгүй */
+        data: tenantData({
           slug,
           title,
           date: new Date(`${input.date}T00:00:00Z`),
-          status: "DRAFT",
           authorId: actor.userId,
           ...writable,
-        },
+          /** Шинэ мэдээ ҮРГЭЛЖ ноорог — гараар тавьсан төлөвийг ч дарна */
+          status: "DRAFT" as const,
+        }),
         select: { id: true },
       });
       id = created.id;
@@ -255,8 +258,12 @@ export const studioNewsRouter = router({
         const billId = current
           ? (await ctx.db.bill.updateMany({ where: { id: current.id }, data: billData }),
             current.id)
-          : (await ctx.db.bill.create({ data: { ...billData, postId: id }, select: { id: true } }))
-              .id;
+          : (
+              await ctx.db.bill.create({
+                data: tenantData({ ...billData, postId: id }),
+                select: { id: true },
+              })
+            ).id;
 
         if (data.billSteps !== undefined) {
           await ctx.db.billStage.deleteMany({ where: { billId } });
@@ -424,13 +431,13 @@ export const studioNewsRouter = router({
       });
 
       const row = await ctx.db.newsMedia.create({
-        data: {
+        data: tenantData({
           postId: post.id,
           url: input.url,
           kind: input.kind,
           caption: input.caption || null,
           order: last ? last.order + 1 : 0,
-        },
+        }),
         select: { id: true },
       });
 

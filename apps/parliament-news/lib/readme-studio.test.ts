@@ -6,6 +6,9 @@ import type { NewsRole } from "@nuul/db-news";
 import { ROLE_LABELS, SECTIONS, FLOW } from "./permissions";
 import { STATUS_LABELS } from "./studio-status";
 import { ACTION_BUTTONS } from "./workflow-actions";
+import { LIMITS } from "./studio-post-input";
+import { IMAGE_TYPES, IMAGE_MAX, VIDEO_MAX } from "./upload";
+import { LOOK_PRESETS, MOTIF_CHOICES } from "./look-presets";
 
 /**
  * Баримтжуулалт нь кодоос ТАСРАХГҮЙ байх.
@@ -72,5 +75,65 @@ describe("README-ийн студийн хэсэг", () => {
 
   it("эрх нь серверт шалгагддагийг хэлнэ", () => {
     expect(readme).toMatch(/товч нуух нь хамгаалалт биш/i);
+  });
+});
+
+/**
+ * Засварлагчийн баримт нь кодоос тасрахгүй байх.
+ *
+ * Хязгаарыг кодод өөрчлөөд README-г мартвал редактор «160 тэмдэгт» гэж
+ * уншаад 200 бичиж, сервер татгалзахад яагаад гэдгийг ойлгохгүй.
+ */
+describe("README-ийн засварлагчийн хэсэг", () => {
+  it("замуудыг хэлнэ", () => {
+    expect(readme).toContain("/studio/news/new");
+    expect(readme).toContain("/studio/news/<id>");
+  });
+
+  it("талбаруудын хязгаар кодтой таарна", () => {
+    for (const n of [LIMITS.title, LIMITS.kicker, LIMITS.lead, LIMITS.body, LIMITS.sources]) {
+      expect(readme, `${n} README-д алга`).toContain(String(n));
+    }
+  });
+
+  it("байршуулалтын хязгаар кодтой таарна", () => {
+    expect(readme).toContain(String(Math.round(IMAGE_MAX / (1024 * 1024))));
+    expect(readme).toContain(String(Math.round(VIDEO_MAX / (1024 * 1024))));
+  });
+
+  /** SVG-г яагаад хориглосныг хэлэх нь дүрмийг өөрийг нь хэлэхээс чухал */
+  it("SVG хориотойг шалтгаантай нь хэлнэ", () => {
+    expect(readme).toMatch(/SVG зөвшөөрөгдөхгүй/);
+    expect(readme).toMatch(/script/i);
+  });
+
+  /** README нь брэндийн бичлэгээр бичнэ («WebP»), тиймээс том жижгийг үл ялгана */
+  it("зөвшөөрөгдсөн зургийн төрлүүд", () => {
+    const lower = readme.toLowerCase();
+    for (const t of IMAGE_TYPES) {
+      const name = t.split("/")[1];
+      expect(lower, `${name} README-д алга`).toContain(name);
+    }
+  });
+
+  it("нийтлэгдсэн мэдээний хаяг хөдлөхгүйг хэлнэ", () => {
+    expect(readme).toMatch(/хаяг ХЭЗЭЭ Ч хөдлөхгүй/);
+  });
+
+  it("зэрэгцээ засварлалтыг хэлнэ", () => {
+    expect(readme).toContain("updatedAt");
+  });
+
+  it("дизайн мастерын бэлэн загварууд", () => {
+    for (const p of LOOK_PRESETS.slice(0, 3)) {
+      expect(readme, `${p.name} README-д алга`).toContain(String(LOOK_PRESETS.length));
+    }
+    expect(readme).toContain(String(MOTIF_CHOICES.length));
+  });
+
+  it("ороогүй зүйлсийг шалтгаантай нь жагсаана", () => {
+    expect(readme).toContain("Сошиал постын текст");
+    expect(readme).toContain("Tiptap");
+    expect(readme).toMatch(/Anthropic API/);
   });
 });
