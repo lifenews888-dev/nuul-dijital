@@ -10,6 +10,7 @@
     "db:studio": "dotenv -e ../../.env -- prisma studio",
     "db:seed": "dotenv -e ../../.env -- tsx prisma/seed.ts",
     "db:seed:demo": "dotenv -e ../../.env -- tsx prisma/seed-demo.ts",
+    "db:seed:member": "dotenv -e ../../.env -- tsx prisma/seed-member.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
