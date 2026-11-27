@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { countPosts, searchPosts, searchTerm, SEARCH_MAX } from "../../lib/posts";
-import { pageParams } from "../../lib/paging";
-import { PostCard } from "../../components/post-card";
-import { Pager } from "../../components/pager";
+import { countPosts, searchPosts, searchTerm, SEARCH_MAX } from "../../../lib/posts";
+import { pageParams } from "../../../lib/paging";
+import { PostCard } from "../../../components/post-card";
+import { Pager } from "../../../components/pager";
 
 /** `q` нь хязгааргүй хувилбартай — кэшлэхгүй */
 export const dynamic = "force-dynamic";

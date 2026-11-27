@@ -1,14 +1,14 @@
-import { homeData } from "../lib/home-data";
-import { shelfBooks } from "../components/shelf-model";
-import { Hero } from "../components/hero/hero";
-import { Shelf3D } from "../components/hero/shelf3d";
-import { Timeline } from "../components/hero/timeline";
-import { Ticker } from "../components/hero/ticker";
-import { WidgetAttendance } from "../components/hero/widget-attendance";
-import { WidgetAgenda } from "../components/hero/widget-agenda";
-import { StoriesRail } from "../components/hero/stories-rail";
-import { HeroFooter } from "../components/hero/hero-footer";
-import { HomeFeed } from "../components/home-feed";
+import { homeData } from "../../lib/home-data";
+import { shelfBooks } from "../../components/shelf-model";
+import { Hero } from "../../components/hero/hero";
+import { Shelf3D } from "../../components/hero/shelf3d";
+import { Timeline } from "../../components/hero/timeline";
+import { Ticker } from "../../components/hero/ticker";
+import { WidgetAttendance } from "../../components/hero/widget-attendance";
+import { WidgetAgenda } from "../../components/hero/widget-agenda";
+import { StoriesRail } from "../../components/hero/stories-rail";
+import { HeroFooter } from "../../components/hero/hero-footer";
+import { HomeFeed } from "../../components/home-feed";
 
 export const revalidate = 300;
 

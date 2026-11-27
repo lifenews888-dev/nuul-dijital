@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { categoryBySlug, countPosts, postsByCategory } from "../../../lib/posts";
-import { pageParams } from "../../../lib/paging";
-import { PostCard } from "../../../components/post-card";
-import { Pager } from "../../../components/pager";
+import { categoryBySlug, countPosts, postsByCategory } from "../../../../lib/posts";
+import { pageParams } from "../../../../lib/paging";
+import { PostCard } from "../../../../components/post-card";
+import { Pager } from "../../../../components/pager";
 
 export const revalidate = 300;
 

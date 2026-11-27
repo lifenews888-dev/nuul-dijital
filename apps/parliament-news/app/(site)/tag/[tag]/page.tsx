@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { countPosts, postsByTag } from "../../../lib/posts";
-import { pageParams } from "../../../lib/paging";
-import { PostCard } from "../../../components/post-card";
-import { Pager } from "../../../components/pager";
+import { countPosts, postsByTag } from "../../../../lib/posts";
+import { pageParams } from "../../../../lib/paging";
+import { PostCard } from "../../../../components/post-card";
+import { Pager } from "../../../../components/pager";
 
 export const revalidate = 300;
 

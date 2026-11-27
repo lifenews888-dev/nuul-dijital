@@ -18,6 +18,11 @@ const config: Config = {
         muted: "var(--muted)",
         cob: "var(--cob)",
         red: "var(--red)",
+        /* Студийн нэмэлтүүд — admin.html-ийн --pan, --line, --ok, --warn */
+        pan: "var(--pan)",
+        line: "var(--line)",
+        ok: "var(--ok)",
+        warn: "var(--warn)",
         /**
          * Сувгаар — `border-rule/20` зэрэг alpha-тай хувилбар ажиллахын тулд.
          * Өмнө нь `borderColor: { rule: "var(--rule)" }` байсан: Tailwind

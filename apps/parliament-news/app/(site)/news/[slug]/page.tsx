@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { postBySlug, postIdByRedirect, type PostFull } from "../../../lib/posts";
-import { resolveSlugTarget } from "../../../lib/article";
-import { mnDate, readMinutes } from "../../../lib/format";
-import { metaDescription, absoluteUrl } from "../../../lib/seo";
-import { ArticleBody } from "../../../components/article-body";
-import { PostCover } from "../../../components/post-cover";
-import { PostImage } from "../../../components/post-image";
-import { imageOrCover } from "../../../lib/images";
+import { postBySlug, postIdByRedirect, type PostFull } from "../../../../lib/posts";
+import { resolveSlugTarget } from "../../../../lib/article";
+import { mnDate, readMinutes } from "../../../../lib/format";
+import { metaDescription, absoluteUrl } from "../../../../lib/seo";
+import { ArticleBody } from "../../../../components/article-body";
+import { PostCover } from "../../../../components/post-cover";
+import { PostImage } from "../../../../components/post-image";
+import { imageOrCover } from "../../../../lib/images";
 
 export const revalidate = 300;
 

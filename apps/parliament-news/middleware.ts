@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { needsStudioAuth } from "./lib/routes";
+import { newsAuthSecret, cookieName } from "./lib/auth-env";
 
 /**
  * Edge дээр ажиллана: зөвхөн /studio-ийн нэвтрэлтийн хаалга.
@@ -12,9 +13,17 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  /**
+   * Түлхүүр ба cookie-ийн нэр `lib/auth.ts`-тай ЯГ таарах ёстой — эс бөгөөс
+   * нэвтэрсэн хүний токеныг middleware танихгүй, нэвтрэх хуудас руу
+   * хязгааргүй чиглүүлнэ.
+   */
+  const secure = process.env.NODE_ENV === "production";
   const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: newsAuthSecret() ?? process.env.NEXTAUTH_SECRET,
+    cookieName: cookieName("session-token", secure),
+    secureCookie: secure,
   });
 
   if (!token) {
