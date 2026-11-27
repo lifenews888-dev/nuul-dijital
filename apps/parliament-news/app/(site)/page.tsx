@@ -1,4 +1,5 @@
 import { homeData } from "../../lib/home-data";
+import { siteInfo } from "../../lib/info-data";
 import { shelfBooks } from "../../components/shelf-model";
 import { Hero } from "../../components/hero/hero";
 import { Shelf3D } from "../../components/hero/shelf3d";
@@ -14,7 +15,7 @@ export const revalidate = 300;
 
 export default async function HomePage() {
   // Нүүрний бүх өгөгдөл НЭГ уншилтаар — виджет бүр өөрөө санд очихгүй
-  const data = await homeData();
+  const [data, info] = await Promise.all([homeData(), siteInfo()]);
   const { latest, stories, live, agenda, ticker } = data;
 
   if (latest.length === 0) {
@@ -36,7 +37,7 @@ export default async function HomePage() {
     <>
       {/* Artifact-ийн hero дүр зураг, дотор нь 3D номын тавиур */}
       <Hero live={live}>
-        <Ticker posts={latest} ads={ticker} on={live?.tickerOn ?? false} />
+        <Ticker posts={latest} ads={ticker} on={live?.tickerOn ?? false} info={info} />
         <StoriesRail stories={stories} />
         <WidgetAttendance live={live} />
         <WidgetAgenda agenda={agenda} />
