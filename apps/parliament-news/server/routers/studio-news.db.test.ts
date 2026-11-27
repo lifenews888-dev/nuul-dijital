@@ -115,10 +115,27 @@ beforeAll(async () => {
 });
 
 /** Тест бүр цэвэр төлөвөөс эхэлнэ — мутаци нь мөрийг хөдөлгөдөг */
-/** Хуулийн төсөл ба шатууд нь мэдээ рүү заадаг — ТЭДНИЙГ ЭХЛЭЭД устгана */
+/**
+ * Fixture-уудыг БҮРЭН устгана.
+ *
+ * Slug-аар хайж болохгүй: `save` нь гарчиг солиход slug-ийг дагуулж
+ * өөрчилдөг тул дахин нэрлэгдсэн мөр slug-ийн жагсаалтаас гардаг.
+ * Тэр нь ажиллуулалт бүрт хэдэн арван мөр үлдээж байсан (бодитоор
+ * 166 мөр хуримтлагдсан). Иймд ЗОХИОГЧООР нь хайна — тестийн
+ * хэрэглэгчид `beforeAll`-д шинээр үүсдэг тул өөр хэний мөр ч
+ * хамрагдахгүй.
+ *
+ * Хуулийн төсөл, медиа нь мэдээ рүү заадаг — тэднийг эхлээд.
+ */
 async function dropFixtures(): Promise<void> {
   const posts = await prisma.newsPost.findMany({
-    where: { slug: { in: Object.values(S) } },
+    where: {
+      OR: [
+        { slug: { in: Object.values(S) } },
+        ...(myId ? [{ authorId: myId }] : []),
+        ...(otherId ? [{ authorId: otherId }] : []),
+      ],
+    },
     select: { id: true },
   });
   const postIds = posts.map((p) => p.id);
@@ -130,7 +147,7 @@ async function dropFixtures(): Promise<void> {
   await prisma.bill.deleteMany({ where: { postId: { in: postIds } } });
   await prisma.newsMedia.deleteMany({ where: { postId: { in: postIds } } });
   await prisma.newsActivity.deleteMany({ where: { postId: { in: postIds } } });
-  await prisma.newsPost.deleteMany({ where: { slug: { in: Object.values(S) } } });
+  await prisma.newsPost.deleteMany({ where: { id: { in: postIds } } });
 }
 
 beforeEach(async () => {
