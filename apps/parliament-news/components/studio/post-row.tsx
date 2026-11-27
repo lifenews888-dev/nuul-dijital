@@ -1,0 +1,46 @@
+import Link from "next/link";
+import type { StudioPost } from "../../lib/studio-posts";
+import { STATUS_LABELS, mnAgoShort } from "../../lib/studio-status";
+import { mnNumericDate } from "../../lib/format";
+import { sectionsFor, type Actor } from "../../lib/permissions";
+
+/**
+ * Мэдээний нэг мөр — admin.html-ийн `.nr`.
+ *
+ * Товчны ТЕКСТ нь эрхээс хамаарна: засах хэсэггүй хүнд «Харах» гэж гарна.
+ * Энэ нь хамгаалалт БИШ (сервер өөрөө шалгана) — харин «Засах» гэж дараад
+ * бүх талбар нь түгжээтэй хуудас үзэхээс хамгаална.
+ */
+export function PostRow({ post, actor }: { post: StudioPost; actor: Actor }) {
+  const editable =
+    sectionsFor(actor, { id: post.id, status: post.status, authorId: post.authorId }).length > 0;
+
+  return (
+    <article className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3.5 border-t border-line px-3.5 py-3 first:border-t-0 md:px-[18px] md:py-3.5">
+      <div className="min-w-0">
+        <Link
+          href={`/studio/news/${post.id}`}
+          className="font-head text-[15px] font-semibold text-ink hover:underline"
+        >
+          {post.title || "(гарчиггүй)"}
+        </Link>
+
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-head text-[12.5px] text-muted">
+          {/* Өнгө нь app/studio.css-д `[data-status]`-аар */}
+          <span data-status={post.status}>{STATUS_LABELS[post.status]}</span>
+          {post.categoryName ? <span>{post.categoryName}</span> : null}
+          <span>{mnNumericDate(post.date)}</span>
+          {post.authorName ? <span>{post.authorName}</span> : null}
+          <span>{mnAgoShort(post.updatedAt)}</span>
+        </div>
+      </div>
+
+      <Link
+        href={`/studio/news/${post.id}`}
+        className="flex h-9 shrink-0 items-center rounded-lg border border-line bg-pan px-3 font-head text-[13px] font-semibold text-ink hover:bg-soft"
+      >
+        {editable ? "Засах" : "Харах"}
+      </Link>
+    </article>
+  );
+}

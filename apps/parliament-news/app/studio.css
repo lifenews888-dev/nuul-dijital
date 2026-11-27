@@ -69,6 +69,49 @@
 }
 
 /*
+ * Төлөвийн чип — admin.html-ийн `.pill.<status>`.
+ *
+ * `color-mix` нь Tailwind-ийн утилит болж хувирдаггүй, React-ийн `style`
+ * нь объект шаарддаг тул мөрөөр дамжуулж ч болохгүй. Иймд дүрэм нь энд,
+ * компонент нь `data-status` л тавина. Ашиг: бараан горим нь токенуудаар
+ * өөрөө дагана, нэмэлт код хэрэггүй.
+ */
+.studio [data-status] {
+  display: inline-block;
+  white-space: nowrap;
+  border-radius: 20px;
+  padding: 5px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.studio [data-status="DRAFT"] {
+  background: color-mix(in srgb, var(--muted) 18%, transparent);
+  color: var(--muted);
+}
+
+.studio [data-status="REVIEW"] {
+  background: color-mix(in srgb, var(--warn) 20%, transparent);
+  color: var(--warn);
+}
+
+.studio [data-status="APPROVED"] {
+  background: color-mix(in srgb, var(--cob) 14%, transparent);
+  color: var(--cob);
+}
+
+.studio [data-status="PUBLISHED"] {
+  background: color-mix(in srgb, var(--ok) 16%, transparent);
+  color: var(--ok);
+}
+
+.studio [data-status="RETURNED"] {
+  background: color-mix(in srgb, #c0392b 14%, transparent);
+  color: #c0392b;
+}
+
+/*
  * Идэвхтэй холбоосын улбар шар зураас — admin.html-ийн `.nv.on::before`.
  * Tailwind-ийн утилитаар бичиж болох ч, `::before`-ийн байрлалыг дөрвөн
  * утилитаар тараавал уншихад хэцүү болно.
