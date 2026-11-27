@@ -2,6 +2,7 @@ import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 import { studioSession } from "@/lib/studio-session";
 import { allowedTypes, maxBytes, type UploadKind } from "@/lib/upload";
+import { SECTIONS } from "@/lib/permissions";
 
 /**
  * Байршуулах токен гаргагч — `@vercel/blob`-ийн client upload.
@@ -31,6 +32,16 @@ export async function POST(request: Request): Promise<NextResponse> {
       onBeforeGenerateToken: async (_pathname, clientPayload) => {
         /** Зураг уу, видео юу — клиент хэлнэ, бид дүрмийг нь сонгоно */
         const kind: UploadKind = clientPayload === "video" ? "video" : "image";
+
+        /*
+         * Гишүүн байх нь ХАНГАЛТГҮЙ. `ANALYST`, `LIVE` нь ямар ч хэсэг
+         * засахгүй (`SECTIONS` нь хоосон) атлаа токен авч 200 МБ видео
+         * байршуулж чадна — квот дүүргэхэд редакцын эрх хангалттай болно.
+         * Мэдээ бүрийн төлөв энд мэдэгдэхгүй тул үүргийн ДЭЭД хязгаараар.
+         */
+        if (!SECTIONS[studio.actor.role].includes(kind === "video" ? "video" : "photos")) {
+          throw new Error("Файл байршуулах эрх алга");
+        }
         return {
           allowedContentTypes: allowedTypes(kind),
           maximumSizeInBytes: maxBytes(kind),

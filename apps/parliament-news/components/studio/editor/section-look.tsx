@@ -10,7 +10,7 @@ import {
   MOTIF_CHOICES,
 } from "../../../lib/look-presets";
 import { coverInner, palette, parseLook, COVER_W, COVER_H } from "../../../lib/cover";
-import { editorCoverInput } from "../../../lib/editor-cover";
+import { editorCoverInput, sizePercent, sizeFraction, duoOn } from "../../../lib/editor-cover";
 import type { EditorState, EditorAction } from "../../../lib/editor-state";
 
 /**
@@ -35,7 +35,8 @@ export function SectionLook({
   /** Одоогийн бодит өнгөнүүд — хэрэглэгч `look`-д тавиагүй бол палитрынх */
   const [bg, fg, ac] = palette(state.theme, parseLook(state.look));
 
-  const size = typeof look.size === "number" ? look.size : 100;
+  /** Санд ЭЗЛЭХҮҮН, гулсуурт ХУВЬ */
+  const size = sizePercent(typeof look.size === "number" ? look.size : undefined);
   const lay = (look.lay as string) ?? "top";
   const font = (look.font as string) ?? "sans";
   const fy = typeof look.fy === "number" ? look.fy : 50;
@@ -128,7 +129,7 @@ export function SectionLook({
           max={SIZE_RANGE.max}
           step={SIZE_RANGE.step}
           value={size}
-          onChange={(e) => setLook("size", Number(e.target.value))}
+          onChange={(e) => setLook("size", sizeFraction(Number(e.target.value)))}
           className="w-full max-w-[280px]"
         />
       </label>
@@ -145,7 +146,7 @@ export function SectionLook({
           <label className="mb-3 flex items-center gap-2 font-head text-sm text-ink">
             <input
               type="checkbox"
-              checked={look.duo === true}
+              checked={duoOn(look.duo)}
               onChange={(e) => setLook("duo", e.target.checked)}
             />
             Зургийг брэндийн 2 өнгөөр будах

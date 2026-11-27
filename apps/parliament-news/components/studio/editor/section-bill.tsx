@@ -105,7 +105,7 @@ export function SectionBill({
               <textarea
                 className={`${inputClass} min-h-[44px]`}
                 rows={2}
-                maxLength={400}
+                maxLength={1500}
                 value={state.billNotes[i] ?? ""}
                 onChange={(e) => setNote(i, e.target.value)}
                 placeholder="Огноо, тогтоолын дугаар, товч тайлбар"

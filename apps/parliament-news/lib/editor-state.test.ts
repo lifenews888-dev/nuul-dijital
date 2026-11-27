@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  storyDaysOf,
   emptyEditor,
   editorFromPost,
   editorToInput,
@@ -33,6 +34,7 @@ const POST: StudioPostFull = {
   story: false,
   storyUntil: null,
   publishedAt: null,
+  createdAt: new Date("2026-11-20T00:00:00Z"),
   updatedAt: new Date("2026-11-21T10:00:00Z"),
   reviewNote: null,
   media: [],
@@ -182,5 +184,93 @@ describe("isDirty", () => {
   it("мэдээнээс дахин үүсгэсэн төлөв нь цэвэр", () => {
     const a: EditorState = editorFromPost(POST);
     expect(isDirty(a, editorFromPost(POST))).toBe(false);
+  });
+});
+
+/**
+ * C1 — супер админы төлөвийн сонголт.
+ *
+ * `canSetStatusManually`-ийн бүх хэлхээ (схем, `pickEditable`, роутерын
+ * тест) БАЙСАН ч `editorToInput` нь `status`-ийг илгээдэггүй байв:
+ * супер админ «Нийтлэгдсэн» гэж сонгоод хадгалахад «Бүх өөрчлөлт
+ * хадгалагдсан» гэсэн мессеж гарч, мөр нь ноорог хэвээр үлддэг.
+ */
+describe("төлөв нь оролтод орно (C1)", () => {
+  it("байгаа мэдээний төлөвийг илгээнэ", () => {
+    const s = editorReducer(editorFromPost(POST), {
+      type: "set",
+      field: "status",
+      value: "PUBLISHED",
+    });
+    expect(editorToInput(s).status).toBe("PUBLISHED");
+  });
+
+  /** Шинэ мэдээ ҮРГЭЛЖ ноорог — сервер ч дарна, клиент ч илгээхгүй */
+  it("шинэ мэдээнд төлөв илгээхгүй", () => {
+    expect(editorToInput(emptyEditor("2026-11-27")).status).toBeUndefined();
+  });
+});
+
+/**
+ * C2 — хадгалсны дараа `expectedUpdatedAt` шинэчлэгдэх ёстой.
+ *
+ * Үгүй бол нэг хуудас ачаалалтад ЗӨВХӨН НЭГ УДАА хадгалж болно:
+ * хоёр дахь нь «өөр хүн засаж өөрчлөгдсөн» гэсэн ХУУРАМЧ зөрчил авна.
+ */
+describe("хадгалсны дараах тэмдэг (C2)", () => {
+  it("шинэ updatedAt-аар сэргээнэ", () => {
+    const a = editorFromPost(POST);
+    const b = editorReducer(a, {
+      type: "saved",
+      id: POST.id,
+      updatedAt: "2026-11-22T10:00:00.000Z",
+    });
+    expect(b.expectedUpdatedAt).toBe("2026-11-22T10:00:00.000Z");
+    expect(b.id).toBe(POST.id);
+  });
+
+  it("хэрэглэгчийн бичсэнийг ХАДГАЛНА — зөвхөн тэмдгийг солино", () => {
+    let a = editorFromPost(POST);
+    a = editorReducer(a, { type: "set", field: "title", value: "Шинэ гарчиг" });
+    const b = editorReducer(a, { type: "saved", id: POST.id, updatedAt: "2026-11-22T10:00:00.000Z" });
+    expect(b.title).toBe("Шинэ гарчиг");
+  });
+
+  it("шинэ мэдээний id-г тавина — дараагийн хадгалалт шинийг үүсгэхгүй", () => {
+    const a = emptyEditor("2026-11-27");
+    const b = editorReducer(a, { type: "saved", id: "new-1", updatedAt: "2026-11-27T00:00:00.000Z" });
+    expect(editorToInput(b).id).toBe("new-1");
+  });
+});
+
+/**
+ * I1 — сторины хугацаа хадгалалт бүрт сунах ёсгүй.
+ *
+ * `storyDaysOf` нь ҮЛДСЭН хугацаагаар сонголтыг таамагладаг байв:
+ * 7 хоногийн стори гурав дахь өдөр засагдахад дахин 7 хоног авч,
+ * өдөр бүр засагддаг мэдээ ХЭЗЭЭ Ч дуусахгүй болно.
+ */
+describe("сторины хугацаа (I1)", () => {
+  const now = new Date("2026-11-27T12:00:00Z");
+  const post = (over: Partial<StudioPostFull>): StudioPostFull => ({ ...POST, ...over });
+
+  it("стори биш бол анхдагч нэг өдөр", () => {
+    expect(storyDaysOf(post({ story: false, storyUntil: null }), now)).toBe(1);
+  });
+
+  it("хугацаагүй стори нь тэг", () => {
+    expect(storyDaysOf(post({ story: true, storyUntil: null }), now)).toBe(0);
+  });
+
+  /** Хадгалсан хугацааг ҮЛДСЭНЭЭР нь биш, ҮҮССЭНЭЭР нь сэргээнэ */
+  it("дуусахад гурав хоногтой 7 хоногийн стори нь 7 хэвээр", () => {
+    const created = new Date("2026-11-24T12:00:00Z");
+    const until = new Date(created.getTime() + 7 * 86_400_000);
+    expect(storyDaysOf(post({ story: true, storyUntil: until, createdAt: created }), now)).toBe(7);
+  });
+
+  it("хугацаа нь өнгөрсөн стори нь сэргэхгүй — тэг хоног", () => {
+    const until = new Date(now.getTime() - 10 * 86_400_000);
+    expect(storyDaysOf(post({ story: true, storyUntil: until }), now)).toBe(0);
   });
 });

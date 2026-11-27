@@ -81,10 +81,8 @@ export const postInputSchema = z.object({
   billStage: z.number().int().min(0).max(4).optional(),
   votesYes: z.number().int().min(0).max(1000).optional(),
   votesNo: z.number().int().min(0).max(1000).optional(),
-  billSteps: z
-    .array(z.object({ label: trimmedMax(80), note: trimmedMax(400) }))
-    .max(5)
-    .optional(),
+  /** `BillStage.note` нь `@db.VarChar(1500)`, artifact нь `maxlength=1500` */
+  billSteps: z.array(z.object({ note: trimmedMax(1500) })).max(5).optional(),
 
   // pub
   // ТАЙЛБАР: artifact-ийн «Сошиал постын текст» (`f_soc`, 2200) нь ЭНД

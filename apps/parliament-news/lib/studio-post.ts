@@ -49,6 +49,8 @@ export type StudioPostFull = {
   story: boolean;
   storyUntil: Date | null;
   publishedAt: Date | null;
+  /** Сторины сонгосон хугацааг сэргээхэд — `storyUntil - createdAt` */
+  createdAt: Date;
   /** Зэрэгцээ засварлалт илрүүлэхэд — формоос буцаж ирнэ */
   updatedAt: Date;
   reviewNote: string | null;
@@ -84,6 +86,7 @@ export async function studioPost(
       story: true,
       storyUntil: true,
       publishedAt: true,
+      createdAt: true,
       updatedAt: true,
       reviewNote: true,
       category: { select: { name: true } },
@@ -128,6 +131,7 @@ export async function studioPost(
     story: row.story,
     storyUntil: row.storyUntil,
     publishedAt: row.publishedAt,
+    createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     reviewNote: row.reviewNote,
     media: row.media,

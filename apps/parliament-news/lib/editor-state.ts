@@ -1,6 +1,7 @@
 import type { NewsStatus } from "@nuul/db-news";
 import type { StudioPostFull } from "./studio-post";
-import type { PostInput } from "./studio-post-input";
+import { FIELD_SECTION, type PostInput } from "./studio-post-input";
+import type { Section } from "./permissions";
 
 /**
  * Засварлагчийн формын төлөв — НЭГ объект, нэг reducer.
@@ -59,6 +60,14 @@ export type EditorAction =
   | { type: "set"; field: keyof EditorState; value: unknown }
   /** `key: null` нь бүхэл `look`-ийг цэвэрлэнэ — «Анхны байдалд» */
   | { type: "look"; key: string | null; value: unknown }
+  /**
+   * Хадгалсны дараа: серверээс ирсэн ШИНЭ `updatedAt`-ийг тавина.
+   *
+   * Үгүй бол нэг хуудас ачаалалтад ЗӨВХӨН НЭГ УДАА хадгалж болно —
+   * хоёр дахь нь хуучин тэмдгээ илгээж, сервер «өөр хүн засаж
+   * өөрчлөгдсөн» гэсэн ХУУРАМЧ зөрчил буцаана.
+   */
+  | { type: "saved"; id: string; updatedAt: string }
   | { type: "reset"; state: EditorState };
 
 export function emptyEditor(today: string): EditorState {
@@ -104,12 +113,27 @@ function billNotesOf(post: StudioPostFull): string[] {
   return notes;
 }
 
-/** Сторины хугацааг үлдсэн хоногоос сэргээх — artifact-ийн сонголтууд */
-function storyDaysOf(post: StudioPostFull): number {
-  if (!post.story || !post.storyUntil) return post.story ? 0 : 1;
-  const days = Math.round((post.storyUntil.getTime() - Date.now()) / 86_400_000);
+/**
+ * Сторины сонгосон хугацааг сэргээнэ.
+ *
+ * ҮЛДСЭН хугацаагаар тооцож БОЛОХГҮЙ: 7 хоногийн стори гурав дахь өдөр
+ * засагдахад «4 хоног үлдсэн» гэж уншаад дахин 7 хоног авна. Өдөр бүр
+ * засагддаг мэдээ ХЭЗЭЭ Ч дуусахгүй болно (artifact нь хадгалсан
+ * `storyUntil`-ийг хэвээр үлдээдэг — `admin.html:1049`).
+ *
+ * Иймд ҮҮССЭНЭЭС нь тоолно: `storyUntil - createdAt`.
+ */
+export function storyDaysOf(post: StudioPostFull, now: Date = new Date()): number {
+  if (!post.story) return 1;
+  /** Хугацаагүй стори */
+  if (!post.storyUntil) return 0;
+
+  /** Хугацаа нь өнгөрсөн бол сонголтыг таамаглахгүй — дахин сунгахгүй */
+  if (post.storyUntil.getTime() <= now.getTime()) return 0;
+
+  const span = Math.round((post.storyUntil.getTime() - post.createdAt.getTime()) / 86_400_000);
   for (const allowed of [1, 3, 7]) {
-    if (days <= allowed) return allowed;
+    if (span <= allowed) return allowed;
   }
   return 7;
 }
@@ -164,8 +188,17 @@ function parseTags(text: string): string[] {
   return out;
 }
 
-export function editorToInput(state: EditorState): PostInput {
-  return {
+/**
+ * Формын төлөвөөс серверийн оролт руу.
+ *
+ * `allowed` өгвөл ЗУРАГДСАН хэсгийн талбарыг л илгээнэ. Үгүй бол
+ * сэтгүүлч өөрийн ноорогоо хадгалах бүрт «Эрх хүрэхгүй тул хадгалаагүй
+ * талбар: channels, featured, story…» гэсэн сэрэмжлүүлэг авна — тэр
+ * талбарууд формд нь ОГТ БАЙГААГҮЙ. `dropped` нь жинхэнэ асуудлыг
+ * барихын тулд байгаа; өдөр бүр хуцдаг бол хэн ч сонсохоо болино.
+ */
+export function editorToInput(state: EditorState, allowed?: Section[]): PostInput {
+  const full: PostInput = {
     ...(state.id ? { id: state.id } : {}),
     ...(state.expectedUpdatedAt ? { expectedUpdatedAt: state.expectedUpdatedAt } : {}),
     title: state.title,
@@ -185,12 +218,30 @@ export function editorToInput(state: EditorState): PostInput {
     billStage: state.billStage,
     votesYes: state.votesYes,
     votesNo: state.votesNo,
-    billSteps: state.billNotes.map((note, index) => ({ label: String(index), note })),
+    /** `BillStage`-д `label` багана БАЙХГҮЙ — зөвхөн `index` ба `note` */
+    billSteps: state.billNotes.map((note) => ({ note })),
     channels: state.channels,
     featured: state.featured,
     story: state.story,
     storyDays: state.storyDays,
+    /**
+     * Төлөвийг ЗӨВХӨН байгаа мэдээнд илгээнэ. Шинэ мэдээ үргэлж ноорог
+     * болж үүснэ (сервер ч дарна). Сервер нь `canSetStatusManually`-аар
+     * шүүх тул эрхгүй хүний илгээсэн төлөв `dropped`-д орно.
+     */
+    ...(state.id ? { status: state.status } : {}),
   };
+
+  if (!allowed) return full;
+
+  const sections = new Set<Section>(allowed);
+  const out: Record<string, unknown> = {};
+  for (const [field, value] of Object.entries(full)) {
+    const section = FIELD_SECTION[field];
+    /** Хэсэггүй талбарууд (id, title, date, status…) үргэлж явна */
+    if (!section || sections.has(section)) out[field] = value;
+  }
+  return out as PostInput;
 }
 
 export function editorReducer(state: EditorState, action: EditorAction): EditorState {
@@ -202,6 +253,9 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         ...state,
         look: action.key === null ? {} : { ...state.look, [action.key]: action.value },
       };
+    case "saved":
+      /** Хэрэглэгчийн бичсэнийг ХӨНДӨХГҮЙ — зөвхөн таних тэмдгүүдийг */
+      return { ...state, id: action.id, expectedUpdatedAt: action.updatedAt };
     case "reset":
       return action.state;
   }

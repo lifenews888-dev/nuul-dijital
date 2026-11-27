@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { editorCoverInput } from "./editor-cover";
+import { editorCoverInput, sizePercent, sizeFraction, duoOn } from "./editor-cover";
 import { emptyEditor, editorReducer, type EditorState } from "./editor-state";
 
 const base = (): EditorState => {
@@ -75,5 +75,64 @@ describe("editorCoverInput", () => {
     const s = editorReducer(base(), { type: "set", field: "date", value: "" });
     expect(() => editorCoverInput(s, null)).not.toThrow();
     expect(editorCoverInput(s, null).date).toBeNull();
+  });
+});
+
+/**
+ * C3 — гарчгийн хэмжээ: UI нь ХУВЬ, хавтас нь ЭЗЛЭХҮҮН.
+ *
+ * `cover.ts` нь `clamp(0.8, 1.25, o.size || 1)` гэж уншдаг. UI нь 80-125
+ * гэж бичиж байсан тул ЯМАР Ч байрлал 1.25 болж хавчигдаж, гарчиг
+ * хамгийн том хэмжээнд түгжигдэж, урт гарчиг тавиурын хавтсан дээр
+ * таслагдаж байв. `admin.html:1109` нь 100-д хуваадаг.
+ */
+describe("гарчгийн хэмжээ (C3)", () => {
+  it("хувиас эзлэхүүн рүү", () => {
+    expect(sizeFraction(100)).toBe(1);
+    expect(sizeFraction(80)).toBe(0.8);
+    expect(sizeFraction(125)).toBe(1.25);
+  });
+
+  it("эзлэхүүнээс хувь рүү", () => {
+    expect(sizePercent(1)).toBe(100);
+    expect(sizePercent(0.8)).toBe(80);
+    expect(sizePercent(1.25)).toBe(125);
+  });
+
+  it("тавиагүй бол 100 хувь", () => {
+    expect(sizePercent(undefined)).toBe(100);
+  });
+
+  it("буцаж эргэхэд эвдрэхгүй", () => {
+    for (const p of [80, 85, 90, 95, 100, 105, 110, 115, 120, 125]) {
+      expect(sizePercent(sizeFraction(p))).toBe(p);
+    }
+  });
+
+  /** Хавтас руу ЭЗЛЭХҮҮН очно, хувь биш */
+  it("хавтасны оролтод эзлэхүүнээр очно", () => {
+    const s = editorReducer(base(), { type: "look", key: "size", value: 0.8 });
+    expect(editorCoverInput(s, null).look?.size).toBe(0.8);
+  });
+});
+
+/**
+ * I3 — хоёр өнгөөр будах нь АНХДАГЧААР АСААЛТТАЙ.
+ *
+ * `cover.ts` нь `o.duo !== false` гэж уншдаг: тавиагүй бол асаалттай.
+ * UI нь `duo === true` гэж уншиж байсан тул шинэ мэдээн дээр нүд нь
+ * хоосон атлаа зураг будагдсан байж, нэг дарахад юу ч өөрчлөгдөхгүй.
+ */
+describe("хоёр өнгөөр будах (I3)", () => {
+  it("тавиагүй бол АСААЛТТАЙ", () => {
+    expect(duoOn(undefined)).toBe(true);
+  });
+
+  it("зориуд унтраасан бол унтраалттай", () => {
+    expect(duoOn(false)).toBe(false);
+  });
+
+  it("зориуд асаасан бол асаалттай", () => {
+    expect(duoOn(true)).toBe(true);
   });
 });

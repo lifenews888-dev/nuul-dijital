@@ -94,13 +94,25 @@ export function EditorForm({
     setError(null);
     setNotice(null);
     try {
-      const res = await trpc.studioNews.save.mutate(editorToInput(state));
+      const res = await trpc.studioNews.save.mutate(editorToInput(state, [...allowed]));
 
       if (res.dropped.length > 0) {
         setNotice(`Эрх хүрэхгүй тул хадгалаагүй талбар: ${res.dropped.join(", ")}`);
       }
 
-      setSaved(state);
+      /**
+       * Серверээс ирсэн шинэ `updatedAt`-ийг төлөвт тавина. Үгүй бол
+       * дараагийн хадгалалт хуучин тэмдгээ илгээж, «өөр хүн засаж
+       * өөрчлөгдсөн» гэсэн ХУУРАМЧ зөрчил авна — нэг хуудас ачаалалтад
+       * ганц л удаа хадгалж болдог болно.
+       */
+      const next = editorReducer(state, {
+        type: "saved",
+        id: res.id,
+        updatedAt: res.updatedAt,
+      });
+      dispatch({ type: "saved", id: res.id, updatedAt: res.updatedAt });
+      setSaved(next);
 
       if (!post) {
         /** Шинэ мэдээ — өөрийн хаяг руу шилжинэ, дахин үүсгэхгүй */

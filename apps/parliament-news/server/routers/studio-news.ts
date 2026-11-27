@@ -156,10 +156,26 @@ export const studioNewsRouter = router({
         })
       ).map((p) => p.slug);
 
+      /*
+       * «Нэг удаа нийтлэгдсэн эсэх»-ийг БҮРТГЭЛЭЭР шалгана.
+       *
+       * `nextSlug` нь `publishedAt !== null` гэж үздэг ч `unpublish` нь
+       * тэр талбарыг цэвэрлэдэг: буулгаад гарчиг засвал хаяг чөлөөлөгдөж,
+       * сошиалд тарсан холбоос 404 болно. Бүртгэлд `publish` үйлдэл
+       * байгаа эсэх нь хөдөлдөггүй баримт.
+       */
+      const everPublished =
+        existing !== null &&
+        (existing.publishedAt !== null ||
+          existing.status === "PUBLISHED" ||
+          (await ctx.db.newsActivity.count({
+            where: { postId: existing.id, action: "publish" },
+          })) > 0);
+
       slug = nextSlug({
         title,
         currentSlug: existing?.slug ?? null,
-        publishedAt: existing?.publishedAt ?? null,
+        publishedAt: everPublished ? new Date(0) : null,
         status: existing?.status,
         taken,
       });
@@ -266,15 +282,21 @@ export const studioNewsRouter = router({
             ).id;
 
         if (data.billSteps !== undefined) {
-          await ctx.db.billStage.deleteMany({ where: { billId } });
-          await ctx.db.billStage.createMany({
-            data: data.billSteps.map((step, index) => ({
-              tenantId: ctx.tenantId,
-              billId,
-              index,
-              note: step.note || null,
-            })),
-          });
+          /*
+           * Устгаад үүсгэх нь АТОМ байх ёстой: `createMany` унавал
+           * таван шатны тайлбар аль хэдийн алга болсон байна.
+           */
+          await ctx.db.$transaction([
+            ctx.db.billStage.deleteMany({ where: { billId } }),
+            ctx.db.billStage.createMany({
+              data: data.billSteps.map((step, index) => ({
+                tenantId: ctx.tenantId,
+                billId,
+                index,
+                note: step.note || null,
+              })),
+            }),
+          ]);
         }
       }
     }
@@ -295,7 +317,23 @@ export const studioNewsRouter = router({
       revalidatePublic(slug || existing?.slug || "");
     }
 
-    return { id, slug, dropped };
+    /**
+     * ШИНЭ `updatedAt`-ийг буцаана — форм түүгээр өөрийн тэмдгээ
+     * шинэчилнэ. Үгүй бол нэг хуудас ачаалалтад зөвхөн нэг удаа
+     * хадгалж болно: хоёр дахь нь хуучин тэмдгээ илгээж, хуурамч
+     * зөрчил авна.
+     */
+    const saved = await ctx.db.newsPost.findFirst({
+      where: { id },
+      select: { updatedAt: true, slug: true },
+    });
+
+    return {
+      id,
+      slug: saved?.slug ?? slug,
+      updatedAt: (saved?.updatedAt ?? new Date()).toISOString(),
+      dropped,
+    };
   }),
 
   act: editorialProcedure
@@ -444,6 +482,39 @@ export const studioNewsRouter = router({
       if (post.status === "PUBLISHED") revalidatePublic(post.slug);
 
       return { id: row.id };
+    }),
+
+  /** Зургийн тайлбар — admin.html-ийн «Зургийн тайлбар · зурагчны нэр» */
+  captionMedia: editorialProcedure
+    .input(z.object({ id: z.string().min(1), caption: z.string().trim().max(200) }))
+    .mutation(async ({ ctx, input }) => {
+      const actor = ctxActor(ctx);
+
+      const media = await ctx.db.newsMedia.findFirst({
+        where: { id: input.id },
+        select: { id: true, kind: true, postId: true },
+      });
+      if (!media) throw new TRPCError({ code: "NOT_FOUND", message: "Файл олдсонгүй" });
+
+      const post = await ctx.db.newsPost.findFirst({
+        where: { id: media.postId },
+        select: { id: true, slug: true, status: true, authorId: true },
+      });
+      if (!post) throw new TRPCError({ code: "NOT_FOUND", message: "Мэдээ олдсонгүй" });
+
+      const need: Section = media.kind === "video" ? "video" : "photos";
+      if (!sectionsFor(actor, post).includes(need)) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Энэ хэсгийг засах эрх алга" });
+      }
+
+      await ctx.db.newsMedia.updateMany({
+        where: { id: media.id },
+        data: { caption: input.caption || null },
+      });
+
+      if (post.status === "PUBLISHED") revalidatePublic(post.slug);
+
+      return { ok: true as const };
     }),
 
   removeMedia: editorialProcedure

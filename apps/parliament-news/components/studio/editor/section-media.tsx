@@ -61,6 +61,18 @@ export function SectionMedia({
     }
   }
 
+  async function caption(id: string, text: string) {
+    setBusy(true);
+    try {
+      await trpc.studioNews.captionMedia.mutate({ id, caption: text });
+      router.refresh();
+    } catch (e) {
+      setError(trpcMessage(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function remove(id: string) {
     setBusy(true);
     try {
@@ -131,9 +143,24 @@ export function SectionMedia({
                         Хавтасны зураг
                       </b>
                     ) : null}
-                    <span className="block truncate font-head text-[12.5px] text-muted" dir="ltr">
-                      {m.url.split("/").pop()}
-                    </span>
+                    {/*
+                      Тайлбар нь нийтлэлийн хуудсанд зургийн доор гарна
+                      (`lib/posts.ts` нь `caption`-ийг сонгодог). `MEDIA`
+                      үүргийн тодорхойлолт ч «зураг, видео, ТАЙЛБАРЫГ
+                      засна» гэдэг.
+                    */}
+                    <input
+                      className="w-full rounded-md border border-line bg-pan px-2 py-1 font-head text-[12.5px] text-ink"
+                      defaultValue={m.caption ?? ""}
+                      maxLength={200}
+                      disabled={busy}
+                      placeholder="Зургийн тайлбар · зурагчны нэр"
+                      aria-label="Зургийн тайлбар"
+                      onBlur={(e) => {
+                        if (e.target.value === (m.caption ?? "")) return;
+                        void caption(m.id, e.target.value);
+                      }}
+                    />
                   </span>
 
                   <span className="flex shrink-0 gap-1">
