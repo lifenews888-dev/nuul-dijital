@@ -393,6 +393,76 @@ try {
    * хадгалах) нь жинхэнэ сесс шаарддаг тул энд биш — тэр нь
    * редакцын гишүүнээр нэвтэрч шалгадаг тусдаа скриптэд.
    */
+  // ---- Хавтасны хэвлэмэл бүтэц ------------------------------------------
+  /*
+   * T1-T3: `lib/cover.ts`-ийн `textureLayer()` нь ҮНЭХЭЭР зурагддаг ба
+   * брэндийн өнгийг ҮЛ ГАЖУУДУУЛНА.
+   *
+   * Яагаад хөтчөөр: эхний хувилбар нь бараан үр тариаг `multiply`-аар,
+   * цайварыг `screen`-ээр тавьсан — vitest бүгд ногоон байсан (мөр нь
+   * зөв), харин зурагдахдаа #0A22E0 хөх бүдгэрч, #F3F0EA цаас саарал
+   * болсон. Цэвэр функцийн тест үүнийг хэзээ ч барихгүй: энэ нь ПИКСЕЛИЙН
+   * шинж. Тиймээс хавтсыг canvas-д зурж, бүтэцтэй/бүтэцгүй хоёрыг
+   * харьцуулна — палитрыг энд давтахгүй, хавтас өөрөө эталоноо авчирна.
+   */
+  await page.goto("/");
+
+  const tex = await guard("T хавтасны бүтэц", async () =>
+    page.evaluate(`(async () => {
+      const src = document.querySelector('.tape .cv img')?.getAttribute('src');
+      if (!src) return { skipped: true };
+      const svg = await (await fetch(src)).text();
+      if (!svg.includes('feTurbulence')) return { missing: true };
+      const cut = svg.lastIndexOf('<g pointer-events="none">');
+      const bare = cut < 0 ? svg : svg.slice(0, cut) + '</svg>';
+
+      const draw = (text) => new Promise((res, rej) => {
+        const img = new Image();
+        img.onload = () => {
+          const c = document.createElement('canvas');
+          c.width = 474; c.height = 900;
+          const x = c.getContext('2d');
+          x.drawImage(img, 0, 0, 474, 900);
+          // Гарчиг, хээнээс ЧӨЛӨӨТЭЙ хэсэг: баруун дээд булангийн доод тал
+          res(x.getImageData(300, 100, 120, 24).data);
+        };
+        img.onerror = () => rej(new Error('зурагдсангүй'));
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(text);
+      });
+
+      const stat = (d) => {
+        let n = 0, s = [0, 0, 0], q = 0;
+        for (let i = 0; i < d.length; i += 4) {
+          n++; s[0] += d[i]; s[1] += d[i + 1]; s[2] += d[i + 2];
+        }
+        const m = s.map((v) => v / n);
+        for (let i = 0; i < d.length; i += 4) {
+          const l = (d[i] + d[i + 1] + d[i + 2]) / 3;
+          q += (l - (m[0] + m[1] + m[2]) / 3) ** 2;
+        }
+        return { mean: m, sd: Math.sqrt(q / n), sat: Math.max(...m) - Math.min(...m) };
+      };
+
+      const a = stat(await draw(bare));
+      const b = stat(await draw(svg));
+      return {
+        drift: Math.max(...a.mean.map((v, i) => Math.abs(v - b.mean[i]))),
+        satLoss: a.sat - b.sat,
+        sdGain: b.sd - a.sd,
+      };
+    })()`),
+  );
+
+  if (tex?.skipped) {
+    pass.push("T хавтас байхгүй — алгасав");
+  } else if (tex?.missing) {
+    check("T1 хавтсанд бүтэц байна", false, "feTurbulence олдсонгүй");
+  } else if (tex) {
+    check("T1 бүтэц үнэхээр зурагдана", tex.sdGain > 0.8, `барзгар ${tex.sdGain.toFixed(2)}`);
+    check("T2 брэндийн өнгө шилжихгүй", tex.drift < 14, `шилжилт ${tex.drift.toFixed(1)}/255`);
+    check("T3 өнгө ханамж алдагдахгүй", tex.satLoss < 14, `ханамж -${tex.satLoss.toFixed(1)}`);
+  }
+
   for (const [name, path] of [
     ["E1 шинэ мэдээ хаалгатай", "/studio/news/new"],
     ["E2 засварлагч хаалгатай", "/studio/news/some-id"],

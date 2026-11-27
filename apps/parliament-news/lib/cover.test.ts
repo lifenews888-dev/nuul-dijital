@@ -10,6 +10,8 @@ import {
   motifSvg,
   coverSvg,
   coverInner,
+  textureDefs,
+  textureLayer,
   type CoverInput,
 } from "./cover";
 
@@ -306,5 +308,132 @@ describe("coverInner — plain", () => {
     const svg = coverInner({ ...input, plain: true, imageUrl: "https://example.mn/a.jpg" });
     expect(svg).toContain("<image");
     expect(svg).not.toContain("<text");
+  });
+});
+
+/**
+ * Хэвлэмэл цаасны бодит бүтэц.
+ *
+ * Лавлагаа (`reference/vhs-archive.html`) нь гурван давхаргаар бодит мэт
+ * болгодог: 220px-ийн `feTurbulence` үр тариа `mix-blend-mode:multiply`-аар,
+ * гэрлийн градиент, гүн сүүдэр. Эхний хоёр нь ЗУРАГТ биш CSS-д байсан тул
+ * `<img src="/cover/...">`-ээр гарах хавтсанд (нүүр, тэжээл, карт) хүрдэггүй.
+ * Тиймээс энд SVG-ийн ДОТОР тавьсан — таван хэрэглэгч бүгд нэг адил харагдана.
+ */
+describe("хэвлэмэл бүтэц — textureDefs", () => {
+  it("үр тариа ба бэхний толбо — хоёр давтамжит хээ", () => {
+    const d = textureDefs();
+    expect((d.match(/<pattern /g) ?? []).length).toBe(2);
+    expect((d.match(/feTurbulence/g) ?? []).length).toBe(2);
+  });
+
+  it("үр тариа нь ТАСРАЛТГҮЙ хавтгайрна — хээний зааг харагдахгүй", () => {
+    const d = textureDefs();
+    expect((d.match(/stitchTiles="stitch"/g) ?? []).length).toBe(2);
+    // filter-ийн муж нь хээний хэмжээтэй ЯГ тэнцэнэ, эс тэгвээс зааг гарна
+    expect((d.match(/filterUnits="userSpaceOnUse"/g) ?? []).length).toBe(2);
+  });
+
+  /**
+   * `feTurbulence` нь ӨНГӨ БОЛОН ТУНГАЛАГ дөрвүүлэнг нь санамсаргүй гаргадаг.
+   * Тунгалагийг нь 1 болгож тогтоохгүй бол хээ нь толбо толбоор цоорч,
+   * үр тариа биш, бохир шиг харагдана.
+   */
+  it("тунгалагийг 1 болгож тогтооно — зөвхөн гэрэлтүүлэг нь дуугарна", () => {
+    expect((textureDefs().match(/0 0 0 0 1"/g) ?? []).length).toBe(2);
+  });
+
+  it("булангийн винет", () => {
+    expect(textureDefs()).toContain("<radialGradient");
+  });
+
+  it("тогтвортой — нэг л гаргалт", () => {
+    expect(textureDefs()).toBe(textureDefs());
+  });
+});
+
+describe("хэвлэмэл бүтэц — textureLayer", () => {
+  /**
+   * ЗӨВХӨН `overlay`. `multiply` нь дарж, `screen` нь цайруулдаг — хоёулаа
+   * гадаргууг саарал руу татна: #0A22E0 хөх нь бүдгэрч, #F3F0EA цаас нь
+   * саарал болсон. `overlay` нь дунд саарал дээр ЮУ Ч ХИЙДЭГГҮЙ тул
+   * дунджаараа 0 нөлөөтэй: гадаргуу л барзгарна, брэндийн өнгө хэвээр.
+   */
+  it("зөвхөн overlay — брэндийн өнгийг саарал руу татахгүй", () => {
+    const l = textureLayer();
+    expect((l.match(/mix-blend-mode:overlay/g) ?? []).length).toBe(2);
+    expect(l).not.toContain("multiply");
+    expect(l).not.toContain("screen");
+  });
+
+  /** Хэт хүчтэй бүтэц нь гарчгийг уншигдахгүй болгоно. */
+  it("бүтцийн нийт хүч 0.3-аас хэтрэхгүй", () => {
+    // зөвхөн хөшиг давхаргууд — `stroke-opacity` нь шугамынх, гадаргууг хардаггүй
+    const sum = [...textureLayer().matchAll(/[^-]opacity="\.(\d+)"/g)].reduce(
+      (a, m) => a + Number("0." + m[1]),
+      0,
+    );
+    expect(sum).toBeLessThanOrEqual(0.3);
+  });
+
+  it("давхарга бүр хавтасны бүтэн хэмжээг дүүргэнэ", () => {
+    const l = textureLayer();
+    expect((l.match(/width="474" height="900"/g) ?? []).length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("хайчилсан хажуу — гэрэл тусах цаасны зузаан", () => {
+    expect(textureLayer()).toContain("stroke");
+  });
+
+  it("бүтэц нь дарагдахгүй — pointer, aria-д оролцохгүй", () => {
+    expect(textureLayer()).not.toContain("<text");
+  });
+});
+
+describe("coverInner — бодит хэвлэлийн бүтэц", () => {
+  const base: CoverInput = {
+    title: "Төсвийн хэлэлцүүлэг",
+    kicker: null,
+    lead: "Товч агуулга",
+    categoryName: "Төсөв",
+    motif: "bars",
+    theme: 0,
+    look: null,
+    imageUrl: null,
+    featured: false,
+  };
+
+  it("хавтас бүрт бүтэц орно", () => {
+    expect(coverInner(base)).toContain(textureLayer());
+    expect(coverInner(base)).toContain(textureDefs());
+  });
+
+  it("бүтэц нь ТЕКСТИЙН ДАРАА — бэх цаасан дээр, цаас бэхэн дээр биш", () => {
+    const svg = coverInner(base);
+    expect(svg.indexOf(textureLayer())).toBeGreaterThan(svg.lastIndexOf("</text>"));
+  });
+
+  it("текстгүй хавтсанд ч бүтэц байна — стори нь мөн адил цаасан дээр", () => {
+    const svg = coverInner({ ...base, plain: true });
+    expect(svg).toContain(textureLayer());
+    expect(svg).not.toContain("<text");
+  });
+
+  it("texture:false үед нэг ч давхарга гарахгүй", () => {
+    const svg = coverInner({ ...base, texture: false });
+    expect(svg).not.toContain("feTurbulence");
+    expect(svg).not.toContain("mix-blend-mode");
+    expect(svg).toContain("Төсвийн");
+  });
+
+  it("зурагтай хавтсанд duotone ба бүтэц НЭГ defs-д", () => {
+    const svg = coverInner({ ...base, imageUrl: "https://ex.mn/a.jpg" });
+    expect((svg.match(/<defs>/g) ?? []).length).toBe(1);
+    expect(svg).toContain('type="saturate"');
+    expect(svg).toContain("feTurbulence");
+  });
+
+  it("бүтэц нь ангиллын өнгийг гажуудуулахгүй — дэвсгэр rect хэвээр", () => {
+    expect(coverInner({ ...base, theme: 2 })).toContain('fill="#E86522"');
   });
 });
