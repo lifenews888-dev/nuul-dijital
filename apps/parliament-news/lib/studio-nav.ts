@@ -12,8 +12,14 @@ import { canCreate, canEditSettings, type Actor } from "./permissions";
 export type NavItem = { href: string; label: string };
 
 export function navFor(actor: Actor): NavItem[] {
-  /** Жагсаалтыг ҮҮРЭГ БҮР харна — шинжээч ч, оператор ч */
-  const items: NavItem[] = [{ href: "/studio/news", label: "Мэдээнүүд" }];
+  /**
+   * Самбар ба жагсаалтыг ҮҮРЭГ БҮР харна — шинжээч ч, оператор ч.
+   * Самбар нь нэвтэрмэгц буух хуудас тул эхэнд.
+   */
+  const items: NavItem[] = [
+    { href: "/studio", label: "Самбар" },
+    { href: "/studio/news", label: "Мэдээнүүд" },
+  ];
 
   if (canCreate(actor)) {
     items.push({ href: "/studio/news/new", label: "Шинэ мэдээ" });
