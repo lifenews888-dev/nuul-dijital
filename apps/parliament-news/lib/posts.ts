@@ -63,7 +63,12 @@ const MEDIA_SELECT = {
 /** Жагсаалтад: хавтасны зураг нэг л хэрэгтэй */
 const LIST_INCLUDE = {
   category: CATEGORY_SELECT,
-  media: { ...MEDIA_SELECT, take: 1 },
+  /*
+   * Хавтас нь ЗУРАГ байх ёстой. `kind` шүүлтгүй бол эхлээд оруулсан
+   * видео `order: 0`-тэй болж хавтас болох ба `<image href="…mp4">` нь
+   * хоосон талбай болж зурагдана.
+   */
+  media: { ...MEDIA_SELECT, where: { kind: { not: "video" } }, take: 1 },
 } satisfies Prisma.NewsPostInclude;
 
 /** Нийтлэлийн хуудсанд: бүх медиа */

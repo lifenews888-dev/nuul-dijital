@@ -68,7 +68,17 @@ export async function homeData(): Promise<HomeData> {
     }),
     // Стори нь нийтийн хаалгаар БА хугацаа нь дуусаагүй байх ёстой
     db.newsPost.findMany({
-      where: { ...gate, story: true, storyUntil: { gt: now } },
+      /*
+       * Хугацаагүй стори (`storyUntil` нь NULL) нь ҮҮРД харагдана —
+       * artifact-ийн `index.html:1007`: `!o.storyUntil || +o.storyUntil > now`.
+       * SQL-д NULL нь `>`-г ХЭЗЭЭ Ч хангахгүй тул зөвхөн `gt` бичвэл
+       * «Хугацаагүй» сонгосон стори огт гарахгүй болно.
+       */
+      where: {
+        ...gate,
+        story: true,
+        OR: [{ storyUntil: null }, { storyUntil: { gt: now } }],
+      },
       ...PUBLIC_LIST,
       take: STORY_TAKE,
     }),
