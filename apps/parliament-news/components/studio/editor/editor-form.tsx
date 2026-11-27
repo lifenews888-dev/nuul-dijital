@@ -19,6 +19,8 @@ import { SectionBasic } from "./section-basic";
 import { SectionSrc } from "./section-src";
 import { SectionBill } from "./section-bill";
 import { SectionPub } from "./section-pub";
+import { SectionLook } from "./section-look";
+import { CoverPreview } from "./cover-preview";
 
 /**
  * Мэдээ бэлтгэх форм — admin.html-ийн `#v-edit`.
@@ -64,6 +66,12 @@ export function EditorForm({
     authorId: post?.authorId ?? actor.userId,
   };
   const allowed = new Set<PermSection>(sectionsFor(actor, ref));
+
+  /**
+   * Эхний зураг нь хавтас болно — admin.html-ийн «эхний зураг ном
+   * хавтас болно». Зураг оруулах нь Task 10, тэр хүртэл хээ зурагдана.
+   */
+  const coverImage = post?.media.find((m) => m.kind === "image")?.url ?? null;
 
   /**
    * Хадгалаагүй өөрчлөлттэй хуудас орхиход хөтөч сэрэмжлүүлнэ.
@@ -129,23 +137,41 @@ export function EditorForm({
 
       <FlowBar status={ref.status} reviewNote={post?.reviewNote ?? null} />
 
-      {allowed.has("basic") ? (
-        <SectionBasic
-          state={state}
-          dispatch={dispatch}
-          categories={categories}
-          autoFormat={autoFormat}
-          onAutoFormatChange={setAutoFormat}
-        />
-      ) : null}
+      {/*
+        Хоёр багана: зүүн талд форм, баруун талд ном. Урьдчилан харалт нь
+        наалддаг тул гүйлгэх үед ч харагдана — редактор бичих бүртээ
+        үр дүнг нь хардаг.
+      */}
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">
+        <div className="min-w-0">
+          {allowed.has("basic") ? (
+            <SectionBasic
+              state={state}
+              dispatch={dispatch}
+              categories={categories}
+              autoFormat={autoFormat}
+              onAutoFormatChange={setAutoFormat}
+            />
+          ) : null}
 
-      {allowed.has("bill") ? <SectionBill state={state} dispatch={dispatch} /> : null}
+          {allowed.has("look") ? (
+            <SectionLook state={state} dispatch={dispatch} imageUrl={coverImage} />
+          ) : null}
 
-      {allowed.has("src") ? <SectionSrc state={state} dispatch={dispatch} /> : null}
+          {allowed.has("bill") ? <SectionBill state={state} dispatch={dispatch} /> : null}
 
-      {allowed.has("pub") ? (
-        <SectionPub state={state} dispatch={dispatch} actor={actor} />
-      ) : null}
+          {allowed.has("src") ? <SectionSrc state={state} dispatch={dispatch} /> : null}
+
+          {allowed.has("pub") ? (
+            <SectionPub state={state} dispatch={dispatch} actor={actor} />
+          ) : null}
+        </div>
+
+        {/* Хавтсыг ХЭНД Ч харуулна — засах эрхгүй ч юу нийтлэгдэхийг харах нь зөв */}
+        <div className="order-first lg:order-none">
+          <CoverPreview state={state} imageUrl={coverImage} />
+        </div>
+      </div>
 
       {allowed.size === 0 ? (
         <p className="rounded-[14px] border border-line bg-pan px-4 py-8 text-center font-head text-sm text-muted">
