@@ -18,9 +18,16 @@ const config: Config = {
         muted: "var(--muted)",
         cob: "var(--cob)",
         red: "var(--red)",
-        /* Студийн нэмэлтүүд — admin.html-ийн --pan, --line, --ok, --warn */
+        /*
+         * Студийн нэмэлтүүд. Утга нь `app/studio.css`-д `.studio` дээр
+         * тавигдана — нийтийн хуудсанд эдгээр токен БАЙХГҮЙ, тиймээс
+         * эндээс өнгө нийтийн хуудсанд гоожиж чадахгүй.
+         */
         pan: "var(--pan)",
         line: "var(--line)",
+        soft: "var(--soft)",
+        rail: "var(--rail)",
+        inp: "var(--inp)",
         ok: "var(--ok)",
         warn: "var(--warn)",
         /**

@@ -18,12 +18,6 @@
   /* Tailwind-ийн border-rule/NN нь тунгалаг var()-д alpha нэмж чаддаггүй тул
      суваг болгон ч өгнө: rgb(var(--rule-rgb) / <alpha-value>) */
   --rule-rgb: 20 20 20;
-  /* Студийн нэмэлт токенууд — `site-v2/admin.html:16` */
-  --pan: #ffffff;
-  --line: #e2ddd2;
-  --inp: #fbfaf8;
-  --ok: #11795a;
-  --warn: #9a6a00;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   color-scheme: light;
 }
@@ -38,11 +32,6 @@
     --red: #ff8a4c;
     --rule: rgba(236, 232, 224, 0.75);
     --rule-rgb: 236 232 224;
-    --pan: #151d35;
-    --line: #263055;
-    --inp: #0c1328;
-    --ok: #5fd3a8;
-    --warn: #f1c15b;
     color-scheme: dark;
   }
 }
@@ -56,11 +45,6 @@
   --red: #ff8a4c;
   --rule: rgba(236, 232, 224, 0.75);
   --rule-rgb: 236 232 224;
-  --pan: #151d35;
-  --line: #263055;
-  --inp: #0c1328;
-  --ok: #5fd3a8;
-  --warn: #f1c15b;
   color-scheme: dark;
 }
 

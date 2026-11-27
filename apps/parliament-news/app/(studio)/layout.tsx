@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
+import "../studio.css";
 
 /**
  * РЕДАКЦЫН бүрхүүл — нийтийн толгой, гүйдэг мөр, хөлгүй.
  *
- * Энд ХААЛГА БАЙХГҮЙ: нэвтрэх хуудас нь өөрөө `/studio/signin`-д байх тул
- * энэ бүрхүүл `requireStudio()` дуудвал нэвтрээгүй хүн нэвтрэх хуудас руу
- * хязгааргүй чиглүүлэгдэнэ. Хаалга нь `studio/(desk)/layout.tsx`-д —
- * нэвтрэх хуудас түүний ГАДНА.
+ * `.studio` класс нь `app/studio.css`-ийн токенуудыг ЗӨВХӨН энэ дэд модонд
+ * нээнэ: `bg-pan`, `border-line`, `bg-rail` гэх утилитууд нийтийн хуудсанд
+ * утгагүй, тиймээс студийн өнгө тийшээ гоожиж чадахгүй.
+ *
+ * Энд ХААЛГА БАЙХГҮЙ: нэвтрэх хуудас нь `/studio/signin`-д, энэ бүрхүүлийн
+ * ДОТОР байх тул `requireStudio()`-г энд дуудвал нэвтрээгүй хүн нэвтрэх
+ * хуудас руугаа хязгааргүй чиглүүлэгдэнэ. Хаалга нь `studio/(desk)`-д.
  */
 export const metadata: Metadata = {
   title: { default: "Редакц", template: "%s — Редакц" },
@@ -15,5 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default function StudioLayout({ children }: { children: React.ReactNode }) {
-  return <div className="flex min-h-screen flex-1 flex-col bg-paper text-ink">{children}</div>;
+  return (
+    <div className="studio flex min-h-screen flex-1 flex-col bg-paper text-ink">{children}</div>
+  );
 }
