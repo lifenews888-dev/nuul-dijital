@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { randomBytes } from "node:crypto";
 import { prisma } from "@nuul/db-news";
 import { tenantSlug } from "./tenant";
 import { recentActivity, ACTIVITY_MAX } from "./activity-feed";
@@ -12,7 +13,15 @@ import { recentActivity, ACTIVITY_MAX } from "./activity-feed";
  * Энэ тест нь нэр ШИЙДЭГДЭЖ байгааг, шийдэгдэхгүй үед мөр ХООСРОХГҮЙ
  * байгааг барина.
  */
-const sfx = Date.now().toString(36);
+/**
+ * Файл тус бүрийн дагавар. `Date.now()` ДАНГААРАА хүрэхгүй: vitest нь
+ * файлуудыг зэрэгцээ ажиллуулдаг тул хоёр файл нэг миллисекундэд эхэлж,
+ * ИЖИЛ дагавар авч болно. Тэр үед нэг файлын `sfx`-ээр хийсэн хайлт
+ * нөгөөгийн өгөгдлийг олж, тест үл баригдах болно (бодитоор тохиолдсон:
+ * `posts.db.test.ts`-ийн «том/жижиг үсэг» тест 4 ажиллуулалтаас 2-т
+ * улаан болов). Санамсаргүй сүүл нь түүнийг хаана.
+ */
+const sfx = `${Date.now().toString(36)}${randomBytes(3).toString("hex")}`;
 const EMAIL = { me: `af-me-${sfx}@test.local` };
 const NOTE = { mine: `af-note-${sfx}`, orphan: `af-orphan-${sfx}` };
 

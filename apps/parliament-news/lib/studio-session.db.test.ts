@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { randomBytes } from "node:crypto";
 import { prisma } from "@nuul/db-news";
 import { tenantSlug } from "./tenant";
 import { getNewsRole } from "./trpc";
@@ -15,7 +16,15 @@ import { memberActor } from "./studio-session";
  * `home-data.db.test.ts`-ийн загвараар: жинхэнэ tenant дотор түр хэрэглэгч
  * үүсгээд төгсгөлд устгана, tenant-ыг УСТГАХГҮЙ.
  */
-const sfx = Date.now().toString(36);
+/**
+ * Файл тус бүрийн дагавар. `Date.now()` ДАНГААРАА хүрэхгүй: vitest нь
+ * файлуудыг зэрэгцээ ажиллуулдаг тул хоёр файл нэг миллисекундэд эхэлж,
+ * ИЖИЛ дагавар авч болно. Тэр үед нэг файлын `sfx`-ээр хийсэн хайлт
+ * нөгөөгийн өгөгдлийг олж, тест үл баригдах болно (бодитоор тохиолдсон:
+ * `posts.db.test.ts`-ийн «том/жижиг үсэг» тест 4 ажиллуулалтаас 2-т
+ * улаан болов). Санамсаргүй сүүл нь түүнийг хаана.
+ */
+const sfx = `${Date.now().toString(36)}${randomBytes(3).toString("hex")}`;
 const EMAIL = {
   member: `studio-member-${sfx}@test.local`,
   outsider: `studio-outsider-${sfx}@test.local`,

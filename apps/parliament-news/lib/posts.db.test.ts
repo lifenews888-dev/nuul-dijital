@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { randomBytes } from "node:crypto";
 import { prisma } from "@nuul/db-news";
 import { tenantSlug } from "./tenant";
 import {
@@ -22,7 +23,15 @@ import {
  * Батламжууд нь өөрийн дагавартай мэдээнүүдээр хязгаарлагдана: санд демо
  * контент байж болно, тэднээс хамаарах тест хэврэг болно.
  */
-const sfx = Date.now().toString(36);
+/**
+ * Файл тус бүрийн дагавар. `Date.now()` ДАНГААРАА хүрэхгүй: vitest нь
+ * файлуудыг зэрэгцээ ажиллуулдаг тул хоёр файл нэг миллисекундэд эхэлж,
+ * ИЖИЛ дагавар авч болно. Тэр үед нэг файлын `sfx`-ээр хийсэн хайлт
+ * нөгөөгийн өгөгдлийг олж, тест үл баригдах болно (бодитоор тохиолдсон:
+ * `posts.db.test.ts`-ийн «том/жижиг үсэг» тест 4 ажиллуулалтаас 2-т
+ * улаан болов). Санамсаргүй сүүл нь түүнийг хаана.
+ */
+const sfx = `${Date.now().toString(36)}${randomBytes(3).toString("hex")}`;
 const S = {
   pub: `pub-${sfx}`,
   draft: `draft-${sfx}`,

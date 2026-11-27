@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
+import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@nuul/db-news";
 import type { NewsRole, NewsStatus } from "@nuul/db-news";
@@ -23,7 +24,15 @@ import { appRouter } from "./index";
  */
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
-const sfx = Date.now().toString(36);
+/**
+ * Файл тус бүрийн дагавар. `Date.now()` ДАНГААРАА хүрэхгүй: vitest нь
+ * файлуудыг зэрэгцээ ажиллуулдаг тул хоёр файл нэг миллисекундэд эхэлж,
+ * ИЖИЛ дагавар авч болно. Тэр үед нэг файлын `sfx`-ээр хийсэн хайлт
+ * нөгөөгийн өгөгдлийг олж, тест үл баригдах болно (бодитоор тохиолдсон:
+ * `posts.db.test.ts`-ийн «том/жижиг үсэг» тест 4 ажиллуулалтаас 2-т
+ * улаан болов). Санамсаргүй сүүл нь түүнийг хаана.
+ */
+const sfx = `${Date.now().toString(36)}${randomBytes(3).toString("hex")}`;
 
 const S = {
   draft: `wf-draft-${sfx}`,
@@ -323,11 +332,19 @@ describe("studioNews.remove", () => {
    * хэнийх ч биш болсон ч «хэн, хэзээ устгасан» гэдэг нь үлдэх ёстой.
    */
   it("устгалт бүртгэлд үлдэнэ", async () => {
-    const before = await prisma.newsActivity.count({ where: { tenantId, action: "delete" } });
+    /**
+     * `action: "delete"`-ээр тоолж БОЛОХГҮЙ: өөр тестийн файл нэг л
+     * tenant дотор зэрэг ажиллаж, мөн тийм мөр үүсгэнэ — тоолол нь
+     * хоёр тестийн хооронд хөдөлж, аль нэг нь үл баригдах болно.
+     * `note` нь устгасан мэдээний slug тул энэ файлын дагавартай.
+     */
     await caller("CHIEF").studioNews.remove({ id: ids.trash });
-    expect(await prisma.newsActivity.count({ where: { tenantId, action: "delete" } })).toBe(
-      before + 1,
-    );
+    const row = await prisma.newsActivity.findFirst({
+      where: { tenantId, action: "delete", note: S.trash },
+    });
+    expect(row).not.toBeNull();
+    expect(row?.postId).toBeNull();
+    expect(row?.userId).toBe(myId);
   });
 
   it("өөр tenant-ийн мэдээг устгахгүй", async () => {
