@@ -125,6 +125,9 @@ model NewsPost {
   theme       Int          @default(0)
   featured    Boolean      @default(false)
   story       Boolean      @default(false)
+  /// Сторины БОСОО медиа (9:16). Байхгүй бол мэдээний зураг,
+  /// тэр ч байхгүй бол текстгүй хавтас руу эргэнэ.
+  storyUrl   String?
   storyUntil  DateTime?
   tags        String[]
   channels    String[]
@@ -314,6 +317,9 @@ model Banner {
   tenantId  String
   tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   imageUrl  String
+  /// Медиа төрөл: "image" (зураг, GIF) эсвэл "video". GIF нь зураг —
+  /// хөтөч өөрөө хөдөлгөнө, <video> хэрэггүй.
+  kind      String    @default("image")
   linkUrl   String?
   title     String?   @db.VarChar(80)
   placement String    @default("both")

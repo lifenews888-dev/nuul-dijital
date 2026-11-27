@@ -10,3 +10,4 @@ dist/
 
 # Prisma-ийн үүсгэсэн мэдээний client
 packages/db-news/generated/
+backups/
