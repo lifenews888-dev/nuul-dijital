@@ -115,10 +115,26 @@ beforeAll(async () => {
 });
 
 /** Тест бүр цэвэр төлөвөөс эхэлнэ — мутаци нь мөрийг хөдөлгөдөг */
+/** Хуулийн төсөл ба шатууд нь мэдээ рүү заадаг — ТЭДНИЙГ ЭХЛЭЭД устгана */
+async function dropFixtures(): Promise<void> {
+  const posts = await prisma.newsPost.findMany({
+    where: { slug: { in: Object.values(S) } },
+    select: { id: true },
+  });
+  const postIds = posts.map((p) => p.id);
+  const bills = await prisma.bill.findMany({
+    where: { postId: { in: postIds } },
+    select: { id: true },
+  });
+  await prisma.billStage.deleteMany({ where: { billId: { in: bills.map((b) => b.id) } } });
+  await prisma.bill.deleteMany({ where: { postId: { in: postIds } } });
+  await prisma.newsActivity.deleteMany({ where: { postId: { in: postIds } } });
+  await prisma.newsPost.deleteMany({ where: { slug: { in: Object.values(S) } } });
+}
+
 beforeEach(async () => {
   vi.mocked(revalidatePath).mockClear();
-  await prisma.newsActivity.deleteMany({ where: { postId: { in: Object.values(ids) } } });
-  await prisma.newsPost.deleteMany({ where: { slug: { in: Object.values(S) } } });
+  await dropFixtures();
 
   ids.draft = await makePost(S.draft, "DRAFT", myId, tenantId);
   ids.review = await makePost(S.review, "REVIEW", myId, tenantId);
@@ -131,8 +147,8 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+  await dropFixtures();
   await prisma.newsActivity.deleteMany({ where: { tenantId: { in: [tenantId, foreignTenantId] } } });
-  await prisma.newsPost.deleteMany({ where: { slug: { in: Object.values(S) } } });
   await prisma.user.deleteMany({ where: { email: { in: Object.values(EMAIL) } } });
   await prisma.tenant.delete({ where: { id: foreignTenantId } });
 });
@@ -368,6 +384,133 @@ describe("studioNews.save", () => {
     });
     const row = await prisma.newsPost.findUnique({ where: { id: ids.draft } });
     expect(row?.look).not.toHaveProperty("hog");
+  });
+});
+
+/**
+ * Хуулийн төсөл — `Bill` ба `BillStage` нь ТУСДАА хүснэгт.
+ *
+ * Засварлагч нь нэг хадгалалтаар мэдээ, төсөл, таван шатыг бичнэ.
+ * Унтраахад төсөл устах ёстой: үлдвэл нийтлэлийн хуудас хуучин шатыг
+ * харуулсаар байна.
+ */
+describe("studioNews.save — хуулийн төсөл", () => {
+  const D = "2026-11-27";
+  const STEPS = [0, 1, 2, 3, 4].map((i) => ({ label: String(i), note: `Tailbar ${i}` }));
+
+  it("төслийг үүсгэж, шат ба саналыг хадгална", async () => {
+    await caller("LEGAL").studioNews.save({
+      id: ids.draft,
+      title: "IGNORED",
+      date: D,
+      billEnabled: true,
+      billStage: 3,
+      votesYes: 40,
+      votesNo: 12,
+      billSteps: STEPS,
+    });
+
+    const bill = await prisma.bill.findFirst({
+      where: { postId: ids.draft },
+      include: { stages: { orderBy: { index: "asc" } } },
+    });
+    expect(bill?.stage).toBe(3);
+    expect(bill?.votesYes).toBe(40);
+    expect(bill?.votesNo).toBe(12);
+    expect(bill?.stages).toHaveLength(5);
+    expect(bill?.stages[2].note).toBe("Tailbar 2");
+  });
+
+  it("дахин хадгалахад төсөл давхардахгүй", async () => {
+    const save = () =>
+      caller("LEGAL").studioNews.save({
+        id: ids.draft,
+        title: "IGNORED",
+        date: D,
+        billEnabled: true,
+        billStage: 1,
+        billSteps: STEPS,
+      });
+    await save();
+    await save();
+    expect(await prisma.bill.count({ where: { postId: ids.draft } })).toBe(1);
+    expect(
+      await prisma.billStage.count({
+        where: { bill: { postId: ids.draft } },
+      }),
+    ).toBe(5);
+  });
+
+  it("шатыг шинэчилнэ, хуучныг үлдээхгүй", async () => {
+    await caller("LEGAL").studioNews.save({
+      id: ids.draft,
+      title: "IGNORED",
+      date: D,
+      billEnabled: true,
+      billStage: 2,
+      billSteps: STEPS.map((x, i) => ({ ...x, note: `Shinechilsen ${i}` })),
+    });
+    const bill = await prisma.bill.findFirst({
+      where: { postId: ids.draft },
+      include: { stages: { orderBy: { index: "asc" } } },
+    });
+    expect(bill?.stages[0].note).toBe("Shinechilsen 0");
+  });
+
+  it("унтраавал төсөл устана", async () => {
+    await caller("LEGAL").studioNews.save({
+      id: ids.draft,
+      title: "IGNORED",
+      date: D,
+      billEnabled: true,
+      billStage: 1,
+      billSteps: STEPS,
+    });
+    expect(await prisma.bill.count({ where: { postId: ids.draft } })).toBe(1);
+
+    await caller("LEGAL").studioNews.save({
+      id: ids.draft,
+      title: "IGNORED",
+      date: D,
+      billEnabled: false,
+    });
+    expect(await prisma.bill.count({ where: { postId: ids.draft } })).toBe(0);
+  });
+
+  it("шат нь 0-4-ийн хооронд", async () => {
+    await expect(
+      caller("LEGAL").studioNews.save({
+        id: ids.draft,
+        title: "IGNORED",
+        date: D,
+        billEnabled: true,
+        billStage: 9,
+      }),
+    ).rejects.toThrow();
+  });
+
+  it("эрхгүй үүрэг төсөлд хүрэхгүй", async () => {
+    await expect(
+      caller("SOCIAL").studioNews.save({
+        id: ids.draft,
+        title: "IGNORED",
+        date: D,
+        billEnabled: true,
+        billStage: 2,
+      }),
+    ).rejects.toThrow(/эрх/);
+  });
+
+  it("төслийн гарчиг нь мэдээнийхээс авагдана", async () => {
+    await caller("CHIEF").studioNews.save({
+      id: ids.draft,
+      title: "Tusgai huuliin tosol",
+      date: D,
+      billEnabled: true,
+      billStage: 0,
+    });
+    const bill = await prisma.bill.findFirst({ where: { postId: ids.draft } });
+    expect(bill?.title).toBe("Tusgai huuliin tosol");
   });
 });
 

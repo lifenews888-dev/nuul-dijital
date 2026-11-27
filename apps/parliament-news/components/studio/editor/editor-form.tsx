@@ -16,6 +16,9 @@ import { trpc, trpcMessage } from "../../../lib/trpc-client";
 import type { StudioPostFull } from "../../../lib/studio-post";
 import { FlowBar } from "./flow-bar";
 import { SectionBasic } from "./section-basic";
+import { SectionSrc } from "./section-src";
+import { SectionBill } from "./section-bill";
+import { SectionPub } from "./section-pub";
 
 /**
  * Мэдээ бэлтгэх форм — admin.html-ийн `#v-edit`.
@@ -134,6 +137,14 @@ export function EditorForm({
           autoFormat={autoFormat}
           onAutoFormatChange={setAutoFormat}
         />
+      ) : null}
+
+      {allowed.has("bill") ? <SectionBill state={state} dispatch={dispatch} /> : null}
+
+      {allowed.has("src") ? <SectionSrc state={state} dispatch={dispatch} /> : null}
+
+      {allowed.has("pub") ? (
+        <SectionPub state={state} dispatch={dispatch} actor={actor} />
       ) : null}
 
       {allowed.size === 0 ? (

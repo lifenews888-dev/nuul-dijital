@@ -205,6 +205,53 @@ export const studioNewsRouter = router({
       id = created.id;
     }
 
+    /**
+     * Хуулийн төсөл нь ТУСДАА хүснэгт (`Bill` + `BillStage`).
+     *
+     * Унтраахад УСТГАНА: үлдээвэл нийтлэлийн хуудас хуучин шатыг
+     * харуулсаар байх ба редактор «болиулсан» гэж бодно. Шатуудыг
+     * бүхэлд нь сольдог — таван мөр тул ялгаварлан шинэчлэх нь
+     * нарийн төвөгтэй, ашиг нь алга.
+     */
+    if (data.billEnabled !== undefined) {
+      const current = await ctx.db.bill.findFirst({
+        where: { postId: id },
+        select: { id: true },
+      });
+
+      if (!data.billEnabled) {
+        if (current) {
+          await ctx.db.billStage.deleteMany({ where: { billId: current.id } });
+          await ctx.db.bill.deleteMany({ where: { id: current.id } });
+        }
+      } else {
+        const billData = {
+          title: title || existing?.title || "",
+          stage: data.billStage ?? 0,
+          votesYes: data.votesYes ?? 0,
+          votesNo: data.votesNo ?? 0,
+        };
+
+        const billId = current
+          ? (await ctx.db.bill.updateMany({ where: { id: current.id }, data: billData }),
+            current.id)
+          : (await ctx.db.bill.create({ data: { ...billData, postId: id }, select: { id: true } }))
+              .id;
+
+        if (data.billSteps !== undefined) {
+          await ctx.db.billStage.deleteMany({ where: { billId } });
+          await ctx.db.billStage.createMany({
+            data: data.billSteps.map((step, index) => ({
+              tenantId: ctx.tenantId,
+              billId,
+              index,
+              note: step.note || null,
+            })),
+          });
+        }
+      }
+    }
+
     await logActivity(ctx.db, {
       tenantId: ctx.tenantId,
       postId: id,
