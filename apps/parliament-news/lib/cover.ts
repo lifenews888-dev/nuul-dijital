@@ -79,6 +79,12 @@ export type CoverInput = {
    * зорилтын дагуу нэмэв. Өгөөгүй бол огнооны мөр гарахгүй.
    */
   date?: Date | null;
+  /**
+   * Хэвлэмэл цаасны бүтэц (`textureLayer`). Анхдагч нь ОН — хавтас нь
+   * бодит объект мэт харагдах нь зорилго. `false` нь зөвхөн бүтцийн
+   * зардлыг шалгах, эсвэл Satori мэт filter дэмжихгүй зурагчдад.
+   */
+  texture?: boolean;
 };
 
 /** `(r*299 + g*587 + b*114)/1000 > 150` — artifact-ийн `light()`. Яг 150 нь цайвар БИШ. */
@@ -255,6 +261,112 @@ export function motifSvg(kind: string, fg: string, ac: string): string {
   return s;
 }
 
+/**
+ * ============ Хэвлэмэл цаасны бодит бүтэц ============
+ *
+ * Лавлагаа (`reference/vhs-archive.html`) нь гурван зүйлээр "бодит мэт"
+ * болгодог: (1) 220px-ийн `feTurbulence` үр тариаг бүтэн дэлгэцэд
+ * `mix-blend-mode`-оор, (2) гэрлийн градиент, (3) гүн сүүдэр. Хавтасны
+ * ЗУРАГ нь түүнд гараар үүсгэсэн PNG — түүнийг бид хуулж чадахгүй,
+ * бидний хавтас нь өгөгдлөөс үүсдэг вектор. Харин ОБЪЕКТЫН бодит
+ * байдлыг хуулж, бас нэг зэрэг сайжруулж чадна: лавлагаанд үр тариа нь
+ * CSS-д (`.grain`) байдаг тул тавиур дээр Л гардаг. Бидний хавтас таван
+ * газар гардаг — тавиур, нүүрний тэжээл, картууд, нийтлэлийн хуудас,
+ * редакцын урьдчилан харагдац — гурав нь `<img src="/cover/…">`, CSS
+ * хүрэхгүй. Тиймээс бүтцийг SVG-ийн ДОТОР тавьсан: таван хэрэглэгч
+ * бүгд нэг адил.
+ *
+ * ЯАГААД ЗӨВХӨН `overlay`:
+ * Эхний оролдлого нь бараан үр тариаг `multiply`-аар, цайварыг
+ * `screen`-ээр тавьсан — лавлагааных шиг. Үр дүн нь буруу байв: хоёулаа
+ * дунджаараа 0-ээс ялгаатай хөшиг тул #0A22E0 хөх бүдгэрч, #F3F0EA цаас
+ * саарал болсон. Лавлагаанд энэ нь ажилладаг, учир нь түүний гадаргуу нь
+ * бүхэлдээ бор-саарал зураг. Бидний хавтас нь ЦЭВЭР БРЭНДИЙН ӨНГӨ.
+ * `overlay` нь дунд саарал (.5) дээр юу ч хийдэггүй, зөрүү нь л
+ * гэрэлтүүлж/бараантуулна — дунджаараа 0 нөлөө, өнгө ханамж бүрэн хэвээр.
+ *
+ * Гурван давхарга:
+ *   1. `ptk` — бэхний толбо: доод давтамж, офсет хэвлэлийн бэх хэзээ ч
+ *      тэгшхэн суудаггүй.
+ *   2. `ptg` — цаасны шүд: дээд давтамж.
+ *   3. `ptv` — булангийн винет: бодит биетийн зураг булан руугаа
+ *      хэзээ ч тэгшхэн байдаггүй.
+ * Дээр нь хайчилсан хажуу — цаасны зузаан гэрэлд.
+ */
+
+const GRAIN_TILE = 150;
+const MOTTLE_TILE = 300;
+
+/**
+ * Хээний filter. Хоёр зүйл чухал:
+ *
+ * 1. `filterUnits="userSpaceOnUse"` ба муж нь хээний хэмжээтэй ЯГ тэнцүү.
+ *    Анхдагч муж нь bbox-оос 10% том тул `stitchTiles` нь 180px-ийн зааг
+ *    дээр холбож, 150px-ийн хээнд үл ялиг зураас гаргана.
+ * 2. `feColorMatrix` нь R суваг → саарал, тунгалаг → 1. `feTurbulence` нь
+ *    дөрвөн сувгийг БҮГДИЙГ санамсаргүй гаргадаг; тунгалагийг нь тогтоохгүй
+ *    бол хээ толбо толбоор цоорч, үр тариа биш бохир шиг харагдана. Гурван
+ *    сувгийн дунджийг биш, R-г авсан нь: сувгууд хоорондоо хамааралгүй тул
+ *    дундаж нь хэлбэлзлийг √3 дахин багасгана.
+ */
+function noiseFilter(
+  id: string,
+  freq: string,
+  octaves: number,
+  seed: number,
+  tile: number,
+): string {
+  return (
+    `<filter id="${id}" filterUnits="userSpaceOnUse" x="0" y="0" width="${tile}" height="${tile}" color-interpolation-filters="sRGB">` +
+    `<feTurbulence type="fractalNoise" baseFrequency="${freq}" numOctaves="${octaves}" seed="${seed}" stitchTiles="stitch"/>` +
+    `<feColorMatrix values="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1"/>` +
+    `</filter>`
+  );
+}
+
+function noiseTile(id: string, filterId: string, size: number): string {
+  return (
+    `<pattern id="${id}" width="${size}" height="${size}" patternUnits="userSpaceOnUse">` +
+    `<rect width="${size}" height="${size}" filter="url(#${filterId})"/></pattern>`
+  );
+}
+
+/**
+ * Бүтцийн `<defs>`-ийн агуулга. `id` нь ТОГТМОЛ, өнгөнөөс хамаардаггүй:
+ * нэг хуудсанд хэд хэдэн хавтас inline байвал (редакцын 8 урьдчилан
+ * харагдац) ижил `id` давхардана — агуулга нь үсэг үсгээрээ адил тул
+ * `url(#…)` бүр ижил зүйлд заана, хоосон зардал.
+ */
+export function textureDefs(): string {
+  return (
+    noiseFilter("ptfk", ".01 .014", 2, 3, MOTTLE_TILE) +
+    noiseFilter("ptfg", ".9", 3, 7, GRAIN_TILE) +
+    noiseTile("ptk", "ptfk", MOTTLE_TILE) +
+    noiseTile("ptg", "ptfg", GRAIN_TILE) +
+    `<radialGradient id="ptv" cx=".5" cy=".44" r=".78">` +
+    `<stop offset=".55" stop-color="#000" stop-opacity="0"/>` +
+    `<stop offset="1" stop-color="#000" stop-opacity=".12"/></radialGradient>`
+  );
+}
+
+/**
+ * Бүтцийн давхарга. Хавтасны агуулгын ДАРАА зурагдана — бэх цаасан дээр
+ * суудаг, цаас бэхэн дээр суудаггүй: үр тариа гарчгийг ч дамжин гарна.
+ */
+export function textureLayer(): string {
+  const full = `width="${COVER_W}" height="${COVER_H}"`;
+  return (
+    `<g pointer-events="none">` +
+    `<rect ${full} fill="url(#ptk)" opacity=".1" style="mix-blend-mode:overlay"/>` +
+    `<rect ${full} fill="url(#ptg)" opacity=".17" style="mix-blend-mode:overlay"/>` +
+    `<rect ${full} fill="url(#ptv)"/>` +
+    `<path d="M1 ${COVER_H - 1}V1h${COVER_W - 2}" fill="none" stroke="#fff" stroke-opacity=".17" stroke-width="1.6"/>` +
+    `<path d="M1.5 ${COVER_H - 1.5}h${COVER_W - 3}V2" fill="none" stroke="#000" stroke-opacity=".17" stroke-width="1.6"/>` +
+    `<rect x=".5" y=".5" width="${COVER_W - 1}" height="${COVER_H - 1}" fill="none" stroke="#000" stroke-opacity=".2"/>` +
+    `</g>`
+  );
+}
+
 function clamp(min: number, max: number, v: number): number {
   return Math.max(min, Math.min(max, v));
 }
@@ -357,12 +469,16 @@ export function coverInner(input: CoverInput): string {
     ? `<text x="37" y="868" font-size="18" font-weight="600">${dotDate(input.date)}</text>`
     : "";
 
+  const tex = input.texture !== false;
+  const allDefs = (usesDefs ? defs : "") + (tex ? textureDefs() : "");
+  const skin = tex ? textureLayer() : "";
+
   const ground =
-    (usesDefs ? `<defs>${defs}</defs>` : "") +
+    (allDefs ? `<defs>${allDefs}</defs>` : "") +
     `<rect width="${COVER_W}" height="${COVER_H}" fill="${bg}"/>` +
     art;
 
-  if (input.plain) return ground;
+  if (input.plain) return ground + skin;
 
   return (
     ground +
@@ -379,7 +495,8 @@ export function coverInner(input: CoverInput): string {
     summary +
     featured +
     dateLine +
-    `</g>`
+    `</g>` +
+    skin
   );
 }
 

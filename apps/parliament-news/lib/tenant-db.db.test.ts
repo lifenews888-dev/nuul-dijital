@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { randomBytes } from "node:crypto";
 import { prisma } from "@nuul/db-news";
-import { forTenant } from "./tenant-db";
+import { forTenant, tenantData } from "./tenant-db";
 
 let a: string, b: string;
 /**
@@ -41,7 +41,9 @@ describe("forTenant", () => {
 
   it("create дээр tenantId-г автоматаар тавина", async () => {
     const created = await forTenant(a).newsPost.create({
-      data: { slug: `auto-${sfx}`, title: "Авто", date: new Date() },
+      // `tenantData` нь гүйцэтгэлд юу ч хийхгүй — extension нь tenantId-г
+      // өөрөө тавина. Prisma-ийн төрөл түүнийг мэдэхгүй тул цоорхойг нөхнө.
+      data: tenantData({ slug: `auto-${sfx}`, title: "Авто", date: new Date() }),
     });
     expect(created.tenantId).toBe(a);
   });

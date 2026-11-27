@@ -84,7 +84,13 @@ beforeAll(async () => {
 
 afterAll(async () => {
   const postIds = Object.values(ids);
-  await prisma.billStage.deleteMany({ where: { tenantId: { in: [tenantId, foreignTenantId] } } });
+  /*
+   * ЗӨВХӨН өөрийн төслийн шатууд. Өмнө нь энэ нь tenant доторх БҮХ шатыг
+   * устгадаг байсан — vitest файлуудыг зэрэгцээ ажиллуулдаг тул
+   * `article-view.db.test.ts`-ийн шатуудыг дундуур нь авч оддог,
+   * гурван ажиллуулалтын гуравт нь улаан болов.
+   */
+  await prisma.billStage.deleteMany({ where: { bill: { postId: { in: postIds } } } });
   await prisma.bill.deleteMany({ where: { postId: { in: postIds } } });
   await prisma.newsMedia.deleteMany({ where: { postId: { in: postIds } } });
   await prisma.newsPost.deleteMany({ where: { slug: { in: Object.values(S) } } });

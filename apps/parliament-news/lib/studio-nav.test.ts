@@ -12,8 +12,33 @@ const hrefs = (role: NewsRole): string[] => navFor(act(role)).map((i: NavItem) =
  * гэхдээ ажиллахгүй холбоосоор дүүрэн цэс нь хүнийг 403 руу хөтөлнө.
  */
 describe("navFor", () => {
-  it("шинжээч зөвхөн жагсаалт харна", () => {
-    expect(hrefs("ANALYST")).toEqual(["/studio/news"]);
+  /** Самбар нь нэвтэрмэгц гарах хуудас — ҮҮРЭГ БҮРТ */
+  it("самбар нь эхэнд, үүрэг бүрт", () => {
+    for (const r of ["SUPER", "ANALYST", "LIVE", "REPORTER"] as NewsRole[]) {
+      expect(hrefs(r)[0]).toBe("/studio");
+    }
+  });
+
+  it("шинжээч самбар, жагсаалт, медиа сан, багийг харна", () => {
+    expect(hrefs("ANALYST")).toEqual([
+      "/studio",
+      "/studio/news",
+      "/studio/media",
+      "/studio/users",
+    ]);
+  });
+
+  it("сэтгэгдэл нь хянагчаас дээш", () => {
+    expect(hrefs("REVIEWER")).toContain("/studio/comments");
+    expect(hrefs("CHIEF")).toContain("/studio/comments");
+    expect(hrefs("REPORTER")).not.toContain("/studio/comments");
+  });
+
+  it("медиа сан, баг нь үүрэг бүрт", () => {
+    for (const r of ["SUPER", "ANALYST", "LEGAL", "SOCIAL"] as NewsRole[]) {
+      expect(hrefs(r)).toContain("/studio/media");
+      expect(hrefs(r)).toContain("/studio/users");
+    }
   });
 
   it("супер админ бүх холбоостой", () => {
@@ -52,7 +77,7 @@ describe("navFor", () => {
       "ANALYST",
     ];
     for (const r of roles) {
-      expect(hrefs(r)[0]).toBe("/studio/news");
+      expect(hrefs(r)).toContain("/studio/news");
       expect(navFor(act(r)).length).toBeGreaterThan(0);
     }
   });
