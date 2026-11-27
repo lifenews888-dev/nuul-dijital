@@ -1,5 +1,7 @@
 import { tickerItems, type TickerAd } from "../../lib/ticker";
+import { TickerInfo } from "../info";
 import type { PostListItem } from "../../lib/posts";
+import type { SiteInfo } from "../../lib/info-data";
 
 /**
  * Толгойн доорх гүйдэг мөр — artifact-ийн `.tick` (index.html:586).
@@ -15,10 +17,12 @@ export function Ticker({
   posts,
   ads,
   on,
+  info,
 }: {
   posts: PostListItem[];
   ads: TickerAd[];
   on: boolean;
+  info: SiteInfo;
 }) {
   if (!on) return null;
   const items = tickerItems([...posts].reverse().map((p) => p.title), ads);
@@ -73,8 +77,10 @@ export function Ticker({
           {run(1)}
         </div>
       </div>
-      {/* Цаг агаар ба ханш — 3-р шатанд. `.tinfo:empty` нь өөрөө нуугдана. */}
-      <div className="tinfo" id="tinfo" />
+      {/* Цаг агаар ба ханш. `.tinfo:empty` нь өөрөө нуугдана. */}
+      <div className="tinfo" id="tinfo">
+        <TickerInfo info={info} />
+      </div>
     </div>
   );
 }

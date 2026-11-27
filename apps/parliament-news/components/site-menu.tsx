@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "./icon";
 import { MenuResults } from "./menu-results";
+import { MenuToday, TickerInfo } from "./info";
 import type { MenuPost } from "../lib/menu-filter";
+import type { SiteInfo } from "../lib/info-data";
 
 const FOCUSABLE = 'button, [href], input, [tabindex]:not([tabindex="-1"])';
 
@@ -24,9 +26,11 @@ const FOCUSABLE = 'button, [href], input, [tabindex]:not([tabindex="-1"])';
 export function SiteMenu({
   posts,
   order,
+  info,
 }: {
   posts: MenuPost[];
   order: string[];
+  info: SiteInfo;
 }) {
   const [open, setOpen] = useState(false);
   const boxRef = useRef<HTMLElement | null>(null);
@@ -119,6 +123,14 @@ export function SiteMenu({
 
       <div className="mi">
         <div>
+          {/*
+            `.minfo2` нь УТСАНД л харагдах хэвтээ зурвас. `.tinfo`-той ижил
+            агуулга боловч `.fxx` далдлалтгүй: ширээн дээр гүйдэг мөр нэг
+            валют харуулдаг бол утсан дээр энэ нь гурвууланг харуулна.
+          */}
+          <div className="minfo2">
+            <TickerInfo info={info} strip />
+          </div>
           <MenuResults posts={posts} order={order} onNavigate={close} />
         </div>
 
@@ -161,6 +173,7 @@ export function SiteMenu({
               </div>
             </li>
           </ul>
+          <MenuToday info={info} />
           {/* Artifact-ийн `.mlinks` — дүрс, нэр, сум */}
           <nav className="mlinks abl" aria-label="Холбоос">
             <a href="/c/video">

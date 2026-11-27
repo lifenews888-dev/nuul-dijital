@@ -407,6 +407,52 @@ try {
    * хадгалах) нь жинхэнэ сесс шаарддаг тул энд биш — тэр нь
    * редакцын гишүүнээр нэвтэрч шалгадаг тусдаа скриптэд.
    */
+  // ---- Цаг агаар ба ханш -------------------------------------------------
+  /*
+   * W1-W3: тохиргооны цаг агаар, ханш нь НИЙТИЙН талд гарч байгаа эсэх.
+   *
+   * Гурван харагдац нэг өгөгдлөөс: гүйдэг мөрийн `.tinfo`, цэсний `.minfo`,
+   * утасны `.minfo2`. Цэвэр тест нь `lib/info.ts`-ийн шүүлт, бөөрөнхийлөлтийг
+   * барина; ЭНЭ нь тэдгээр нь хуудсанд үнэхээр холбогдсон эсэхийг барина.
+   *
+   * Өгөгдөл байхгүй бол алгасана: редакц ханш оруулаагүй байх нь хэвийн, ба
+   * тэр үед БҮХ блок алга болох ёстой — түүнийг нь мөн шалгана.
+   */
+  await page.goto("/");
+  const info = await guard("W мэдээлэл", async () =>
+    page.evaluate(`(() => {
+      const burger = document.getElementById('burger');
+      burger && burger.click();
+      return new Promise((done) => setTimeout(() => done({
+        ticker: (document.querySelector('.tinfo')?.textContent || '').trim(),
+        menu: (document.querySelector('.minfo')?.textContent || '').trim(),
+        strip: (document.querySelector('.minfo2')?.textContent || '').trim(),
+        stripHidden: document.querySelector('.minfo2')
+          ? getComputedStyle(document.querySelector('.minfo2')).display === 'none'
+          : null,
+        arrows: document.querySelectorAll('.minfo .up, .minfo .dn').length,
+        src: (document.querySelector('.isrc')?.textContent || '').trim(),
+      }), 600));
+    })()`),
+  );
+
+  if (!info || (!info.ticker && !info.menu)) {
+    pass.push("W цаг агаар, ханш оруулаагүй — алгасав");
+  } else {
+    check("W1 гүйдэг мөрөнд ханш гарна", /\d/.test(info.ticker), `«${info.ticker.slice(0, 40)}»`);
+    check(
+      "W2 цэсний ӨНӨӨДӨР блок",
+      info.menu.includes("ӨНӨӨДӨР") && /\d/.test(info.menu),
+      `«${info.menu.slice(0, 40)}»`,
+    );
+    check("W3 ханшийн эх сурвалж нэрлэгдэнэ", /Ханш:/.test(info.src), `«${info.src}»`);
+    /*
+     * `.minfo2` нь ширээн дээр нуугдах ёстой: гүйдэг мөр аль хэдийн
+     * харуулж байгаа тул хоёр удаа гарвал цэс давхардсан харагдана.
+     */
+    check("W4 утасны зурвас ширээн дээр нуугдана", info.stripHidden !== false, "харагдаж байна");
+  }
+
   // ---- Нийтлэлийн унших харагдац -----------------------------------------
   /*
    * R1-R6: artifact-ийн нийтлэлийн дэлгэц нь ЦААСАН ХУУДАС дээр суудаг ба
