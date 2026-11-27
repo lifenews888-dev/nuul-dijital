@@ -101,7 +101,7 @@ export const feedSchema = z.object({
 export const SETTING_KEYS = ["header", "footer", "weather", "feed"] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
-const SCHEMAS = {
+export const SCHEMAS = {
   header: headerSchema,
   footer: footerSchema,
   weather: weatherSchema,

@@ -40,12 +40,17 @@ export type DashboardData = {
    * Товч агуулгагүй, ангилалгүй, эх сурвалжгүй нь уншигчид ч, SEO-д ч муу.
    */
   issues: { id: string; title: string; missing: string[] }[];
+  /** Миний ажил — ӨӨРИЙН бичсэн, одоо гарт байгаа мэдээ */
+  mine: { id: string; title: string; status: NewsStatus }[];
+  /** Сүүлийн сэтгэгдэл — модерацид хүлээгдэж буй нь эхэнд */
+  comments_recent: { id: string; authorName: string; body: string; hidden: boolean }[];
 };
 
 const CHANNELS = ["Сайт", "Facebook", "YouTube", "Instagram", "TikTok"];
 
 export async function dashboardData(
   tenantId: string,
+  userId: string,
   chartDays: ChartDays = 14,
   now: Date = new Date(),
 ): Promise<DashboardData> {
@@ -70,6 +75,8 @@ export async function dashboardData(
     publishedChannels,
     teamActivity,
     candidates,
+    mine,
+    recentComments,
   ] = await Promise.all([
     db.newsPost.groupBy({ by: ["status"], _count: { _all: true } }),
     db.newsPost.count({ where: { status: "PUBLISHED", publishedAt: { gte: weekAgo, lte: now } } }),
@@ -101,6 +108,18 @@ export async function dashboardData(
       select: { id: true, title: true, lead: true, categoryId: true, sources: true },
       take: 60,
       orderBy: { updatedAt: "desc" },
+    }),
+    /** Миний гарт байгаа ажил — нийтлэгдсэнийг оруулахгүй */
+    db.newsPost.findMany({
+      where: { authorId: userId, status: { not: "PUBLISHED" } },
+      orderBy: { updatedAt: "desc" },
+      take: 6,
+      select: { id: true, title: true, status: true },
+    }),
+    db.newsComment.findMany({
+      orderBy: [{ hidden: "desc" }, { createdAt: "desc" }],
+      take: 5,
+      select: { id: true, authorName: true, body: true, hidden: true },
     }),
   ]);
 
@@ -184,5 +203,7 @@ export async function dashboardData(
     channels: [...channelCount.entries()].map(([name, count]) => ({ name, count })),
     team,
     issues,
+    mine,
+    comments_recent: recentComments,
   };
 }

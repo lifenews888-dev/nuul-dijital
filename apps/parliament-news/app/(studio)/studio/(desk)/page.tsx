@@ -35,7 +35,7 @@ export default async function StudioDashboard({
   const { actor, tenantId, name, email } = await requireStudio();
   const days = parseDays(searchParams.chart);
   const now = new Date();
-  const d = await dashboardData(tenantId, days, now);
+  const d = await dashboardData(tenantId, actor.userId, days, now);
 
   const ubHour = new Date(now.getTime() + UB_OFFSET_MS).getUTCHours();
   const pending = d.counts.REVIEW + d.counts.APPROVED;
@@ -120,6 +120,33 @@ export default async function StudioDashboard({
 
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-4">
+          {/* Миний ажил — хамгийн түрүүнд: редактор эхлээд ӨӨРИЙНХӨӨ ажлыг хайна */}
+          <section className="rounded-[14px] border border-line bg-pan p-4 md:p-5">
+            <h2 className="mb-3 font-head text-[15px] font-bold text-ink">Миний ажил</h2>
+            {d.mine.length === 0 ? (
+              <p className="font-head text-[13px] text-muted">
+                Гарт байгаа мэдээ алга. {canCreate(actor) ? "Шинэ мэдээ эхлүүлж болно." : ""}
+              </p>
+            ) : (
+              <ul className="m-0 list-none p-0">
+                {d.mine.map((p) => (
+                  <li
+                    key={p.id}
+                    className="flex flex-wrap items-center gap-2 border-t border-line py-2 first:border-t-0 first:pt-0"
+                  >
+                    <span data-status={p.status}>{STATUS_LABELS[p.status]}</span>
+                    <Link
+                      href={`/studio/news/${p.id}`}
+                      className="min-w-0 flex-1 truncate font-head text-[13.5px] font-semibold text-ink hover:underline"
+                    >
+                      {p.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
           <ActivityChart points={d.chart} days={days} />
 
           {/* Ажлын урсгалын юүлүүр */}
@@ -224,6 +251,36 @@ export default async function StudioDashboard({
                   >
                     <b className="tabular-nums text-cob">{a.time}</b>
                     <span className="text-ink">{a.text}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          {/* Сүүлийн сэтгэгдэл — нуугдсан нь эхэнд, тэд анхаарал шаардана */}
+          <section className="rounded-[14px] border border-line bg-pan p-4 md:p-5">
+            <div className="mb-3 flex items-baseline gap-2">
+              <h2 className="font-head text-[15px] font-bold text-ink">Сүүлийн сэтгэгдэл</h2>
+              <Link
+                href="/studio/comments"
+                className="ml-auto font-head text-[12.5px] font-semibold text-cob"
+              >
+                Бүгд →
+              </Link>
+            </div>
+            {d.comments_recent.length === 0 ? (
+              <p className="font-head text-[13px] text-muted">Сэтгэгдэл алга.</p>
+            ) : (
+              <ul className="m-0 list-none p-0">
+                {d.comments_recent.map((c) => (
+                  <li key={c.id} className="border-t border-line py-2 first:border-t-0 first:pt-0">
+                    <b className="font-head text-[12.5px] font-semibold text-ink">
+                      {c.authorName}
+                    </b>
+                    {c.hidden ? (
+                      <span className="ml-1.5 font-head text-[11.5px] text-warn">нуугдсан</span>
+                    ) : null}
+                    <p className="mt-0.5 line-clamp-2 font-body text-[13px] text-muted">{c.body}</p>
                   </li>
                 ))}
               </ul>

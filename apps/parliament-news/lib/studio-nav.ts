@@ -25,9 +25,20 @@ export function navFor(actor: Actor): NavItem[] {
     items.push({ href: "/studio/news/new", label: "Шинэ мэдээ" });
   }
 
+  /** Сэтгэгдэл нь хянагчаас дээш — admin.html-ийн `v-cm` */
+  if (["SUPER", "CHIEF", "REVIEWER"].includes(actor.role)) {
+    items.push({ href: "/studio/comments", label: "Сэтгэгдэл" });
+  }
+
+  /** Медиа санг гишүүн бүр харна — юу байршуулснаа мэдэх нь энгийн зүйл */
+  items.push({ href: "/studio/media", label: "Медиа сан" });
+
   if (canEditSettings(actor)) {
     items.push({ href: "/studio/settings", label: "Сайтын тохиргоо" });
   }
+
+  /** Багийн жагсаалтыг бүгд харна, засах нь зөвхөн супер админд */
+  items.push({ href: "/studio/users", label: "Баг ба эрх" });
 
   return items;
 }

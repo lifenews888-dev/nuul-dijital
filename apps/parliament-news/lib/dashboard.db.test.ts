@@ -93,13 +93,13 @@ afterAll(async () => {
 
 describe("dashboardData", () => {
   it("төлөв бүрийн тоо — ноорог ч тоологдоно", async () => {
-    const d = await dashboardData(tenantId);
+    const d = await dashboardData(tenantId, userId);
     expect(d.counts.DRAFT).toBeGreaterThanOrEqual(2);
     expect(d.counts.REVIEW).toBeGreaterThanOrEqual(1);
   });
 
   it("таван төлөв бүгд байна — хоосон нь тэг", async () => {
-    const d = await dashboardData(tenantId);
+    const d = await dashboardData(tenantId, userId);
     for (const s of ["DRAFT", "REVIEW", "APPROVED", "PUBLISHED", "RETURNED"] as const) {
       expect(typeof d.counts[s]).toBe("number");
     }
@@ -107,41 +107,41 @@ describe("dashboardData", () => {
 
   /** forTenant-ийн хаалга самбарт ч хэвээр */
   it("хөршийн мэдээ тоонд ОРОХГҮЙ", async () => {
-    const mine = await dashboardData(tenantId);
-    const theirs = await dashboardData(foreignTenantId);
+    const mine = await dashboardData(tenantId, userId);
+    const theirs = await dashboardData(foreignTenantId, userId);
     expect(theirs.counts.DRAFT).toBe(1);
     expect(mine.counts.DRAFT).toBeGreaterThan(theirs.counts.DRAFT);
   });
 
   it("долоо хоногийн нийтлэлийг тоолно", async () => {
-    const d = await dashboardData(tenantId);
+    const d = await dashboardData(tenantId, userId);
     expect(d.week.now).toBeGreaterThanOrEqual(1);
     expect(typeof d.week.before).toBe("number");
   });
 
   it("график нь хоногийн тоогоор, хоосон өдөр ч", async () => {
-    expect((await dashboardData(tenantId, 14)).chart).toHaveLength(14);
-    expect((await dashboardData(tenantId, 90)).chart).toHaveLength(90);
+    expect((await dashboardData(tenantId, userId, 14)).chart).toHaveLength(14);
+    expect((await dashboardData(tenantId, userId, 90)).chart).toHaveLength(90);
   });
 
   it("графикт нийтлэл тусад нь", async () => {
-    const d = await dashboardData(tenantId, 14);
+    const d = await dashboardData(tenantId, userId, 14);
     const total = d.chart.reduce((n, p) => n + p.published, 0);
     expect(total).toBeGreaterThanOrEqual(1);
   });
 
   it("хөршийн үйл явдал графикт орохгүй", async () => {
-    const theirs = await dashboardData(foreignTenantId, 14);
+    const theirs = await dashboardData(foreignTenantId, userId, 14);
     expect(theirs.chart.reduce((n, p) => n + p.published + p.other, 0)).toBe(1);
   });
 
   it("ангиллаар — мэдээгүй ангилал гарахгүй", async () => {
-    const d = await dashboardData(tenantId);
+    const d = await dashboardData(tenantId, userId);
     expect(d.byCategory.every((c) => c.count > 0)).toBe(true);
   });
 
   it("сувгаар нийтлэгдсэнийг тоолно", async () => {
-    const d = await dashboardData(tenantId);
+    const d = await dashboardData(tenantId, userId);
     const site = d.channels.find((c) => c.name === "Сайт");
     expect(site?.count).toBeGreaterThanOrEqual(1);
     expect(d.channels.map((c) => c.name)).toEqual([
@@ -154,32 +154,32 @@ describe("dashboardData", () => {
   });
 
   it("багийн идэвх — нэртэйгээ", async () => {
-    const d = await dashboardData(tenantId);
+    const d = await dashboardData(tenantId, userId);
     const me = d.team.find((t) => t.name === `Самбар ${sfx}`);
     expect(me?.actions).toBeGreaterThanOrEqual(2);
   });
 
   /** Дутуу мэдээг нэрлэх нь самбарын гол ажил */
   it("чанарын шалгалт нь дутуу зүйлийг нэрлэнэ", async () => {
-    const d = await dashboardData(tenantId);
+    const d = await dashboardData(tenantId, userId);
     const bad = d.issues.find((i) => i.title.endsWith(`${MARK}-bad`));
     expect(bad?.missing).toContain("товч агуулга");
     expect(bad?.missing).toContain("эх сурвалж");
   });
 
   it("бүрэн мэдээ чанарын шалгалтад ОРОХГҮЙ", async () => {
-    const d = await dashboardData(tenantId);
+    const d = await dashboardData(tenantId, userId);
     expect(d.issues.some((i) => i.title.endsWith(`${MARK}-p`))).toBe(false);
   });
 
   it("сэтгэгдэл, медиагийн тоо", async () => {
-    const d = await dashboardData(tenantId);
+    const d = await dashboardData(tenantId, userId);
     expect(typeof d.comments.total).toBe("number");
     expect(typeof d.media.videos).toBe("number");
   });
 
   it("мэдээгүй tenant-д ч унахгүй", async () => {
-    const d = await dashboardData(foreignTenantId);
+    const d = await dashboardData(foreignTenantId, userId);
     expect(d.issues).toEqual([]);
     expect(d.byCategory).toEqual([]);
   });

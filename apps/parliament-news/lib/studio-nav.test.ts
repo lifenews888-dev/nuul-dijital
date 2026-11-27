@@ -19,8 +19,26 @@ describe("navFor", () => {
     }
   });
 
-  it("шинжээч самбар ба жагсаалт харна", () => {
-    expect(hrefs("ANALYST")).toEqual(["/studio", "/studio/news"]);
+  it("шинжээч самбар, жагсаалт, медиа сан, багийг харна", () => {
+    expect(hrefs("ANALYST")).toEqual([
+      "/studio",
+      "/studio/news",
+      "/studio/media",
+      "/studio/users",
+    ]);
+  });
+
+  it("сэтгэгдэл нь хянагчаас дээш", () => {
+    expect(hrefs("REVIEWER")).toContain("/studio/comments");
+    expect(hrefs("CHIEF")).toContain("/studio/comments");
+    expect(hrefs("REPORTER")).not.toContain("/studio/comments");
+  });
+
+  it("медиа сан, баг нь үүрэг бүрт", () => {
+    for (const r of ["SUPER", "ANALYST", "LEGAL", "SOCIAL"] as NewsRole[]) {
+      expect(hrefs(r)).toContain("/studio/media");
+      expect(hrefs(r)).toContain("/studio/users");
+    }
   });
 
   it("супер админ бүх холбоостой", () => {
