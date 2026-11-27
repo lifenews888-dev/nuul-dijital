@@ -1,6 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Icon } from "./icon";
+import { MenuResults } from "./menu-results";
+import type { MenuPost } from "../lib/menu-filter";
 
 const FOCUSABLE = 'button, [href], input, [tabindex]:not([tabindex="-1"])';
 
@@ -19,9 +22,11 @@ const FOCUSABLE = 'button, [href], input, [tabindex]:not([tabindex="-1"])';
  * цэсний дээр үлдэнэ.
  */
 export function SiteMenu({
-  categories,
+  posts,
+  order,
 }: {
-  categories: { slug: string; name: string }[];
+  posts: MenuPost[];
+  order: string[];
 }) {
   const [open, setOpen] = useState(false);
   const boxRef = useRef<HTMLElement | null>(null);
@@ -114,31 +119,7 @@ export function SiteMenu({
 
       <div className="mi">
         <div>
-          <form className="sbox" action="/search" method="get" role="search">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="2" />
-              <path d="M20 20l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <input
-              className="srch"
-              id="q"
-              name="q"
-              type="search"
-              placeholder="Мэдээ хайх: төсөв, сонгууль, хороо…"
-              autoComplete="off"
-              aria-label="Мэдээ хайх"
-            />
-          </form>
-
-          {categories.length > 0 ? (
-            <div className="chips" id="chips">
-              {categories.map((c) => (
-                <a className="chip" key={c.slug} href={`/c/${c.slug}`}>
-                  {c.name}
-                </a>
-              ))}
-            </div>
-          ) : null}
+          <MenuResults posts={posts} order={order} onNavigate={close} />
         </div>
 
         <aside className="about">
@@ -180,14 +161,35 @@ export function SiteMenu({
               </div>
             </li>
           </ul>
+          {/* Artifact-ийн `.mlinks` — дүрс, нэр, сум */}
           <nav className="mlinks abl" aria-label="Холбоос">
+            <a href="/c/video">
+              <Icon name="video" />
+              <span>Видео мэдээ</span>
+              <Icon name="chevron" className="abch" />
+            </a>
             <a href="/rss.xml">
+              <Icon name="file" />
               <span>RSS мэдээний суваг</span>
+              <Icon name="chevron" className="abch" />
             </a>
             <a href="https://legalinfo.mn" target="_blank" rel="noopener">
+              <Icon name="scale" />
               <span>Хуулийн эх — legalinfo.mn</span>
+              <Icon name="external" className="abch" />
             </a>
           </nav>
+
+          <div className="abf">
+            {/*
+              Редакцын нэвтрэх — artifact-ийн `.abadm`. Хаалгатай зам тул
+              нэвтрээгүй хүнийг нэвтрэх хуудас руу чиглүүлнэ.
+            */}
+            <a href="/studio" className="abadm" title="Редакцын нэвтрэх">
+              <Icon name="tag" />
+              <span>Редакц</span>
+            </a>
+          </div>
         </aside>
       </div>
     </section>

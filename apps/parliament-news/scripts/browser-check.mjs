@@ -306,6 +306,71 @@ try {
     check("I5 Escape хаана", focus.closed, "хаагдаагүй");
   }
 
+  // ---- Цэс ба хайлт ------------------------------------------------------
+  /*
+   * M1-M7: цэс нь НЭЭМЭГЦ илэрцтэй байх ёстой.
+   *
+   * Эхний хувилбар нь бичих хүртэл хоосон байв — хэрэглэгч нүдээрээ
+   * олсон. Artifact-ийн `openMenu()` нь харуулахаасаа ӨМНӨ `renderRes()`
+   * дууддаг: цэс нь хэзээ ч хоосон байдаггүй. Цэвэр тест нь
+   * `lib/menu-filter.ts`-ийг барина; ЭНЭ нь тэр логик хуудастай
+   * холбогдсон эсэхийг барина.
+   */
+  await page.goto("/");
+
+  const menu = await guard("M цэс", async () => {
+    await page.evaluate(`document.getElementById('burger').click()`);
+    await new Promise((r) => setTimeout(r, 500));
+    return page.evaluate(`(() => {
+      const res = document.querySelectorAll('#res .ri').length;
+      return {
+        open: !document.getElementById('menu').hidden,
+        results: res,
+        covers: document.querySelectorAll('#res .rcv img').length,
+        chips: document.querySelectorAll('#chips .chip').length,
+        chipIcons: document.querySelectorAll('#chips .chip svg').length,
+        chipCount: document.querySelector('#chips .chip small')?.textContent || '',
+        rc: document.getElementById('rc')?.textContent || '',
+        times: document.querySelectorAll('#tflt button').length,
+      };
+    })()`);
+  });
+
+  check("M1 бургер цэсийг нээнэ", menu?.open === true, `hidden: ${!menu?.open}`);
+  check("M2 нээмэгц илэрц харагдана", (menu?.results ?? 0) > 0, `${menu?.results} илэрц`);
+  check("M3 илэрц хавтастай", (menu?.covers ?? 0) > 0, `${menu?.covers} хавтас`);
+  check("M4 чип дүрс, тоотой", (menu?.chipIcons ?? 0) > 0 && /\d+ мэдээ/.test(menu?.chipCount || ""), `${menu?.chipIcons} дүрс, «${menu?.chipCount}»`);
+  check("M5 хугацааны шүүлтүүр", (menu?.times ?? 0) === 4, `${menu?.times} товч`);
+  check("M6 илэрцийн тоолуур", /\d+ мэдээ/.test(menu?.rc || ""), `«${menu?.rc}»`);
+
+  // Бичихэд шүүгдэх ба архиваас хайх санал
+  const typed = await guard("M7 хайлт", async () => {
+    await page.evaluate(`(() => {
+      const i = document.getElementById('q');
+      const set = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      set.call(i, 'zzzqqqxxx');
+      i.dispatchEvent(new Event('input', { bubbles: true }));
+    })()`);
+    await new Promise((r) => setTimeout(r, 400));
+    return page.evaluate(`({
+      empty: !!document.querySelector('#res .empty'),
+      more: !!document.querySelector('a[href^="/search?q="]'),
+    })`);
+  });
+
+  check("M7 илэрцгүйд хоосон төлөв", typed?.empty === true, "«Илэрц олдсонгүй» алга");
+  /*
+   * Цэс нь зөвхөн сүүлийн 60 мэдээг татдаг. «Илэрц олдсонгүй» гэдэг нь
+   * «сайтад байхгүй» гэсэн үг БИШ — архиваас хайх санал ҮРГЭЛЖ үлдэх
+   * ёстой, эс бөгөөс цэс нь уншигчид худал хэлнэ.
+   */
+  check("M8 илэрцгүй ч архиваас хайх санал", typed?.more === true, "/search холбоос алга");
+
+  await guard("M цэс хаах", () => page.evaluate(
+    `document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))`,
+  ));
+  await new Promise((r) => setTimeout(r, 300));
+
   // ---- Нийтлэлийн хуудас -------------------------------------------------
   const slug = await page.evaluate(
     `document.querySelector('#fList a.fi')?.getAttribute('href')?.replace('/news/','') || ''`,

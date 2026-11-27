@@ -1,7 +1,7 @@
 import { SiteHeader } from "../../components/site-header";
 import { SiteFooter } from "../../components/site-footer";
 import { SiteMenu } from "../../components/site-menu";
-import { menuCategories } from "../../lib/posts";
+import { menuData } from "../../lib/menu-data";
 
 /**
  * НИЙТИЙН сайтын бүрхүүл — artifact-ийн `index.html`-ийн хүрээ.
@@ -12,7 +12,7 @@ import { menuCategories } from "../../lib/posts";
  * зурагдаж, редактор өөрийн ажлын талбарыг уншигчийн хуудасны дотор харна.
  */
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const categories = await menuCategories();
+  const { posts, order } = await menuData();
 
   return (
     <>
@@ -28,7 +28,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       </main>
       <SiteFooter />
       {/* Цэс нь `header.top`-ийн ГАДНА — тэр нь өөрийн давхаргын хүрээтэй */}
-      <SiteMenu categories={categories} />
+      <SiteMenu posts={posts} order={order} />
     </>
   );
 }
