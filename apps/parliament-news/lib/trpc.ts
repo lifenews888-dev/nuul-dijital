@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import type { Session } from "next-auth";
 import { prisma } from "@nuul/db-news";
 import type { NewsRole } from "@nuul/db-news";
+import type { Actor } from "./permissions";
 import { authOptions } from "./auth";
 import { getTenant } from "./tenant";
 import { forTenant } from "./tenant-db";
@@ -73,4 +74,25 @@ export function requireRole(role: NewsRole | null, allowed: NewsRole[]): void {
   if (!role || !allowed.includes(role)) {
     throw new TRPCError({ code: "FORBIDDEN", message: "Энэ үйлдлийн эрх алга" });
   }
+}
+
+/**
+ * Контекстээс `Actor` — эрхийн функц бүрийн оролт.
+ *
+ * `editorialProcedure` нь «редакцын гишүүн эсэх»-ийг л хэлнэ. Хэн гэдгийг
+ * ЭНД нэг л газар шийднэ: мутаци бүр `ctx.session?.user?.id`-г өөрөө
+ * тайлбарлавал аль нэг нь `undefined`-ийг зөвшөөрч, `own(post, actor)`
+ * гэх шалгалт «хэнийх ч биш» мэдээн дээр ажиллана.
+ */
+export function ctxActor(ctx: Ctx): Actor {
+  if (!ctx.role) {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Танд редакцын эрх алга" });
+  }
+
+  const userId = ctx.session?.user?.id;
+  if (!userId) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Нэвтрээгүй байна" });
+  }
+
+  return { userId, role: ctx.role };
 }
