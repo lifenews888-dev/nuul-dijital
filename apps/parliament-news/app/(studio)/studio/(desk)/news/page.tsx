@@ -6,6 +6,8 @@ import { studioPosts, studioCounts, type StudioFilter } from "../../../../../lib
 import { STATUS_LABELS, STATUS_ORDER } from "../../../../../lib/studio-status";
 import { canCreate } from "../../../../../lib/permissions";
 import { PostRow } from "../../../../../components/studio/post-row";
+import { recentActivity } from "../../../../../lib/activity-feed";
+import { ActivityLog } from "../../../../../components/studio/activity-log";
 
 export const metadata: Metadata = {
   title: "Мэдээнүүд",
@@ -44,9 +46,10 @@ export default async function StudioNewsPage({ searchParams }: { searchParams: S
    * тоог харуулна — эс бөгөөс сонгосон чип дээр л тоо гарч, бусад нь 0
    * болж, шүүлтүүр ажиллахгүй шиг харагдана.
    */
-  const [posts, counts] = await Promise.all([
+  const [posts, counts, activity] = await Promise.all([
     studioPosts(tenantId, actor, filter),
     studioCounts(tenantId, actor, { q, mine }),
+    recentActivity(tenantId),
   ]);
 
   const total = STATUS_ORDER.reduce((n, s) => n + counts[s], 0);
@@ -141,17 +144,22 @@ export default async function StudioNewsPage({ searchParams }: { searchParams: S
         </Link>
       </div>
 
-      {posts.length === 0 ? (
-        <p className="rounded-[14px] border border-line bg-pan px-4 py-10 text-center font-head text-sm text-muted">
-          Илэрц алга. Шүүлтүүрээ өөрчилж эсвэл шинэ мэдээ нэмээрэй.
-        </p>
-      ) : (
-        <div className="overflow-hidden rounded-[14px] border border-line bg-pan">
-          {posts.map((post) => (
-            <PostRow key={post.id} post={post} actor={actor} />
-          ))}
-        </div>
-      )}
+      {/* Жагсаалт ба бүртгэл — admin.html-ийн `.grid2` */}
+      <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
+        {posts.length === 0 ? (
+          <p className="rounded-[14px] border border-line bg-pan px-4 py-10 text-center font-head text-sm text-muted">
+            Илэрц алга. Шүүлтүүрээ өөрчилж эсвэл шинэ мэдээ нэмээрэй.
+          </p>
+        ) : (
+          <div className="overflow-hidden rounded-[14px] border border-line bg-pan">
+            {posts.map((post) => (
+              <PostRow key={post.id} post={post} actor={actor} />
+            ))}
+          </div>
+        )}
+
+        <ActivityLog rows={activity} />
+      </div>
     </>
   );
 }
