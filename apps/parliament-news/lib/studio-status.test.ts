@@ -3,7 +3,7 @@ import type { NewsStatus } from "@nuul/db-news";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { STATUS_LABELS, STATUS_ORDER, mnAgoShort } from "./studio-status";
+import { STATUS_LABELS, STATUS_ORDER, mnAgoShort, postBadge } from "./studio-status";
 
 /**
  * Төлөвийн монгол шошго — `admin.html:840`-ийн `STS`.
@@ -51,6 +51,11 @@ describe("app/studio.css", () => {
     }
   });
 
+  /** «Цаг товлосон» нь төлөв биш ч чипийн дүрэм хэрэгтэй */
+  it("цаг товлосонд ч дүрэм", () => {
+    expect(css).toContain('[data-status="SCHEDULED"]');
+  });
+
   it("өнгийг admin.html шиг color-mix-ээр бүдэгрүүлнэ", () => {
     expect(css).toContain("color-mix(in srgb");
   });
@@ -94,5 +99,58 @@ describe("mnAgoShort", () => {
   /** Цаг зөрүүгээс болж ирээдүйн огноо ирвэл сөрөг тоо хэвлэхгүй */
   it("ирээдүйн огнооноос сөрөг тоо гаргахгүй", () => {
     expect(mnAgoShort(new Date(now.getTime() + 60_000), now)).toBe("дөнгөж сая");
+  });
+});
+
+/**
+ * Жагсаалтын шошго нь «САЙТАД БАЙГАА ЭСЭХ»-ийг хэлэх ёстой, зөвхөн
+ * өгөгдлийн сангийн төлөвийг биш.
+ *
+ * Нийтийн шүүлт нь `status = PUBLISHED AND publishedAt <= now`
+ * (`lib/posts.ts`-ийн `publishedWhere`). Иймд ирээдүйн `publishedAt`-тай
+ * мэдээ нь төлөвөөрөө «Нийтлэгдсэн» атлаа сайт дээр БАЙХГҮЙ. Шошго нь
+ * «Нийтлэгдсэн» гэж хэлбэл редактор мэдээгээ гарсан гэж бодож, уншигч
+ * олохгүй — бодит байдал дээр яг тэр тохиолдсон (демо өгөгдлийн
+ * «ЦАГ ТОВЛОСОН» мэдээ).
+ */
+describe("postBadge", () => {
+  const now = new Date("2026-11-27T12:00:00Z");
+  const at = (offsetMs: number) => new Date(now.getTime() + offsetMs);
+
+  it("нийтлэгдсэн ба хугацаа нь болсон бол «Нийтлэгдсэн»", () => {
+    expect(postBadge({ status: "PUBLISHED", publishedAt: at(-1000) }, now)).toEqual({
+      kind: "PUBLISHED",
+      label: "Нийтлэгдсэн",
+    });
+  });
+
+  it("ирээдүйн огноотой бол «Цаг товлосон»", () => {
+    expect(postBadge({ status: "PUBLISHED", publishedAt: at(86_400_000) }, now)).toEqual({
+      kind: "SCHEDULED",
+      label: "Цаг товлосон",
+    });
+  });
+
+  /** Огноогүй «нийтлэгдсэн» ч сайтад гарахгүй — publishedWhere нь `not: null` */
+  it("огноогүй бол ч сайтад байхгүй гэдгийг хэлнэ", () => {
+    expect(postBadge({ status: "PUBLISHED", publishedAt: null }, now).kind).toBe("SCHEDULED");
+  });
+
+  it("яг одоо бол нийтлэгдсэн", () => {
+    expect(postBadge({ status: "PUBLISHED", publishedAt: now }, now).kind).toBe("PUBLISHED");
+  });
+
+  it("бусад төлөв өөрийн шошготой хэвээр", () => {
+    for (const status of ["DRAFT", "REVIEW", "APPROVED", "RETURNED"] as const) {
+      expect(postBadge({ status, publishedAt: null }, now)).toEqual({
+        kind: status,
+        label: STATUS_LABELS[status],
+      });
+    }
+  });
+
+  /** Ноорог дээр ирээдүйн огноо байлаа ч тэр нь ноорог хэвээр */
+  it("ноорогт ирээдүйн огноо байсан ч ноорог", () => {
+    expect(postBadge({ status: "DRAFT", publishedAt: at(86_400_000) }, now).kind).toBe("DRAFT");
   });
 });

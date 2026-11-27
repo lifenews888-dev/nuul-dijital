@@ -106,6 +106,17 @@
   color: var(--ok);
 }
 
+/*
+ * «Цаг товлосон» нь төлөв БИШ: `PUBLISHED` боловч `publishedAt` нь ирээдүйд.
+ * Өнгө нь нийтлэгдсэнтэй ойр (ногоон) ч зурааст — «болоогүй байна» гэдгийг
+ * зөвхөн текстээр биш, хэлбэрээр ч хэлнэ.
+ */
+.studio [data-status="SCHEDULED"] {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ok) 55%, transparent);
+  color: var(--ok);
+}
+
 .studio [data-status="RETURNED"] {
   background: color-mix(in srgb, #c0392b 14%, transparent);
   color: #c0392b;

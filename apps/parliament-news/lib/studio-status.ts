@@ -42,3 +42,33 @@ export function mnAgoShort(at: Date, now: Date = new Date()): string {
   if (minutes < 1440) return `${Math.round(minutes / 60)} цагийн өмнө`;
   return `${Math.round(minutes / 1440)} өдрийн өмнө`;
 }
+
+/** `postBadge`-ийн буцаах төрөл. `SCHEDULED` нь төлөв БИШ — харагдах байдал. */
+export type PostBadge = { kind: NewsStatus | "SCHEDULED"; label: string };
+
+/**
+ * Жагсаалтын шошго — «САЙТАД БАЙГАА ЭСЭХ», зөвхөн өгөгдлийн сангийн
+ * төлөв биш.
+ *
+ * Нийтийн шүүлт нь `status = PUBLISHED AND publishedAt <= now`
+ * (`lib/posts.ts`-ийн `publishedWhere`). Иймд ирээдүйн огноотой мэдээ
+ * нь төлөвөөрөө «Нийтлэгдсэн» атлаа уншигчид ХАРАГДАХГҮЙ. Шошго нь
+ * «Нийтлэгдсэн» гэж хэлбэл редактор мэдээгээ гарсан гэж бодно.
+ *
+ * Огноогүй «нийтлэгдсэн» мэдээ ч мөн адил харагдахгүй (`not: null`) —
+ * түүнийг ч «Цаг товлосон» гэж тэмдэглэнэ: хоёулаа «хүлээж байна»
+ * гэсэн нэг утгатай, редакторт хийх зүйл нь ч адил.
+ */
+export function postBadge(
+  post: { status: NewsStatus; publishedAt: Date | null },
+  now: Date = new Date(),
+): PostBadge {
+  if (post.status !== "PUBLISHED") {
+    return { kind: post.status, label: STATUS_LABELS[post.status] };
+  }
+
+  const live = post.publishedAt !== null && post.publishedAt.getTime() <= now.getTime();
+  return live
+    ? { kind: "PUBLISHED", label: STATUS_LABELS.PUBLISHED }
+    : { kind: "SCHEDULED", label: "Цаг товлосон" };
+}

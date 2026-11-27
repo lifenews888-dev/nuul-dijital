@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { StudioPost } from "../../lib/studio-posts";
-import { STATUS_LABELS, mnAgoShort } from "../../lib/studio-status";
+import { postBadge, mnAgoShort } from "../../lib/studio-status";
 import { mnNumericDate } from "../../lib/format";
-import { sectionsFor, type Actor } from "../../lib/permissions";
+import { sectionsFor, canDelete, type Actor } from "../../lib/permissions";
 import { actionsFor } from "../../lib/workflow-actions";
 import { WorkflowButtons } from "./workflow-buttons";
+import { DeleteButton } from "./delete-button";
 
 /**
  * Мэдээний нэг мөр — admin.html-ийн `.nr`.
@@ -16,6 +17,11 @@ import { WorkflowButtons } from "./workflow-buttons";
 export function PostRow({ post, actor }: { post: StudioPost; actor: Actor }) {
   const ref = { id: post.id, status: post.status, authorId: post.authorId };
   const editable = sectionsFor(actor, ref).length > 0;
+  /**
+   * Шошго нь ТӨЛӨВ биш, «сайтад байгаа эсэх»: ирээдүйн огноотой мэдээ
+   * нь `PUBLISHED` атлаа уншигчид харагдахгүй.
+   */
+  const badge = postBadge(post);
 
   return (
     <article className="grid grid-cols-1 items-start gap-3 border-t border-line px-3.5 py-3 first:border-t-0 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:px-[18px] md:py-3.5">
@@ -29,7 +35,7 @@ export function PostRow({ post, actor }: { post: StudioPost; actor: Actor }) {
 
         <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-head text-[12.5px] text-muted">
           {/* Өнгө нь app/studio.css-д `[data-status]`-аар */}
-          <span data-status={post.status}>{STATUS_LABELS[post.status]}</span>
+          <span data-status={badge.kind}>{badge.label}</span>
           {post.categoryName ? <span>{post.categoryName}</span> : null}
           <span>{mnNumericDate(post.date)}</span>
           {post.authorName ? <span>{post.authorName}</span> : null}
@@ -46,6 +52,8 @@ export function PostRow({ post, actor }: { post: StudioPost; actor: Actor }) {
         >
           {editable ? "Засах" : "Харах"}
         </Link>
+
+        {canDelete(actor, ref) ? <DeleteButton postId={post.id} title={post.title} /> : null}
       </div>
     </article>
   );
