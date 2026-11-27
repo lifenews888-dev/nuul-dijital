@@ -89,7 +89,7 @@ async function launch() {
 
   return {
     send,
-    async goto(path, { width = 1280, height = 900, reduced = false } = {}) {
+    async goto(path, { width = 1280, height = 900, reduced = false, scheme = "dark" } = {}) {
       await send("Emulation.setDeviceMetricsOverride", {
         width,
         height,
@@ -98,7 +98,7 @@ async function launch() {
       });
       await send("Emulation.setEmulatedMedia", {
         features: [
-          { name: "prefers-color-scheme", value: "dark" },
+          { name: "prefers-color-scheme", value: scheme },
           ...(reduced ? [{ name: "prefers-reduced-motion", value: "reduce" }] : []),
         ],
       });
@@ -121,6 +121,20 @@ async function launch() {
       chrome.kill();
     },
   };
+}
+
+/**
+ * `rgb(…)` мөрийн гэрэлтүүлэг 0..1. ЗӨВХӨН Node талд: хуудсан доторх
+ * илэрхийлэл нь template literal-ийн ДОТОР template literal болдог тул
+ * регексийн `\d` хоёр удаа задарч, бодитоор `d` болж хувирдаг (ингээд
+ * шалгуур чимээгүй үргэлж ногоон болсон). Мөрийг нь гаргаж аваад энд
+ * задлах нь тэр ангалыг бүрмөсөн арилгана.
+ */
+function luminance(css) {
+  const n = String(css).match(/\d+(\.\d+)?/g);
+  if (!n || n.length < 3) return null;
+  const [r, g, b] = n.map(Number);
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 }
 
 /** --- Шалгуурууд -------------------------------------------------------- */
@@ -393,6 +407,106 @@ try {
    * хадгалах) нь жинхэнэ сесс шаарддаг тул энд биш — тэр нь
    * редакцын гишүүнээр нэвтэрч шалгадаг тусдаа скриптэд.
    */
+  // ---- Нийтлэлийн унших харагдац -----------------------------------------
+  /*
+   * R1-R6: artifact-ийн нийтлэлийн дэлгэц нь ЦААСАН ХУУДАС дээр суудаг ба
+   * хуулийн шат, үсгийн хэмжээ, санал болгох мэдээ нь ҮЙЛДЭЛТЭЙ. Цэвэр
+   * тест нь `lib/reading.ts`-ийн дүрмийг барина; ЭНЭ нь тэр дүрэм хуудсанд
+   * үнэхээр холбогдсон эсэхийг барина.
+   *
+   * R6 нь бодитоор гарсан алдаанаас: artifact-д ГАНЦ хуудас байсан тул
+   * `.top{color:#fff}` болзолгүй бөгөөд тавиургүй хуудсанд цэс нь цайвар
+   * цаасан дээр цагаанаар бичигдэж, огт үл үзэгдэх болсон.
+   */
+  await page.goto("/");
+  const firstNews = await page.evaluate(
+    `document.querySelector('a[href^="/news/"]')?.getAttribute('href') || ''`,
+  );
+
+  if (!firstNews) {
+    pass.push("R нийтлэл байхгүй — алгасав");
+  } else {
+    const read = await guard("R унших харагдац", async () => {
+      await page.goto(firstNews);
+      return page.evaluate(`(() => {
+        const trk = document.querySelectorAll('.trk button');
+        return {
+          sheet: !!document.querySelector('.spread .pg.L'),
+          lede: !!document.querySelector('.dlede, .dbody'),
+          stages: trk.length,
+          current: document.querySelectorAll('.trk button.cu').length,
+          panel: (document.querySelector('.stgp')?.textContent || '').trim().slice(0, 40),
+          nextLinks: document.querySelectorAll('.nx a[href^="/news/"]').length,
+          comments: !!document.querySelector('.cm'),
+          fz: getComputedStyle(document.querySelector('.spread')).getPropertyValue('--fz').trim(),
+        };
+      })()`);
+    });
+
+    if (read) {
+      check("R1 нийтлэл цаасан хуудсан дээр", read.sheet && read.lede, JSON.stringify(read.sheet));
+      check(
+        "R2 хуулийн шат — 5 нүд, одоогийнх тэмдэглэгдсэн",
+        read.stages === 0 || (read.stages === 5 && read.current === 1),
+        `${read.stages} нүд, ${read.current} одоогийн`,
+      );
+      check("R4 дараагийн ба санал болгох мэдээ холбоостой", read.nextLinks > 0, `${read.nextLinks} холбоос`);
+      check("R5 сэтгэгдлийн блок", read.comments === true, "блок алга");
+      /*
+       * Ялгаралтыг ХОЁР горимд. Эхний хувилбар нь зөвхөн бараанд шалгаж,
+       * алдааг БАРИАГҮЙ: цэс нь бараан дэвсгэр дээр цагаанаар зөв гардаг,
+       * харин цайвар цаасан дээр мөн цагаанаар гарч алга болдог байв.
+       */
+      for (const scheme of ["dark", "light"]) {
+        const probe = await guard(`R6 ${scheme}`, async () => {
+          await page.goto(firstNews, { scheme });
+          return page.evaluate(`(() => {
+            const a = document.querySelector('.top .navc a');
+            return {
+              nav: a ? getComputedStyle(a).color : null,
+              bg: getComputedStyle(document.body).backgroundColor,
+            };
+          })()`);
+        });
+        if (probe) {
+          const navLum = luminance(probe.nav);
+          const bgLum = luminance(probe.bg);
+          check(
+            `R6 толгойн цэс ялгарна (${scheme})`,
+            navLum === null || bgLum === null || Math.abs(navLum - bgLum) > 0.25,
+            `цэс ${probe.nav} vs дэвсгэр ${probe.bg}`,
+          );
+        }
+      }
+      await page.goto(firstNews);
+
+      // R3: шат дээр дарвал самбар солигдоно; A+ дарвал үсэг томорно
+      const acted = await guard("R3 үйлдэл", async () =>
+        page.evaluate(`(async () => {
+          const before = (document.querySelector('.stgp')?.textContent || '').trim().slice(0, 40);
+          const last = [...document.querySelectorAll('.trk button')].pop();
+          last && last.click();
+          const fz0 = getComputedStyle(document.querySelector('.spread')).getPropertyValue('--fz').trim();
+          document.querySelectorAll('.fzg button')[1]?.click();
+          await new Promise((r) => setTimeout(r, 200));
+          return {
+            changed: (document.querySelector('.stgp')?.textContent || '').trim().slice(0, 40) !== before,
+            fz0,
+            fz1: getComputedStyle(document.querySelector('.spread')).getPropertyValue('--fz').trim(),
+          };
+        })()`),
+      );
+      if (acted) {
+        check("R3 шат дээр дарвал тайлбар солигдоно", read.stages === 0 || acted.changed, "өөрчлөгдөөгүй");
+        check(
+          "R3 A+ үсгийг томруулна",
+          Number(acted.fz1 || 1) > Number(acted.fz0 || 1),
+          `${acted.fz0} → ${acted.fz1}`,
+        );
+      }
+    }
+  }
+
   // ---- Хавтасны хэвлэмэл бүтэц ------------------------------------------
   /*
    * T1-T3: `lib/cover.ts`-ийн `textureLayer()` нь ҮНЭХЭЭР зурагддаг ба

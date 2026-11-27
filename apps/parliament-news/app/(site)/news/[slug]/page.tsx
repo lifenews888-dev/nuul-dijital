@@ -2,19 +2,26 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { postBySlug, postIdByRedirect, type PostFull } from "../../../../lib/posts";
-import { resolveSlugTarget } from "../../../../lib/article";
-import { mnDate, readMinutes } from "../../../../lib/format";
+import { articleView } from "../../../../lib/article-view";
+import { resolveSlugTarget, paragraphs } from "../../../../lib/article";
+import { mnNumericDate, readMinutes } from "../../../../lib/format";
+import { runningHeader } from "../../../../lib/reading";
 import { metaDescription, absoluteUrl } from "../../../../lib/seo";
-import { ArticleBody } from "../../../../components/article-body";
-import { PostCover } from "../../../../components/post-cover";
-import { PostImage } from "../../../../components/post-image";
-import { imageOrCover } from "../../../../lib/images";
+import { safeImageSrc } from "../../../../lib/images";
+import { coverUrl } from "../../../../lib/cover-input";
+import { ReadingProgress } from "../../../../components/article/reading-progress";
+import { ReaderTools, ShareButtons } from "../../../../components/article/reader-tools";
+import { BillTrack } from "../../../../components/article/bill-track";
+import { Gallery, type Slide } from "../../../../components/article/gallery";
+import { NextNews } from "../../../../components/article/next-news";
+import { Comments } from "../../../../components/article/comments";
 
 export const revalidate = 300;
 
 type Params = { params: { slug: string } };
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001";
+const VIDEO = /\.(mp4|webm|mov|m4v)(\?|#|$)/i;
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const post = await postBySlug(params.slug);
@@ -62,6 +69,23 @@ function newsArticleJsonLd(post: PostFull): string {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
+/**
+ * Баруун хуудасны слайдууд. Зөвшөөрөгдөөгүй host-ын зураг хаягдана — хоосон
+ * нүх үлдээхээс хавтас нь дээр.
+ */
+function slidesOf(post: PostFull): { slides: Slide[]; ratio: string } {
+  const media: Slide[] = [];
+  for (const m of post.media) {
+    const src = safeImageSrc(m.url);
+    if (src) media.push({ url: src, caption: m.caption, video: VIDEO.test(src), blur: true });
+  }
+  if (media.length > 0) return { slides: media, ratio: "wide" };
+  return {
+    slides: [{ url: coverUrl(post.slug), caption: null, video: false, blur: false }],
+    ratio: "book",
+  };
+}
+
 export default async function ArticlePage({ params }: Params) {
   const direct = await postBySlug(params.slug);
   const found = direct ?? (await postIdByRedirect(params.slug));
@@ -72,89 +96,157 @@ export default async function ArticlePage({ params }: Params) {
 
   // target.kind === "render" тул direct заавал байна
   const post = direct as PostFull;
-  const hero = post.media[0];
-  // Зөвшөөрөөгүй host-ын зураг нь хоосон figure үлдээхгүй, хавтас руу эргэнэ
-  const media = imageOrCover(hero?.url);
+  const view = await articleView(post);
+  const url = absoluteUrl(`/news/${post.slug}`, SITE);
+  const { slides, ratio } = slidesOf(post);
+  const body = paragraphs(post.body);
+  const speech = [post.lead, ...body].filter(Boolean).join(" ");
 
   return (
-    <article className="mx-auto max-w-3xl px-4 py-10">
+    <article className="artpage">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: newsArticleJsonLd(post) }}
       />
+      <ReadingProgress />
 
-      {post.kicker ? (
-        <p className="font-head text-xs font-bold uppercase tracking-widest text-red">
-          {post.kicker}
-        </p>
-      ) : null}
+      <div className="spread">
+        <div className="pg L">
+          <div className="rh lbl">{runningHeader(post.categoryName)}</div>
 
-      <h1 className="mt-2 font-head text-4xl font-extrabold leading-tight tracking-tight">
-        {post.title}
-      </h1>
+          <div className="dl">
+            <div className="m">
+              <span className="lbl dcat">
+                {post.categorySlug ? (
+                  <Link href={`/c/${post.categorySlug}`}>{post.categoryName.toUpperCase()}</Link>
+                ) : (
+                  post.categoryName.toUpperCase()
+                )}
+              </span>
+            </div>
 
-      {post.lead ? (
-        <p className="mt-4 font-title text-xl leading-snug text-muted">{post.lead}</p>
-      ) : null}
+            <div className="m">
+              <span>
+                <h1 className="dt1">{post.title}</h1>
+              </span>
+            </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 border-y border-rule/20 py-3 font-head text-sm text-muted">
-        {post.categorySlug ? (
-          <Link href={`/c/${post.categorySlug}`} className="font-semibold text-cob">
-            {post.categoryName}
-          </Link>
-        ) : (
-          <span>{post.categoryName}</span>
-        )}
-        <time dateTime={post.publishedAt.toISOString()}>{mnDate(post.date)}</time>
-        {post.reporter ? <span>{post.reporter}</span> : null}
-        <span>{readMinutes(post.body)} мин унших</span>
+            <div className="m">
+              <span className="dmeta">
+                {mnNumericDate(post.date)} / {post.categoryName} / {readMinutes(post.body)} мин
+                унших
+              </span>
+            </div>
+
+            <div className="m">
+              <span className="tbar" role="toolbar" aria-label="Нийтлэлийн хэрэгсэл">
+                <ReaderTools url={url} title={post.title} speech={speech} />
+              </span>
+            </div>
+
+            {view.bill ? (
+              <div className="m">
+                <span>
+                  <BillTrack bill={view.bill} />
+                </span>
+              </div>
+            ) : null}
+
+            {post.lead ? (
+              <div className="m">
+                <span>
+                  <p className="dlede">{post.lead}</p>
+                </span>
+              </div>
+            ) : null}
+
+            {body.length > 0 ? (
+              <div className="m">
+                <span>
+                  <div className="dbody">
+                    {body.map((p, i) => (
+                      <p key={i}>{p}</p>
+                    ))}
+                  </div>
+                </span>
+              </div>
+            ) : null}
+
+            {post.reporter ? (
+              <div className="m">
+                <span className="dcred">Сурвалжлагч {post.reporter} · Parliament News</span>
+              </div>
+            ) : null}
+
+            {post.tags.length > 0 ? (
+              <div className="m">
+                <span className="dtags">
+                  {post.tags.map((tag) => (
+                    <Link key={tag} href={`/tag/${encodeURIComponent(tag)}`}>
+                      #{tag}
+                    </Link>
+                  ))}
+                </span>
+              </div>
+            ) : null}
+
+            {post.sources.length > 0 ? (
+              <div className="m">
+                <span>
+                  <div className="srch3">ЭХ СУРВАЛЖ БА ХОЛБООС</div>
+                  <ul className="alk">
+                    {post.sources.map((s) => (
+                      <li key={s}>
+                        {/^https?:\/\//.test(s) ? (
+                          <a href={s} target="_blank" rel="noopener">
+                            {s.replace(/^https?:\/\//, "").slice(0, 60)} ↗
+                          </a>
+                        ) : (
+                          s
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </span>
+              </div>
+            ) : null}
+
+            <div className="m">
+              <span className="tbar end">
+                <span className="tbl">Хуваалцах</span>
+                <ShareButtons url={url} title={post.title} />
+              </span>
+            </div>
+
+            <div className="m">
+              <span className="nx">
+                <NextNews next={view.next} related={view.related} />
+              </span>
+            </div>
+
+            <div className="m">
+              <span className="cm">
+                <Comments comments={view.comments} />
+              </span>
+            </div>
+
+            <div className="m">
+              <span className="note">
+                Parliament News бол хараат бус хэвлэл мэдээллийн байгууллага бөгөөд УИХ-ын албан
+                ёсны сайт биш. Хуулийн албан ёсны эхийг{" "}
+                <a href="https://legalinfo.mn" target="_blank" rel="noopener">
+                  legalinfo.mn
+                </a>
+                -ээс үзнэ үү.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="pg R">
+          <Gallery slides={slides} ratio={ratio} />
+        </div>
       </div>
-
-      <figure className="mt-6">
-        {media.useImage ? (
-          <PostImage
-            src={media.src}
-            alt={hero?.caption ?? post.title}
-            variant="hero"
-            priority
-            className="h-auto w-full"
-          />
-        ) : (
-          <PostCover post={post} className="mx-auto max-w-sm" />
-        )}
-        {media.useImage && hero?.caption ? (
-          <figcaption className="mt-2 text-sm text-muted">{hero.caption}</figcaption>
-        ) : null}
-      </figure>
-
-      <ArticleBody body={post.body} />
-
-      {post.sources.length > 0 ? (
-        <section className="mt-10 border-t border-rule/20 pt-4">
-          <h2 className="font-head text-xs font-bold uppercase tracking-widest text-muted">
-            Эх сурвалж
-          </h2>
-          <ul className="mt-2 space-y-1 text-sm">
-            {post.sources.map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
-      {post.tags.length > 0 ? (
-        <nav aria-label="Шошго" className="mt-8 flex flex-wrap gap-2">
-          {post.tags.map((tag) => (
-            <Link
-              key={tag}
-              href={`/tag/${encodeURIComponent(tag)}`}
-              className="rounded-sm bg-sheet px-2 py-1 font-head text-xs font-semibold hover:text-cob"
-            >
-              #{tag}
-            </Link>
-          ))}
-        </nav>
-      ) : null}
     </article>
   );
 }
