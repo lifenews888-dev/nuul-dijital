@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { getSiteSetting } from "../lib/settings";
+import { siteLogos } from "../lib/branding";
 import { menuCategories } from "../lib/posts";
 import { footerModel } from "./site-chrome";
 
@@ -62,9 +63,10 @@ const SOCIAL_PATH: Record<string, ReactNode> = {
  * бүтэн ажиллах нь дээр.
  */
 export async function SiteFooter() {
-  const [model, categories] = await Promise.all([
+  const [model, categories, logos] = await Promise.all([
     getSiteSetting("footer").then(footerModel),
     menuCategories(),
+    siteLogos(),
   ]);
 
   const sales = model.contact.find((c) => c.label === "Сурталчилгаа")?.value;
@@ -75,12 +77,7 @@ export async function SiteFooter() {
       <div className="sfw">
         <div className="sfb">
           <a href="#" className="sflogo" aria-label="Дээш буцах">
-            <img
-              src="/artifact/logo-white.png"
-              alt="Parliament News"
-              width="160"
-              height="36"
-            />
+            <img src={logos.dark} alt="Parliament News" width="160" height="36" />
           </a>
           <p>Хараат бус, хариуцлагатай улс төрийн мэдээ. Төр ба иргэний гүүр.</p>
 

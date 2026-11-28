@@ -1,4 +1,7 @@
 import { z } from "zod";
+
+/** `server/routers/studio-admin.ts`-ийн `BANNER_BLOB`-тай ижил дүрэм */
+const BLOB_HOST_RE = /^https:\/\/[a-z0-9-]+\.public\.blob\.vercel-storage\.com\//i;
 import { Prisma } from "@nuul/db-news";
 import { forTenant, tenantData } from "./tenant-db";
 import type { TenantClient } from "./tenant-db";
@@ -62,11 +65,39 @@ function httpsOnly(value: string | undefined): string {
 const text = (max: number) => z.string().max(max).default("");
 const social = z.string().optional().transform(normalizeHttps);
 
+/**
+ * Лого нь ЗӨВХӨН манай blob-оос. Гадны хаяг зөвшөөрвөл (1) `next/image`
+ * production-д татгалзана, (2) тэр файл хожим солигдвол манай толгойд
+ * өөр зүйл гарна. Хүчингүй утга нь ХООСОН болж, анхны файл руу эргэнэ.
+ */
+const blobOnly = (v: unknown) => {
+  const s = typeof v === "string" ? v.trim() : "";
+  return BLOB_URL.test(s) ? s : "";
+};
+
+const BLOB_URL = BLOB_HOST_RE;
+
+/**
+ * Цэсний мөр. `href` нь дотоод зам эсвэл https — `javascript:` хэзээ ч.
+ * Хоосон жагсаалт нь «ангиллаар автоматаар» гэсэн утгатай.
+ */
+export const navItemSchema = z.object({
+  label: z.string().trim().min(1).max(30),
+  href: z
+    .string()
+    .trim()
+    .refine((h) => /^\/[\w\-/?=&.%]*$/.test(h) || /^https:\/\//.test(h), "Зам буруу"),
+  show: z.boolean().default(true),
+});
+
 export const headerSchema = z.object({
   pos: z.enum(["left", "center"]).default("left"),
   size: z.number().optional().transform(clampSize),
   tagline: z.string().max(48).default(""),
   menu: z.enum(["inline", "below", "burger"]).default("inline"),
+  logoLight: z.unknown().transform(blobOnly).default(""),
+  logoDark: z.unknown().transform(blobOnly).default(""),
+  nav: z.array(navItemSchema).max(12).default([]),
 });
 
 export const footerSchema = z.object({

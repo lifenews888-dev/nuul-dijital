@@ -6,6 +6,7 @@ import { MenuResults } from "./menu-results";
 import { MenuToday, TickerInfo } from "./info";
 import type { MenuPost } from "../lib/menu-filter";
 import type { SiteInfo } from "../lib/info-data";
+import type { Logos } from "../lib/branding";
 
 const FOCUSABLE = 'button, [href], input, [tabindex]:not([tabindex="-1"])';
 
@@ -27,10 +28,12 @@ export function SiteMenu({
   posts,
   order,
   info,
+  logos,
 }: {
   posts: MenuPost[];
   order: string[];
   info: SiteInfo;
+  logos: Logos;
 }) {
   const [open, setOpen] = useState(false);
   const boxRef = useRef<HTMLElement | null>(null);
@@ -103,14 +106,14 @@ export function SiteMenu({
         <a className="mlg" href="/" aria-label="Parliament News нүүр">
           <img
             className="logo d"
-            src="/artifact/logo.png"
+            src={logos.light}
             alt="Parliament News"
             width={123}
             height={28}
           />
           <img
             className="logo w"
-            src="/artifact/logo-white.png"
+            src={logos.dark}
             alt=""
             width={123}
             height={28}

@@ -3,7 +3,15 @@ import { headerSchema, footerSchema, weatherSchema, feedSchema } from "./setting
 
 describe("headerSchema", () => {
   it("логоны байрлал, цэс, хэмжээг хязгаарлана", () => {
-    expect(headerSchema.parse({})).toEqual({ pos: "left", size: 30, tagline: "", menu: "inline" });
+    expect(headerSchema.parse({})).toEqual({
+      pos: "left",
+      size: 30,
+      tagline: "",
+      menu: "inline",
+      logoLight: "",
+      logoDark: "",
+      nav: [],
+    });
     expect(headerSchema.parse({ size: 999 }).size).toBe(56);
     expect(headerSchema.parse({ size: 1 }).size).toBe(20);
     expect(() => headerSchema.parse({ pos: "top" })).toThrow();
@@ -58,5 +66,37 @@ describe("feedSchema", () => {
   it("rss default нь нээлттэй, fxApi https байх", () => {
     expect(feedSchema.parse({})).toEqual({ rss: true, fxSource: "", fxApi: "" });
     expect(feedSchema.parse({ fxApi: "http://x.mn" }).fxApi).toBe("");
+  });
+});
+
+describe("толгойн лого ба цэс", () => {
+  const parse = (v: unknown) => headerSchema.parse(v);
+
+  it("blob БИШ логог хаяж, хоосон болгоно", () => {
+    expect(parse({ logoLight: "https://evil.mn/l.png" }).logoLight).toBe("");
+  });
+
+  it("blob лого үлдэнэ", () => {
+    const url = "https://pn.public.blob.vercel-storage.com/l.png";
+    expect(parse({ logoLight: url }).logoLight).toBe(url);
+  });
+
+  it("javascript: зам бүхий цэсний мөр татгалзана", () => {
+    expect(() => parse({ nav: [{ label: "Х", href: "javascript:alert(1)" }] })).toThrow();
+  });
+
+  it("дотоод зам ба https зөвшөөрөгдөнө", () => {
+    const got = parse({
+      nav: [
+        { label: "Нүүр", href: "/" },
+        { label: "Гадаад", href: "https://parliament.mn" },
+      ],
+    });
+    expect(got.nav).toHaveLength(2);
+  });
+
+  it("цэс нь 12 мөрөөс хэтрэхгүй", () => {
+    const many = Array.from({ length: 13 }, (_, i) => ({ label: `М${i}`, href: "/" }));
+    expect(() => parse({ nav: many })).toThrow();
   });
 });

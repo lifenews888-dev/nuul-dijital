@@ -8,12 +8,22 @@ import type { SettingOf } from "../lib/settings";
 
 export type MenuItem = { href: string; label: string };
 
+/**
+ * Лого оруулаагүй үеийн анхны файлууд — artifact-ийн нөөц. Эдгээр нь
+ * `public/artifact/`-д, репотой хамт явдаг тул сүлжээгүй ч гарна.
+ */
+export const DEFAULT_LOGO_LIGHT = "/artifact/logo.png";
+export const DEFAULT_LOGO_DARK = "/artifact/logo-white.png";
+
 export type HeaderModel = {
   align: "left" | "center";
   logoScale: number;
   tagline: string;
   menuMode: "inline" | "below" | "burger";
   items: MenuItem[];
+  /** Гэрэл/бараан хоёр лого. Хоосон бол `/artifact/`-ийн анхны файл. */
+  logoLight: string;
+  logoDark: string;
 };
 
 export type FooterModel = {
@@ -44,15 +54,25 @@ export function headerModel(
   setting: SettingOf<"header">,
   categories: { slug: string; name: string }[],
 ): HeaderModel {
+  /**
+   * Тохируулсан цэс БАЙВАЛ түүнийг, эс бөгөөс ангиллаар автоматаар.
+   * Нуусан мөр нь гарахгүй — устгахгүйгээр түр хасах зам хэрэгтэй:
+   * сонгуулийн үед нэг ангиллыг түр хаах нь ердийн хэрэг.
+   */
+  const custom = setting.nav.filter((n) => n.show);
+  const auto = [
+    { href: "/", label: "Нүүр" },
+    ...categories.map((c) => ({ href: `/c/${c.slug}`, label: c.name })),
+  ];
+
   return {
     align: setting.pos,
     logoScale: setting.size,
     tagline: setting.tagline,
     menuMode: setting.menu,
-    items: [
-      { href: "/", label: "Нүүр" },
-      ...categories.map((c) => ({ href: `/c/${c.slug}`, label: c.name })),
-    ],
+    items: custom.length > 0 ? custom.map((n) => ({ href: n.href, label: n.label })) : auto,
+    logoLight: setting.logoLight || DEFAULT_LOGO_LIGHT,
+    logoDark: setting.logoDark || DEFAULT_LOGO_DARK,
   };
 }
 
