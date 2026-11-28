@@ -427,3 +427,54 @@ body:not(:has(.shelf)) .top .live {
     --muted: #A3ACC4;
   }
 }
+
+/*
+ * ======================================================================
+ * БАЯН ТЕКСТИЙН ХОЁР ШИНЭ БЛОК
+ *
+ * Artifact-д дэд гарчиг, ишлэл, жагсаалт, зураг бүгд байдаг. Хоёр нь
+ * байхгүй: ОНЦЛОХ ишлэл (`>>`) ба сошиал шигтгээ (`[[embed:…]]`).
+ * ======================================================================
+ */
+.dbody blockquote.pq {
+  border-left: 0;
+  padding: 18px 20px;
+  margin: 22px 0;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 1.22em;
+  line-height: 1.35;
+  color: var(--cob);
+  border-top: 2px solid color-mix(in srgb, var(--red) 70%, transparent);
+  border-bottom: 2px solid color-mix(in srgb, var(--red) 70%, transparent);
+  text-wrap: balance;
+}
+
+/* Шигтгээ нь хэмжээгээ өөрөө мэдэхгүй тул харьцааг нь гадна талаас өгнө */
+.dbody .emb {
+  margin: 18px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.dbody .emb iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/*
+ * Tailwind-ийн preflight нь `ul{list-style:none}` тавьдаг тул artifact-ийн
+ * `.dbody ul{padding-left:20px}` нь зайтай ч ЦЭГГҮЙ жагсаалт гаргадаг байв.
+ */
+.dbody ul {
+  list-style: disc;
+}
+
+.dbody ol {
+  list-style: decimal;
+  margin: 0 0 12px;
+  padding-left: 20px;
+}

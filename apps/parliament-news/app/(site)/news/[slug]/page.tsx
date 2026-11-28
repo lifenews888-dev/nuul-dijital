@@ -15,6 +15,7 @@ import { BillTrack } from "../../../../components/article/bill-track";
 import { Gallery, type Slide } from "../../../../components/article/gallery";
 import { NextNews } from "../../../../components/article/next-news";
 import { Comments } from "../../../../components/article/comments";
+import { RichBody } from "../../../../components/article/rich-body";
 
 export const revalidate = 300;
 
@@ -99,8 +100,8 @@ export default async function ArticlePage({ params }: Params) {
   const view = await articleView(post);
   const url = absoluteUrl(`/news/${post.slug}`, SITE);
   const { slides, ratio } = slidesOf(post);
-  const body = paragraphs(post.body);
-  const speech = [post.lead, ...body].filter(Boolean).join(" ");
+  /** Сонсох нь ЦЭВЭР текст сонсоно — тэмдэглэгээг уншуулах нь утгагүй. */
+  const speech = [post.lead, ...paragraphs(post.body)].filter(Boolean).join(" ");
 
   return (
     <article className="artpage">
@@ -160,14 +161,10 @@ export default async function ArticlePage({ params }: Params) {
               </div>
             ) : null}
 
-            {body.length > 0 ? (
+            {post.body ? (
               <div className="m">
                 <span>
-                  <div className="dbody">
-                    {body.map((p, i) => (
-                      <p key={i}>{p}</p>
-                    ))}
-                  </div>
+                  <RichBody body={post.body} />
                 </span>
               </div>
             ) : null}

@@ -30,7 +30,19 @@ beforeAll(async () => {
 
   const day = 86_400_000;
   const now = Date.now();
-  const common = { tenantId, categoryId: category.id, date: new Date(), lead: "Товч" };
+  /*
+   * `sources` нь ЗААВАЛ. Үгүй бол эдгээр мэдээ самбарын «чанарын шалгалт»-д
+   * дутуу гэж тоологдоно (`lib/dashboard.ts`), шинэхэн шинэчлэгдсэн тул
+   * эрэмбийн дээр гарч, `dashboard.db.test.ts`-ийн өөрийн бэхэлгээг зургаан
+   * мөрийн жагсаалтаас шахаж гаргадаг — найман ажиллуулалтын нэгд улаан.
+   */
+  const common = {
+    tenantId,
+    categoryId: category.id,
+    date: new Date(),
+    lead: "Товч",
+    sources: ["https://parliament.mn"],
+  };
 
   await prisma.newsPost.createMany({
     data: [

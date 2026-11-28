@@ -407,6 +407,52 @@ try {
    * хадгалах) нь жинхэнэ сесс шаарддаг тул энд биш — тэр нь
    * редакцын гишүүнээр нэвтэрч шалгадаг тусдаа скриптэд.
    */
+  // ---- Баян текст --------------------------------------------------------
+  /*
+   * B1-B4: `lib/rich-text.ts`-ийн блокууд хуудсанд ҮНЭХЭЭР элемент болж
+   * байгаа эсэх. Цэвэр тест нь задлагчийг барина; энэ нь дүрслэлийг.
+   *
+   * B4 нь хамгийн чухал: редакцын бичсэн `<script>` нь ХЭЗЭЭ Ч таг болж
+   * болохгүй. `dangerouslySetInnerHTML` ашиглаагүй тул боломжгүй, гэхдээ
+   * хэн нэг нь хожим «хурдан» гэж түүнийг буцааж тавих магадлалтай.
+   */
+  const rich = await guard("B баян текст", async () => {
+    const href = await page.evaluate(
+      `document.querySelector('a[href^="/news/"]')?.getAttribute('href') || ''`,
+    );
+    if (!href) return { skipped: true };
+    await page.goto(href);
+    return page.evaluate(`(() => {
+      const body = document.querySelector('.dbody');
+      return {
+        has: !!body,
+        h3: document.querySelectorAll('.dbody h3').length,
+        quote: document.querySelectorAll('.dbody blockquote').length,
+        pull: document.querySelectorAll('.dbody blockquote.pq').length,
+        list: document.querySelectorAll('.dbody ul li').length,
+        embeds: document.querySelectorAll('.dbody .emb iframe').length,
+        badFrames: [...document.querySelectorAll('.dbody iframe')].filter(
+          (f) => !/^https:\/\/(www\.youtube\.com|platform\.twitter\.com|www\.facebook\.com)\//.test(f.src),
+        ).length,
+        scripts: document.querySelectorAll('.dbody script').length,
+        markup: (body?.textContent || '').includes('##'),
+      };
+    })()`);
+  });
+
+  if (!rich || rich.skipped) {
+    pass.push("B мэдээ байхгүй — алгасав");
+  } else {
+    check("B1 биет бүтэцлэгдсэн блокоор зурагдана", rich.has === true, "`.dbody` алга");
+    check(
+      "B2 тэмдэглэгээ ТҮҮХИЙ үлдээгүй",
+      rich.markup === false,
+      "«##» уншигчид харагдаж байна",
+    );
+    check("B3 шигтгээ зөвхөн зөвшөөрөгдсөн хостоос", rich.badFrames === 0, `${rich.badFrames} танихгүй iframe`);
+    check("B4 биетэд script таг үүсдэггүй", rich.scripts === 0, `${rich.scripts} script`);
+  }
+
   // ---- Цаг агаар ба ханш -------------------------------------------------
   /*
    * W1-W3: тохиргооны цаг агаар, ханш нь НИЙТИЙН талд гарч байгаа эсэх.
