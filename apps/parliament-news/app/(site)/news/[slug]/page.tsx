@@ -16,6 +16,9 @@ import { Gallery, type Slide } from "../../../../components/article/gallery";
 import { NextNews } from "../../../../components/article/next-news";
 import { Comments } from "../../../../components/article/comments";
 import { RichBody } from "../../../../components/article/rich-body";
+import { AdSlot } from "../../../../components/ads/ad-slot";
+import { banners } from "../../../../lib/banner-data";
+import { getSiteSetting } from "../../../../lib/settings";
 
 export const revalidate = 300;
 
@@ -97,7 +100,11 @@ export default async function ArticlePage({ params }: Params) {
 
   // target.kind === "render" тул direct заавал байна
   const post = direct as PostFull;
-  const view = await articleView(post);
+  const [view, ads, foot] = await Promise.all([
+    articleView(post),
+    banners("article"),
+    getSiteSetting("footer"),
+  ]);
   const url = absoluteUrl(`/news/${post.slug}`, SITE);
   const { slides, ratio } = slidesOf(post);
   /** Сонсох нь ЦЭВЭР текст сонсоно — тэмдэглэгээг уншуулах нь утгагүй. */
@@ -212,6 +219,13 @@ export default async function ArticlePage({ params }: Params) {
               <span className="tbar end">
                 <span className="tbl">Хуваалцах</span>
                 <ShareButtons url={url} title={post.title} />
+              </span>
+            </div>
+
+            {/* Зар нь нийтлэл ДУУССАНЫ дараа — уншилтыг тасалдуулахгүй */}
+            <div className="m">
+              <span>
+                <AdSlot place="article" items={ads} salesEmail={foot.sales} />
               </span>
             </div>
 

@@ -478,3 +478,38 @@ body:not(:has(.shelf)) .top .live {
   margin: 0 0 12px;
   padding-left: 20px;
 }
+
+/*
+ * ======================================================================
+ * ЗАРЫН ТАЛБАЙ — artifact-д байхгүй хоёр зүйл
+ *
+ * Artifact-ийн цэгүүд нь `<i>` — зөвхөн заагч. Бидэнд тэд ДАРАГДАНА тул
+ * `<button>`: гараас хүрч болох, дэлгэц уншигчид нэртэй. Мөн artifact нь
+ * зөвхөн `img` загварчилдаг — видео зар түүнд байгаагүй.
+ * ======================================================================
+ */
+.add button {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.add button.on {
+  background: #fff;
+}
+
+.adr2 video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Гэрийн зар нь слайдерын нүдийг бүтнээр эзэлнэ */
+.adr2 > .hous {
+  flex: 0 0 100%;
+}

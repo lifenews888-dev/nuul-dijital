@@ -407,6 +407,46 @@ try {
    * хадгалах) нь жинхэнэ сесс шаарддаг тул энд биш — тэр нь
    * редакцын гишүүнээр нэвтэрч шалгадаг тусдаа скриптэд.
    */
+  // ---- Зарын талбай ------------------------------------------------------
+  /*
+   * A1-A4: зар нь ШОШГОТОЙ, хоосон үед ГЭРИЙН зар гарна, нийтлэлд ч байна.
+   *
+   * A2 нь редакцын бодлогын амлалт: «сурталчилгаа болон редакцын агуулгыг
+   * тусгаарлаж, зарыг «ЗАР» шошготой гаргана». Шошго алга болвол тэр
+   * амлалт чимээгүй зөрчигдөнө.
+   */
+  await page.goto("/");
+  const ad = await guard("A зар", async () =>
+    page.evaluate(`(() => {
+      const w = document.querySelector('.adw');
+      return {
+        has: !!w,
+        label: (w?.querySelector('small')?.textContent || '').trim(),
+        house: !!w?.querySelector('.hous'),
+        slides: w?.querySelectorAll('.adr2 > *').length || 0,
+        dots: w?.querySelectorAll('.add button').length || 0,
+        unlabelled: [...document.querySelectorAll('.adw')].filter(
+          (x) => (x.querySelector('small')?.textContent || '').trim() !== 'ЗАР',
+        ).length,
+      };
+    })()`),
+  );
+
+  if (ad) {
+    check("A1 нүүрэнд зарын талбай байна", ad.has === true, "`.adw` алга");
+    check("A2 зар бүр «ЗАР» шошготой", ad.unlabelled === 0, `${ad.unlabelled} шошгогүй`);
+    check(
+      "A3 зар байхгүй үед гэрийн зар гарна",
+      ad.slides > 0,
+      `${ad.slides} нүд`,
+    );
+    check(
+      "A4 нэгээс олон зар байвал цэгтэй",
+      ad.slides <= 1 || ad.dots === ad.slides,
+      `${ad.slides} нүд, ${ad.dots} цэг`,
+    );
+  }
+
   // ---- Баян текст --------------------------------------------------------
   /*
    * B1-B4: `lib/rich-text.ts`-ийн блокууд хуудсанд ҮНЭХЭЭР элемент болж
