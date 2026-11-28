@@ -48,10 +48,18 @@ curl localhost:3001/api/trpc/health    # {"result":{"data":{"ok":true}}}
 ### 3. Тест
 
 ```bash
-pnpm test        # цэвэр функцууд (DB шаардахгүй)
-pnpm test:db     # tenant тусгаарлалт — ажиллаж байгаа DB шаардна
-pnpm lint        # $queryRaw/$executeRaw хориотой
+pnpm test           # цэвэр функцууд (DB шаардахгүй)
+pnpm test:db        # tenant тусгаарлалт — ажиллаж байгаа DB шаардна
+pnpm lint           # $queryRaw/$executeRaw хориотой
+
+pnpm check:browser  # нийтийн талын хөтчийн инвариантууд (сервер асаалттай)
+pnpm check:studio   # студийн хуудсууд — НЭВТЭРСЭН төлөвт (зөвхөн dev сервер)
+pnpm check:load     # хоцролтын p50/p95 — `check:load <origin> <зэрэг> <нийт>`
+pnpm db:backup      # схем өөрчлөхийн өмнө ЗААВАЛ
 ```
+
+`check:studio` нь production build дээр ажиллахгүй: тэнд cookie нь
+`__Secure-` угтвартай, https шаарддаг. Скрипт үүнийг хэлээд 2-оор гарна.
 
 ### 4. Хэмжигдэх зорилт
 
@@ -93,6 +101,12 @@ curl -s -o /dev/null -w '%{content_type} %{size_download}
 | `/rss.xml` | RSS 2.0 (редакц тохиргооноос хааж болно) |
 | `/sitemap.xml`, `/robots.txt` | Next-ийн metadata route |
 | `/news/<slug>/opengraph-image` | 1200×630 OG зураг |
+| `/live` | Шууд дамжуулалт, өнөөдрийн хуваарь, ирц |
+| `/video` | 308 → `/c/video` (богино хаяг) |
+| `/bill/<id>` | Хуулийн төслийн явц — ноорог мэдээ гоожихгүй |
+| `/story/<slug>` | Сторины бие даасан хаяг (хугацаа дууссаны дараа ч) |
+| `/ads` | Сурталчилгаа байршуулах — үнэ нь студийн хүснэгтээс |
+| `/api/social/dispatch` | Cron. `SOCIAL_DISPATCH_SECRET`-гүй бол 404 |
 
 Ноорог ба цаг товлосон мэдээ эдгээрийн АЛЬ НЭГЭНД ч гарахгүй — шалгах:
 `curl -s localhost:3001/sitemap.xml | grep -c demo-nooreg` → `0`.
