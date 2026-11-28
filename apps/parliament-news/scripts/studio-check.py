@@ -93,6 +93,20 @@ def main():
     su = S()
     su.login(SUPER)
 
+    # Нэвтэрсэн эсэхийг ЭХЛЭЭД шалгана. Production build дээр cookie нь
+    # `__Secure-` угтвартай, `secure` тугтай гардаг (`lib/auth.ts`) тул
+    # локал `http://` дээр хөтөч ч, энэ скрипт ч түүнийг хадгалахгүй.
+    # Тэр тохиолдолд 18 ойлгомжгүй уналт гаргахын оронд нэг тодорхой
+    # мөр хэвлэнэ: энэ бол бүтээгдэхүүний алдаа БИШ.
+    session = json.loads(su.get("/api/auth/session") or "{}")
+    if not session.get("user"):
+        print("")
+        print('Нэвтэрч чадсангүй.')
+        print("Энэ скрипт нь DEV сервер дээр ажиллана: production build нь")
+        print("cookie-г `__Secure-` угтвартай, зөвхөн https-ээр явуулдаг.")
+        print("  pnpm dev  (эсвэл npx next dev -p 3014) дээр дахин ажиллуулна уу.")
+        sys.exit(2)
+
     print("\n== Тохиргооны хуудас ==")
     p = su.get("/studio/settings")
     has("хуудас нээгдэнэ", p, "Нэгдсэн хуралдаан")
