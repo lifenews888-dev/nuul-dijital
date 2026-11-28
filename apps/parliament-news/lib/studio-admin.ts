@@ -188,7 +188,18 @@ export type SettingsData = {
   ticker: { id: string; text: string; url: string | null; active: boolean }[];
   fx: { id: string; code: string; value: number; change: number }[];
   rates: { id: string; place: string; size: string | null; unit: string; price: number }[];
-  banners: { id: string; imageUrl: string; linkUrl: string | null; placement: string }[];
+  banners: {
+    id: string;
+    imageUrl: string;
+    kind: string;
+    linkUrl: string | null;
+    title: string | null;
+    placement: string;
+    startsOn: string | null;
+    endsOn: string | null;
+    paid: boolean;
+    amount: number;
+  }[];
   categories: { id: string; slug: string; name: string; inMenu: boolean; order: number }[];
   weather: unknown;
   header: unknown;
@@ -268,8 +279,15 @@ export async function settingsData(tenantId: string): Promise<SettingsData> {
     banners: banners.map((b) => ({
       id: b.id,
       imageUrl: b.imageUrl,
+      kind: b.kind,
       linkUrl: b.linkUrl,
+      title: b.title,
       placement: b.placement,
+      /** `<input type="date">` нь ISO-ийн эхний 10 тэмдэгтийг хүлээдэг */
+      startsOn: b.startsOn ? b.startsOn.toISOString().slice(0, 10) : null,
+      endsOn: b.endsOn ? b.endsOn.toISOString().slice(0, 10) : null,
+      paid: b.paid,
+      amount: b.amount,
     })),
     categories: categories.map((c) => ({
       id: c.id,

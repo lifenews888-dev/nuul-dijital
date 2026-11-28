@@ -427,3 +427,178 @@ body:not(:has(.shelf)) .top .live {
     --muted: #A3ACC4;
   }
 }
+
+/*
+ * ======================================================================
+ * БАЯН ТЕКСТИЙН ХОЁР ШИНЭ БЛОК
+ *
+ * Artifact-д дэд гарчиг, ишлэл, жагсаалт, зураг бүгд байдаг. Хоёр нь
+ * байхгүй: ОНЦЛОХ ишлэл (`>>`) ба сошиал шигтгээ (`[[embed:…]]`).
+ * ======================================================================
+ */
+.dbody blockquote.pq {
+  border-left: 0;
+  padding: 18px 20px;
+  margin: 22px 0;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 1.22em;
+  line-height: 1.35;
+  color: var(--cob);
+  border-top: 2px solid color-mix(in srgb, var(--red) 70%, transparent);
+  border-bottom: 2px solid color-mix(in srgb, var(--red) 70%, transparent);
+  text-wrap: balance;
+}
+
+/* Шигтгээ нь хэмжээгээ өөрөө мэдэхгүй тул харьцааг нь гадна талаас өгнө */
+.dbody .emb {
+  margin: 18px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.dbody .emb iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/*
+ * Tailwind-ийн preflight нь `ul{list-style:none}` тавьдаг тул artifact-ийн
+ * `.dbody ul{padding-left:20px}` нь зайтай ч ЦЭГГҮЙ жагсаалт гаргадаг байв.
+ */
+.dbody ul {
+  list-style: disc;
+}
+
+.dbody ol {
+  list-style: decimal;
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+/*
+ * ======================================================================
+ * ЗАРЫН ТАЛБАЙ — artifact-д байхгүй хоёр зүйл
+ *
+ * Artifact-ийн цэгүүд нь `<i>` — зөвхөн заагч. Бидэнд тэд ДАРАГДАНА тул
+ * `<button>`: гараас хүрч болох, дэлгэц уншигчид нэртэй. Мөн artifact нь
+ * зөвхөн `img` загварчилдаг — видео зар түүнд байгаагүй.
+ * ======================================================================
+ */
+.add button {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.add button.on {
+  background: #fff;
+}
+
+.adr2 video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Гэрийн зар нь слайдерын нүдийг бүтнээр эзэлнэ */
+.adr2 > .hous {
+  flex: 0 0 100%;
+}
+
+/*
+ * ======================================================================
+ * ШУУД ДАМЖУУЛАЛТЫН ТОГЛУУЛАГЧ
+ *
+ * Artifact-д шууд дамжуулалт нь зөвхөн товч бөгөөд дарахад «удахгүй»
+ * гэсэн мэдэгдэл гаргадаг (`liveMsg`) — жинхэнэ урсгал байгаагүй.
+ * ======================================================================
+ */
+.livebox {
+  margin: 18px 0 22px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--sheet);
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.lvhead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+}
+
+/*
+ * `.tst.on` нь улаан эмийн хэлбэртэй байх ёстой ч тэжээлийн гадна
+ * дэвсгэрээ алддаг — дүрмийг нь энд тодорхой давтав.
+ */
+.lvhead .tst.on {
+  background: #c8102e;
+  color: #fff;
+}
+
+.lvhead b {
+  font: 700 14px var(--font-head), sans-serif;
+  color: var(--ink);
+}
+
+.lvhead a {
+  margin-left: auto;
+  font: 600 12.5px var(--font-head), sans-serif;
+  color: var(--cob);
+}
+
+.lvframe {
+  position: relative;
+  background: #0b0f1e;
+}
+
+.lvframe iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/*
+ * ======================================================================
+ * ГҮЙЛГЭХЭД ИЛЧЛЭХ
+ *
+ * `.rv` анги нь ЗӨВХӨН хөтөч дээр, `prefers-reduced-motion` шалгасны
+ * ДАРАА тавигдана (`components/motion/reveal.tsx`). Иймд JS ажиллахгүй
+ * үед ч, хөдөлгөөн хаасан үед ч агуулга далдрахгүй — CSS-д `opacity:0`
+ * тавиад JS-ээр нээдэг арга нь яг тэр хоёр тохиолдолд сайтыг хоосолдог.
+ * ======================================================================
+ */
+.rv {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+.rv.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Хөдөлгөөн хаасан үед — хэрэв анги ямар нэгэн замаар үлдсэн бол ч */
+@media (prefers-reduced-motion: reduce) {
+  .rv {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

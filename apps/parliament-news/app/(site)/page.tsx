@@ -1,5 +1,7 @@
 import { homeData } from "../../lib/home-data";
 import { siteInfo } from "../../lib/info-data";
+import { banners } from "../../lib/banner-data";
+import { getSiteSetting } from "../../lib/settings";
 import { shelfBooks } from "../../components/shelf-model";
 import { Hero } from "../../components/hero/hero";
 import { Shelf3D } from "../../components/hero/shelf3d";
@@ -15,7 +17,12 @@ export const revalidate = 300;
 
 export default async function HomePage() {
   // Нүүрний бүх өгөгдөл НЭГ уншилтаар — виджет бүр өөрөө санд очихгүй
-  const [data, info] = await Promise.all([homeData(), siteInfo()]);
+  const [data, info, ads, foot] = await Promise.all([
+    homeData(),
+    siteInfo(),
+    banners("home"),
+    getSiteSetting("footer"),
+  ]);
   const { latest, stories, live, agenda, ticker } = data;
 
   if (latest.length === 0) {
@@ -61,7 +68,7 @@ export default async function HomePage() {
         өөрөө `.feed { margin-top: 100svh }`-ээр нэг бүтэн дэлгэцийн доороос
         эхэлнэ. `main`-ийн 76px-ийг энд хасахгүй — `.feed` нь өөрөө `main`.
       */}
-      <HomeFeed data={data} />
+      <HomeFeed data={data} ads={ads} salesEmail={foot.sales} />
     </>
   );
 }

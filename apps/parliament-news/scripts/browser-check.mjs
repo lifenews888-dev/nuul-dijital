@@ -407,6 +407,164 @@ try {
    * хадгалах) нь жинхэнэ сесс шаарддаг тул энд биш — тэр нь
    * редакцын гишүүнээр нэвтэрч шалгадаг тусдаа скриптэд.
    */
+  // ---- Хөдөлгөөн ---------------------------------------------------------
+  /*
+   * X1-X2: гүйлгэхэд илчлэх нь ажиллах БА хөдөлгөөн хаасан хүнд агуулга
+   * ШУУД харагдах.
+   *
+   * X2 нь илүү чухал: `opacity:0`-ийг CSS-д тавиад JS-ээр нээдэг арга нь
+   * `prefers-reduced-motion` үед, эсвэл JS унасан үед хуудсыг БҮРМӨСӨН
+   * хоослодог. Тиймээс далдлах ангийг зөвхөн хөтөч дээр, шалгасны дараа
+   * тавина — энэ шалгуур тэр гэрээг барина.
+   */
+  for (const scheme of ["motion", "reduced"]) {
+    const reduced = scheme === "reduced";
+    const m = await guard(`X ${scheme}`, async () => {
+      await page.goto("/", { reduced });
+      return page.evaluate(`(() => {
+        const nodes = [...document.querySelectorAll('.rv')];
+        const hidden = nodes.filter((n) => Number(getComputedStyle(n).opacity) < 0.5);
+        return { total: nodes.length, hidden: hidden.length };
+      })()`);
+    });
+
+    if (!m) continue;
+    if (reduced) {
+      check(
+        "X2 хөдөлгөөн хаасан үед далдлахгүй",
+        m.total === 0,
+        `${m.total} элемент далдлагдсан`,
+      );
+    } else {
+      check("X1 илчлэх давхарга холбогдсон", m.total > 0, "`.rv` элемент алга");
+    }
+  }
+
+  // ---- Шууд дамжуулалт ---------------------------------------------------
+  /*
+   * L1-L2: шууд дамжуулалт АСААЛТТАЙ үед тоглуулагч гарна, УНТРААЛТТАЙ
+   * үед блок огт байхгүй. Хоёр дахь нь чухал: «шууд» гэсэн хоосон хайрцаг
+   * нь уншигчид дамжуулалт явж байна гэж хэлнэ.
+   */
+  /** Блок бүр ӨӨРӨӨ хуудсаа нээнэ — өмнөх блок хаана үлдснээс хамаарахгүй. */
+  await page.goto("/");
+  const lv = await guard("L шууд", async () =>
+    page.evaluate(`(() => {
+      const box = document.querySelector('.livebox');
+      /*
+       * Асаалттай эсэхийг ТЕКСТЭЭР биш БҮТЦЭЭР: .tst.on анги нь зөвхөн
+       * дамжуулалт явж байх үед зурагддаг. Текстээр шалгавал үг солихоор
+       * шалгуур чимээгүй худал болно.
+       */
+      return {
+        box: !!box,
+        frame: !!box?.querySelector('.lvframe iframe'),
+        src: box?.querySelector('iframe')?.src || '',
+        off: !document.querySelector('.today .tst.on'),
+      };
+    })()`),
+  );
+
+  if (lv) {
+    if (lv.off) {
+      check("L1 унтраалттай үед тоглуулагч гарахгүй", lv.box === false, "хоосон блок байна");
+    } else {
+      check("L1 асаалттай үед блок гарна", lv.box === true, "блок алга");
+      check(
+        "L2 шигтгээ зөвхөн зөвшөөрөгдсөн хостоос",
+        !lv.frame ||
+          /^https:\/\/(www\.youtube\.com|platform\.twitter\.com|www\.facebook\.com)\//.test(lv.src),
+        lv.src,
+      );
+    }
+  }
+
+  // ---- Зарын талбай ------------------------------------------------------
+  /*
+   * A1-A4: зар нь ШОШГОТОЙ, хоосон үед ГЭРИЙН зар гарна, нийтлэлд ч байна.
+   *
+   * A2 нь редакцын бодлогын амлалт: «сурталчилгаа болон редакцын агуулгыг
+   * тусгаарлаж, зарыг «ЗАР» шошготой гаргана». Шошго алга болвол тэр
+   * амлалт чимээгүй зөрчигдөнө.
+   */
+  await page.goto("/");
+  const ad = await guard("A зар", async () =>
+    page.evaluate(`(() => {
+      const w = document.querySelector('.adw');
+      return {
+        has: !!w,
+        label: (w?.querySelector('small')?.textContent || '').trim(),
+        house: !!w?.querySelector('.hous'),
+        slides: w?.querySelectorAll('.adr2 > *').length || 0,
+        dots: w?.querySelectorAll('.add button').length || 0,
+        unlabelled: [...document.querySelectorAll('.adw')].filter(
+          (x) => (x.querySelector('small')?.textContent || '').trim() !== 'ЗАР',
+        ).length,
+      };
+    })()`),
+  );
+
+  if (ad) {
+    check("A1 нүүрэнд зарын талбай байна", ad.has === true, "`.adw` алга");
+    check("A2 зар бүр «ЗАР» шошготой", ad.unlabelled === 0, `${ad.unlabelled} шошгогүй`);
+    check(
+      "A3 зар байхгүй үед гэрийн зар гарна",
+      ad.slides > 0,
+      `${ad.slides} нүд`,
+    );
+    check(
+      "A4 нэгээс олон зар байвал цэгтэй",
+      ad.slides <= 1 || ad.dots === ad.slides,
+      `${ad.slides} нүд, ${ad.dots} цэг`,
+    );
+  }
+
+  // ---- Баян текст --------------------------------------------------------
+  /*
+   * B1-B4: `lib/rich-text.ts`-ийн блокууд хуудсанд ҮНЭХЭЭР элемент болж
+   * байгаа эсэх. Цэвэр тест нь задлагчийг барина; энэ нь дүрслэлийг.
+   *
+   * B4 нь хамгийн чухал: редакцын бичсэн `<script>` нь ХЭЗЭЭ Ч таг болж
+   * болохгүй. `dangerouslySetInnerHTML` ашиглаагүй тул боломжгүй, гэхдээ
+   * хэн нэг нь хожим «хурдан» гэж түүнийг буцааж тавих магадлалтай.
+   */
+  const rich = await guard("B баян текст", async () => {
+    const href = await page.evaluate(
+      `document.querySelector('a[href^="/news/"]')?.getAttribute('href') || ''`,
+    );
+    if (!href) return { skipped: true };
+    await page.goto(href);
+    return page.evaluate(`(() => {
+      const body = document.querySelector('.dbody');
+      return {
+        has: !!body,
+        h3: document.querySelectorAll('.dbody h3').length,
+        quote: document.querySelectorAll('.dbody blockquote').length,
+        pull: document.querySelectorAll('.dbody blockquote.pq').length,
+        list: document.querySelectorAll('.dbody ul li').length,
+        embeds: document.querySelectorAll('.dbody .emb iframe').length,
+        badFrames: [...document.querySelectorAll('.dbody iframe')].filter(
+          (f) => !/^https:\/\/(www\.youtube\.com|platform\.twitter\.com|www\.facebook\.com)\//.test(f.src),
+        ).length,
+        scripts: document.querySelectorAll('.dbody script').length,
+        markup: (body?.textContent || '').includes('##'),
+      };
+    })()`);
+  });
+
+  if (!rich || rich.skipped) {
+    pass.push("B мэдээ байхгүй — алгасав");
+  } else {
+    check("B1 биет бүтэцлэгдсэн блокоор зурагдана", rich.has === true, "`.dbody` алга");
+    check(
+      "B2 тэмдэглэгээ ТҮҮХИЙ үлдээгүй",
+      rich.markup === false,
+      "«##» уншигчид харагдаж байна",
+    );
+    check("B3 шигтгээ зөвхөн зөвшөөрөгдсөн хостоос", rich.badFrames === 0, `${rich.badFrames} танихгүй iframe`);
+    check("B4 биетэд script таг үүсдэггүй", rich.scripts === 0, `${rich.scripts} script`);
+  }
+
   // ---- Цаг агаар ба ханш -------------------------------------------------
   /*
    * W1-W3: тохиргооны цаг агаар, ханш нь НИЙТИЙН талд гарч байгаа эсэх.

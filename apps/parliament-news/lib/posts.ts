@@ -100,6 +100,8 @@ export type PostListItem = {
   theme: number;
   look: CoverLook | null;
   imageUrl: string | null;
+  /** Сторины БОСОО медиа. Нийтлэлийн зурагтай ХОЛБООГҮЙ, тусдаа багана. */
+  storyUrl: string | null;
   featured: boolean;
 };
 
@@ -135,6 +137,7 @@ export function toListItem(row: PostRow): PostListItem {
     theme: row.theme,
     look: parseLook(row.look),
     imageUrl: row.media[0]?.url ?? null,
+    storyUrl: row.storyUrl,
     featured: row.featured,
   };
 }

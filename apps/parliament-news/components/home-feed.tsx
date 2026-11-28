@@ -1,3 +1,7 @@
+import { AdSlot } from "./ads/ad-slot";
+import { LiveBox } from "./hero/live-box";
+import { Reveal } from "./motion/reveal";
+import type { AdItem } from "../lib/banner";
 import { mnAgo, mnDate, ubToday } from "../lib/format";
 import { imageOrCover } from "../lib/images";
 import { coverUrl } from "../lib/cover-input";
@@ -102,7 +106,15 @@ function Today({ live, agenda }: Pick<HomeData, "live" | "agenda">) {
  * энд `/c/<slug>` хуудас. Тэр хуудас нь хуудаслалттай тул artifact-ийн
  * «Цааш үзэх» товчны үүргийг мөн гүйцэтгэнэ.
  */
-export function HomeFeed({ data }: { data: HomeData }) {
+export function HomeFeed({
+  data,
+  ads,
+  salesEmail,
+}: {
+  data: HomeData;
+  ads: AdItem[];
+  salesEmail: string;
+}) {
   const { latest, featured, live, agenda, bills } = data;
 
   // Artifact-ийн `feat`: онцлохууд түрүүлж, дутвал шинэ мэдээгээр гүйцээнэ
@@ -125,8 +137,21 @@ export function HomeFeed({ data }: { data: HomeData }) {
       <div className="fw">
         <Today live={live} agenda={agenda} />
 
+        {/* Чуулган шууд явж байвал урсгал нь ЭНД, гадагш явуулахгүй */}
+        <Reveal>
+          <LiveBox live={live} />
+        </Reveal>
+
+        {/*
+          Зар нь «Өнөөдөр» блокийн ДАРАА: уншигч тэжээлд ормогц хардаг
+          боловч баатарлаг тавиурыг тасалдуулахгүй. Artifact-ийн `adBlock`
+          ч тэжээлийн дотор л байрлана.
+        */}
+        <AdSlot place="home" items={ads} salesEmail={salesEmail} />
+
         {cards.length > 0 ? (
-          <section className="fsec">
+          <Reveal index={1}>
+            <section className="fsec">
             <h2 className="fh">
               <i />
               Онцлох мэдээ
@@ -151,10 +176,12 @@ export function HomeFeed({ data }: { data: HomeData }) {
                 </a>
               ))}
             </div>
-          </section>
+            </section>
+          </Reveal>
         ) : null}
 
-        <div className="fcols">
+        <Reveal index={2}>
+          <div className="fcols">
           <div className="fmain">
             <h2 className="fh">
               <i />
@@ -218,6 +245,7 @@ export function HomeFeed({ data }: { data: HomeData }) {
             </div>
           </aside>
         </div>
+        </Reveal>
       </div>
     </div>
   );

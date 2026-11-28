@@ -12,6 +12,9 @@ const header = (over: Partial<SettingOf<"header">> = {}): SettingOf<"header"> =>
   size: 30,
   tagline: "",
   menu: "inline",
+  logoLight: "",
+  logoDark: "",
+  nav: [],
   ...over,
 });
 
@@ -114,5 +117,67 @@ describe("footerModel", () => {
     expect(m.contact).toEqual([]);
     expect(m.socials).toEqual([]);
     expect(m.texts).toEqual([]);
+  });
+});
+
+/**
+ * ЛОГО ба ЦЭСНИЙ УДИРДЛАГА.
+ *
+ * Artifact-д лого нь файлын нэр, цэс нь ангиллаас автоматаар. Редакц
+ * өөрийн лого тавих, цэсээ эрэмбэлэх, түр нуух зам байгаагүй.
+ */
+describe("headerModel — лого", () => {
+  it("лого оруулаагүй бол anхны файл руу эргэнэ", () => {
+    const m = headerModel(header(), []);
+    expect(m.logoLight).toBe("/artifact/logo.png");
+    expect(m.logoDark).toBe("/artifact/logo-white.png");
+  });
+
+  it("оруулсан blob лого хэрэглэгдэнэ", () => {
+    const url = "https://pn.public.blob.vercel-storage.com/logo.png";
+    expect(headerModel(header({ logoLight: url }), []).logoLight).toBe(url);
+  });
+});
+
+describe("headerModel — цэс", () => {
+  const cats2 = [{ slug: "tosov", name: "Төсөв" }];
+
+  it("тохируулсан цэс нь ангиллыг ДАРНА", () => {
+    const m = headerModel(
+      header({ nav: [{ label: "Онцлох", href: "/c/ontsloh", show: true }] }),
+      cats2,
+    );
+    expect(m.items).toEqual([{ href: "/c/ontsloh", label: "Онцлох" }]);
+  });
+
+  it("нуусан мөр гарахгүй", () => {
+    const m = headerModel(
+      header({
+        nav: [
+          { label: "Нэг", href: "/a", show: true },
+          { label: "Хоёр", href: "/b", show: false },
+        ],
+      }),
+      cats2,
+    );
+    expect(m.items.map((i) => i.label)).toEqual(["Нэг"]);
+  });
+
+  it("дарааллыг тохиргооных", () => {
+    const m = headerModel(
+      header({
+        nav: [
+          { label: "Б", href: "/b", show: true },
+          { label: "А", href: "/a", show: true },
+        ],
+      }),
+      cats2,
+    );
+    expect(m.items.map((i) => i.label)).toEqual(["Б", "А"]);
+  });
+
+  it("бүгдийг нуувал ангиллаар эргэнэ — хоосон цэс нь сайтыг түгждэг", () => {
+    const m = headerModel(header({ nav: [{ label: "Нэг", href: "/a", show: false }] }), cats2);
+    expect(m.items.map((i) => i.label)).toEqual(["Нүүр", "Төсөв"]);
   });
 });

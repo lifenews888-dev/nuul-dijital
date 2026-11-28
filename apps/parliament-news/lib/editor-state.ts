@@ -53,6 +53,7 @@ export type EditorState = {
   channels: string[];
   featured: boolean;
   story: boolean;
+  storyUrl: string;
   storyDays: number;
 };
 
@@ -96,6 +97,7 @@ export function emptyEditor(today: string): EditorState {
     channels: [...DEFAULT_CHANNELS],
     featured: false,
     story: false,
+    storyUrl: "",
     storyDays: 1,
   };
 }
@@ -164,6 +166,7 @@ export function editorFromPost(post: StudioPostFull): EditorState {
     channels: [...post.channels],
     featured: post.featured,
     story: post.story,
+    storyUrl: post.storyUrl ?? "",
     storyDays: storyDaysOf(post),
   };
 }

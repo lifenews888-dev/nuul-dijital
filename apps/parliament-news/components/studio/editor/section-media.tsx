@@ -21,10 +21,16 @@ import type { StudioMedia } from "../../../lib/studio-post";
  */
 export function SectionMedia({
   postId,
+  ensurePost,
   media,
   kind,
 }: {
   postId: string | null;
+  /**
+   * Мэдээг санд БАЙГАА эсэхийг баталгаажуулна; байхгүй бол ноорог үүсгээд
+   * id-г нь буцаана. Гарчиггүй бол `null` — гарчгийг зохиож болохгүй.
+   */
+  ensurePost: () => Promise<string | null>;
   media: StudioMedia[];
   kind: UploadKind;
 }) {
@@ -46,12 +52,19 @@ export function SectionMedia({
     setBusy(true);
     setError(null);
     try {
+      /** Ноорог ЭХЛЭЭД — файл нь мэдээний id рүү холбогддог. */
+      const id = await ensurePost();
+      if (!id) {
+        setError("Эхлээд гарчиг бичнэ үү — файл нь мэдээнд холбогдоно.");
+        return;
+      }
+
       const blob = await upload(file.name, file, {
         access: "public",
         handleUploadUrl: "/api/upload",
         clientPayload: kind,
       });
-      await trpc.studioNews.attachMedia.mutate({ postId: postId!, url: blob.url, kind });
+      await trpc.studioNews.attachMedia.mutate({ postId: id, url: blob.url, kind });
       router.refresh();
     } catch (e) {
       setError(trpcMessage(e));
@@ -112,11 +125,11 @@ export function SectionMedia({
         гэсэн асуулт л үлдэнэ.
       */}
       {!postId ? (
-        <p className="font-head text-[13px] text-muted">
-          Эхлээд мэдээгээ хадгална уу — дараа нь {title.toLowerCase()} оруулж болно.
+        <p className="mb-2 font-head text-[13px] text-muted">
+          Файл сонгоход ноорог автоматаар үүснэ — гарчиг л бичсэн байхад болно.
         </p>
-      ) : (
-        <>
+      ) : null}
+      <>
           {items.length > 0 ? (
             <ul className="mb-3 list-none p-0">
               {items.map((m, i) => (
@@ -222,8 +235,7 @@ export function SectionMedia({
             Дээд хэмжээ {Math.round(maxBytes(kind) / (1024 * 1024))} МБ.{" "}
             {kind === "image" ? "JPEG, PNG, WebP, AVIF." : "MP4 эсвэл WebM."}
           </p>
-        </>
-      )}
+      </>
 
       {error ? (
         <p role="alert" className="mt-1.5 font-head text-[12.5px] font-semibold text-[#c0392b]">

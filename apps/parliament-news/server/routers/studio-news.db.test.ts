@@ -980,3 +980,60 @@ describe("кэшийн хүчингүй болголт", () => {
     expect(revalidatePath).not.toHaveBeenCalled();
   });
 });
+
+/**
+ * СТОРИНЫ БОСОО МЕДИА.
+ *
+ * Талбар нь схемд, оролтын шалгалтад, редакторын төлөвт бүгдэд нь байсан ч
+ * `save`-ийн бичих блокт БАЙГААГҮЙ — хадгалахад чимээгүй алга болдог байв.
+ * Шинэ талбар нэмэх бүрт давтагдах алдаа тул тестээр барив.
+ */
+describe("сторины босоо медиа", () => {
+  const BLOB = "https://pn.public.blob.vercel-storage.com";
+
+  it("хадгалагдана", async () => {
+    const made = await caller("SUPER").studioNews.save({
+      title: `Стори ${sfx}`,
+      date: "2026-11-28",
+      story: true,
+      storyDays: 1,
+      storyUrl: `${BLOB}/s.mp4`,
+    });
+    const row = await prisma.newsPost.findUnique({
+      where: { id: made.id },
+      select: { storyUrl: true },
+    });
+    expect(row?.storyUrl).toBe(`${BLOB}/s.mp4`);
+    await prisma.newsPost.delete({ where: { id: made.id } });
+  });
+
+  it("хоосон мөр нь медиаг ХАСНА", async () => {
+    const made = await caller("SUPER").studioNews.save({
+      title: `Стори хоосон ${sfx}`,
+      date: "2026-11-28",
+      storyUrl: `${BLOB}/s.jpg`,
+    });
+    await caller("SUPER").studioNews.save({
+      id: made.id,
+      title: `Стори хоосон ${sfx}`,
+      date: "2026-11-28",
+      storyUrl: "",
+    });
+    const row = await prisma.newsPost.findUnique({
+      where: { id: made.id },
+      select: { storyUrl: true },
+    });
+    expect(row?.storyUrl).toBeNull();
+    await prisma.newsPost.delete({ where: { id: made.id } });
+  });
+
+  it("blob БИШ хостын медиа татгалзана", async () => {
+    await expect(
+      caller("SUPER").studioNews.save({
+        title: `Муу ${sfx}`,
+        date: "2026-11-28",
+        storyUrl: "https://evil.mn/s.mp4",
+      }),
+    ).rejects.toThrow();
+  });
+});

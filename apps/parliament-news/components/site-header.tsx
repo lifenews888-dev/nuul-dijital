@@ -25,8 +25,8 @@ export async function SiteHeader() {
   return (
     <header className="top">
       <Link className="brand lbl" href="/" aria-label="Parliament News нүүр">
-        <img className="logo d" src="/artifact/logo.png" alt="Parliament News" />
-        <img className="logo w" src="/artifact/logo-white.png" alt="" />
+        <img className="logo d" src={model.logoLight} alt="Parliament News" />
+        <img className="logo w" src={model.logoDark} alt="" />
         <i />
         <span>parlamentnews.mn</span>
         <em className="btag" id="btag">

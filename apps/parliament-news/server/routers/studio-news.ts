@@ -205,6 +205,8 @@ export const studioNewsRouter = router({
       ...(data.channels !== undefined ? { channels: data.channels } : {}),
       ...(data.featured !== undefined ? { featured: data.featured } : {}),
       ...(data.story !== undefined ? { story: data.story } : {}),
+      /** Хоосон мөр нь «хас» гэсэн утгатай — `null` болж бичигдэнэ. */
+      ...(data.storyUrl !== undefined ? { storyUrl: data.storyUrl || null } : {}),
       ...(storyUntil !== undefined ? { storyUntil } : {}),
       ...(data.status !== undefined ? { status: data.status } : {}),
     };

@@ -1,6 +1,10 @@
 "use client";
 
+import { useRef, useState } from "react";
+import { upload } from "@vercel/blob/client";
 import { Section, inputClass } from "./field";
+import { checkUpload } from "../../../lib/upload";
+import { trpcMessage } from "../../../lib/trpc-client";
 import { STATUS_LABELS, STATUS_ORDER } from "../../../lib/studio-status";
 import { canSetStatusManually, type Actor } from "../../../lib/permissions";
 import type { EditorState, EditorAction } from "../../../lib/editor-state";
@@ -101,6 +105,8 @@ export function SectionPub({
         ) : null}
       </div>
 
+      {state.story ? <StoryMedia state={state} set={set} /> : null}
+
       {canSetStatusManually(actor) ? (
         <label className="block max-w-[280px]">
           <span className="mb-1.5 block font-head text-[13px] font-semibold text-muted">
@@ -132,5 +138,109 @@ export function SectionPub({
         </label>
       ) : null}
     </Section>
+  );
+}
+
+/**
+ * Сторины БОСОО медиа.
+ *
+ * Мэдээний зураг нь ихэвчлэн хэвтээ; түүнийг 9:16 хүрээнд тайрахад хүний
+ * толгой, гарчгийн текст эхэлж тасардаг. Босоо бичлэг эсвэл босоо зураг нь
+ * тусдаа талбар — нийтлэлийн зурагтай хамааралгүй.
+ *
+ * Оруулаагүй бол стори нь хуучин замаараа: мэдээний зураг, тэр ч байхгүй бол
+ * текстгүй хавтас.
+ */
+function StoryMedia({
+  state,
+  set,
+}: {
+  state: EditorState;
+  set: (field: keyof EditorState, value: unknown) => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const video = /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(state.storyUrl);
+
+  async function pick(file: File | undefined) {
+    if (!file) return;
+    const kind = file.type.startsWith("video/") ? "video" : "image";
+    const check = checkUpload({ type: file.type, size: file.size }, kind);
+    if (!check.ok) {
+      setError(check.reason);
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      const blob = await upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/upload",
+        clientPayload: kind,
+      });
+      set("storyUrl", blob.url);
+    } catch (e) {
+      setError(trpcMessage(e));
+    } finally {
+      setBusy(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
+  return (
+    <div className="mb-4">
+      <div className="mb-1.5 font-head text-[12.5px] text-muted">
+        Сторины босоо медиа <span className="font-normal">— 9:16, видео эсвэл зураг</span>
+      </div>
+
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*,video/mp4,video/webm"
+        className="hidden"
+        onChange={(e) => void pick(e.target.files?.[0])}
+      />
+
+      <div className="flex items-start gap-3">
+        <button
+          type="button"
+          className="grid h-32 w-[72px] place-items-center overflow-hidden rounded-lg border border-line bg-inp"
+          disabled={busy}
+          onClick={() => fileRef.current?.click()}
+          aria-label="Сторины медиа сонгох"
+        >
+          {state.storyUrl ? (
+            video ? (
+              <video src={state.storyUrl} muted className="h-full w-full object-cover" />
+            ) : (
+              <img src={state.storyUrl} alt="" className="h-full w-full object-cover" />
+            )
+          ) : (
+            <span className="font-head text-[12px] text-muted">＋</span>
+          )}
+        </button>
+
+        <div className="grid gap-1.5">
+          <p className="max-w-[320px] font-head text-[12.5px] text-muted">
+            Оруулаагүй бол мэдээний зураг, тэр ч байхгүй бол номын хавтас гарна.
+          </p>
+          {state.storyUrl ? (
+            <button
+              type="button"
+              className="justify-self-start font-head text-[12.5px] text-muted underline"
+              onClick={() => set("storyUrl", "")}
+            >
+              Хасах
+            </button>
+          ) : null}
+          {error ? (
+            <p role="alert" className="font-head text-[12.5px] font-semibold text-[#c0392b]">
+              {error}
+            </p>
+          ) : null}
+        </div>
+      </div>
+    </div>
   );
 }

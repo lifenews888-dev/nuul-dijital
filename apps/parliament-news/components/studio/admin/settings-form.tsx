@@ -1,5 +1,7 @@
 "use client";
 
+import { BannerPanel } from "./banner-panel";
+import { HeaderPanel } from "./header-panel";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { trpc, trpcMessage } from "../../../lib/trpc-client";
@@ -86,7 +88,6 @@ export function SettingsForm({ data }: { data: SettingsData }) {
   const hd = (data.header ?? {}) as Row;
   const ft = (data.footer ?? {}) as Row;
   const fd = (data.feed ?? {}) as Row;
-  const [header, setHeader] = useState({ tagline: String(hd.tagline ?? "") });
   const [footer, setFooter] = useState({
     about: String(ft.about ?? ""),
     email: String(ft.email ?? ""),
@@ -452,7 +453,10 @@ export function SettingsForm({ data }: { data: SettingsData }) {
         />
       </Panel>
 
-      {/* 7 — Зарын үнийн санал */}
+      {/* 7 — Сурталчилгааны баннер */}
+      <BannerPanel rows={data.banners} />
+
+      {/* 8 — Зарын үнийн санал */}
       <Panel title="Зарын үнийн санал" hint="«Сурталчилгаа байршуулах» хуудсанд хүснэгтээр гарна.">
         {rates.map((row, i) => (
           <div key={i} className="mb-2 grid grid-cols-[minmax(0,1fr)_120px_110px_110px_40px] gap-2">
@@ -601,25 +605,21 @@ export function SettingsForm({ data }: { data: SettingsData }) {
         />
       </Panel>
 
-      {/* 9 — Толгой */}
-      <Panel title="Толгой хэсэг ба лого" hint="Сайтын бүх хуудсанд.">
-        <input
-          className={adminInput}
-          value={header.tagline}
-          placeholder="parlamentnews.mn"
-          onChange={(e) => setHeader({ tagline: e.target.value })}
-        />
-        <SaveBar
-          k="header"
-          busy={busy}
-          done={done}
-          onSave={() =>
-            void save("header", () =>
-              trpc.studioAdmin.site.mutate({ key: "header", value: header }),
-            )
-          }
-        />
-      </Panel>
+      {/* 9 — Толгой, лого ба цэс */}
+      <HeaderPanel
+        value={{
+          pos: hd.pos === "center" ? "center" : "left",
+          size: Number(hd.size) || 30,
+          tagline: String(hd.tagline ?? ""),
+          menu:
+            hd.menu === "below" || hd.menu === "burger"
+              ? (hd.menu as "below" | "burger")
+              : "inline",
+          logoLight: String(hd.logoLight ?? ""),
+          logoDark: String(hd.logoDark ?? ""),
+          nav: Array.isArray(hd.nav) ? (hd.nav as { label: string; href: string; show: boolean }[]) : [],
+        }}
+      />
 
       {/* 10 — Хөл */}
       <Panel title="Хөл хэсэг ба холбоо барих">

@@ -47,6 +47,7 @@ export type StudioPostFull = {
   channels: string[];
   featured: boolean;
   story: boolean;
+  storyUrl: string | null;
   storyUntil: Date | null;
   publishedAt: Date | null;
   /** Сторины сонгосон хугацааг сэргээхэд — `storyUntil - createdAt` */
@@ -84,6 +85,7 @@ export async function studioPost(
       channels: true,
       featured: true,
       story: true,
+      storyUrl: true,
       storyUntil: true,
       publishedAt: true,
       createdAt: true,
@@ -129,6 +131,7 @@ export async function studioPost(
     channels: row.channels,
     featured: row.featured,
     story: row.story,
+    storyUrl: row.storyUrl,
     storyUntil: row.storyUntil,
     publishedAt: row.publishedAt,
     createdAt: row.createdAt,

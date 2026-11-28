@@ -127,6 +127,27 @@ export function EditorForm({
     }
   }, [state, post, router]);
 
+  /**
+   * Медиа оруулахын өмнө мэдээ САНД БАЙХ ёстой — `attachMedia` нь `postId`
+   * шаарддаг. Өмнө нь засварлагч «Эхлээд мэдээгээ хадгална уу» гэж хэлээд
+   * зургийн талбайг хаадаг байв: сэтгүүлч гарчиг бичихээсээ өмнө зургаа
+   * сонгох нь ердийн урсгал тул энэ нь ажлыг тасалдуулж байсан.
+   *
+   * Одоо ноорог нь АВТОМАТААР үүснэ. Гарчиггүй бол `null` буцаана —
+   * гарчиг нь зохиомол утгаар нөхөж болох зүйл биш, жагсаалтад тэр чигээрээ
+   * гарна.
+   */
+  const ensurePost = useCallback(async (): Promise<string | null> => {
+    const known = post?.id ?? state.id;
+    if (known) return known;
+    if (state.title.trim().length === 0) return null;
+
+    const res = await trpc.studioNews.save.mutate(editorToInput(state, [...allowed]));
+    dispatch({ type: "saved", id: res.id, updatedAt: res.updatedAt });
+    router.replace(`/studio/news/${res.id}`);
+    return res.id;
+  }, [post, state, allowed, router]);
+
   const canSave = state.title.trim().length > 0 && !busy;
 
   return (
@@ -168,11 +189,21 @@ export function EditorForm({
           ) : null}
 
           {allowed.has("photos") ? (
-            <SectionMedia postId={post?.id ?? null} media={post?.media ?? []} kind="image" />
+            <SectionMedia
+              postId={post?.id ?? state.id}
+              media={post?.media ?? []}
+              kind="image"
+              ensurePost={ensurePost}
+            />
           ) : null}
 
           {allowed.has("video") ? (
-            <SectionMedia postId={post?.id ?? null} media={post?.media ?? []} kind="video" />
+            <SectionMedia
+              postId={post?.id ?? state.id}
+              media={post?.media ?? []}
+              kind="video"
+              ensurePost={ensurePost}
+            />
           ) : null}
 
           {allowed.has("look") ? (
