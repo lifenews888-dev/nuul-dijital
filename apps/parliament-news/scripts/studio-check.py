@@ -138,6 +138,46 @@ def main():
     has("автоматаар ноорог", e, "ноорог автоматаар үүснэ")
     has("сторины тохиргоо", e, "Стори болгох")
 
+
+    def wrong_login(email):
+        """Санаатай БУРУУ нууц үгээр нэвтрэхийг оролдоно; алдааны мөр буцаана."""
+        s = S()
+        csrf = json.loads(s.get("/api/auth/csrf"))["csrfToken"]
+        body = urlencode({"csrfToken": csrf, "email": email,
+                          "password": "buruu-nuuts-ug-123", "json": "true"}).encode()
+        try:
+            with s.o.open(urllib.request.Request(
+                    ORIGIN + "/api/auth/callback/credentials", data=body)) as r:
+                return r.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as e:
+            return e.read().decode("utf-8", "replace")
+
+    print("\n== Хурдны хязгаар ==")
+    victim = "rate-%s@parlamentnews.local" % secrets.token_hex(4)
+    blocked_at = None
+    for attempt in range(1, 14):
+        body = wrong_login(victim)
+        if "%D0%A5%D1%8D%D1%82" in body or "Хэт олон" in body:
+            blocked_at = attempt
+            break
+    if blocked_at == 11:
+        ok("нэвтрэлт 11 дэх буруу оролдлогод хаагдав (хязгаар 10)")
+    elif blocked_at:
+        bad("нэвтрэлтийн хязгаар", "%d дахь оролдлогод хаагдав, 11 байх ёстой" % blocked_at)
+    else:
+        bad("нэвтрэлтийн хязгаар", "13 оролдлогод хаагдсангүй")
+
+    # Амжилттай нэвтрэлт нь тоолуурыг цэвэрлэх ёстой — үгүй бол нэг
+    # оффисын багийнхан өдрийн ажлаараа бие биеэ хаана.
+    for _ in range(4):
+        wrong_login(SUPER)
+    s2 = S()
+    s2.login(SUPER)
+    if json.loads(s2.get("/api/auth/session") or "{}").get("user"):
+        ok("амжилттай нэвтрэлт тоолуурыг цэвэрлэв")
+    else:
+        bad("амжилттай нэвтрэлт", "буруу оролдлогын дараа нэвтэрч чадсангүй")
+
     print("\n== Нийтийн тал ==")
     anon = S()
     ads = anon.get("/ads")

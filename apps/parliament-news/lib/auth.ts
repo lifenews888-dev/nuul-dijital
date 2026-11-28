@@ -1,3 +1,4 @@
+import { check, fail, clear, LIMITS } from "./rate-limit";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
@@ -42,24 +43,69 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Нууц үг", type: "password" },
       },
 
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Имэйл болон нууц үг оруулна уу");
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email.toLowerCase().trim() },
-        });
+        const email = credentials.email.toLowerCase().trim();
 
-        if (!user || !user.password) {
+        /*
+         * ХУРДНЫ ХЯЗГААР — нууц үг шалгахаас ӨМНӨ.
+         *
+         * Хоёр түлхүүрээр: имэйл ба IP. Зөвхөн имэйлээр хязгаарлавал
+         * халдагч олон имэйл туршиж тойрно; зөвхөн IP-гээр хязгаарлавал
+         * нэг оффисын сүлжээнээс орсон хэд хэдэн сэтгүүлч бие биеэ
+         * хаана. Хоёулаа давхар байх нь хоёр цоорхойг хоёуланг хаана.
+         *
+         * Хариу нь «буруу» гэсэнтэй ИЖИЛ үг биш: хэрэглэгч хэдэн минут
+         * хүлээхээ мэдэх ёстой, эс бөгөөс дахин дахин оролдоно.
+         */
+        const ip =
+          req?.headers?.["x-forwarded-for"]?.toString().split(",")[0]?.trim() || "unknown";
+
+        const keyEmail = `signin:e:${email}`;
+        const keyIp = `signin:i:${ip}`;
+
+        for (const [key, rule] of [
+          [keyEmail, LIMITS.signinEmail],
+          [keyIp, LIMITS.signinIp],
+        ] as const) {
+          const gate = await check(key, rule);
+          if (!gate.ok) {
+            const minutes = Math.ceil(gate.retryAfter / 60);
+            throw new Error(
+              `Хэт олон буруу оролдлого. ${minutes} минутын дараа дахин оролдоно уу.`,
+            );
+          }
+        }
+
+        /** Бүтэлгүй оролдлогыг хоёр түлхүүрт бүртгээд нэг л үг буцаана. */
+        const wrong = async (): Promise<never> => {
+          await fail(keyEmail, LIMITS.signinEmail);
+          await fail(keyIp, LIMITS.signinIp);
           throw new Error("Имэйл эсвэл нууц үг буруу байна");
+        };
+
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        /*
+         * `wrong()` нь `never` буцаадаг ч TypeScript нь дуудлагын дараа
+         * хяналт зогссоныг мэдэхгүй — `await` нь төрлийг нарийсгахгүй.
+         * Тиймээс шууд `throw`.
+         */
+        if (!user || !user.password) {
+          throw await wrong();
         }
 
         const passwordValid = await compare(credentials.password, user.password);
 
         if (!passwordValid) {
-          throw new Error("Имэйл эсвэл нууц үг буруу байна");
+          throw await wrong();
         }
+
+        /** Амжилттай — тоолуурыг цэвэрлэнэ, өөрийгөө хаахгүй. */
+        await clear([keyEmail, keyIp]);
 
         return {
           id: user.id,

@@ -374,3 +374,17 @@ model FxRate {
   @@unique([tenantId, code])
   @@map("pn_fx_rates")
 }
+
+/// Хурдны хязгаарын тоолуур.
+///
+/// Tenant-д ХАМААРАХГҮЙ: нэвтрэлт нь tenant тодорхойлогдохоос ӨМНӨ
+/// болдог, мөн халдлага нь нэг байгууллагын хил дотор зогсдоггүй.
+/// `lib/tenant-db.ts`-ийн `TENANT_MODELS`-д ЗОРИУД ОРООГҮЙ.
+model RateLimit {
+  key     String   @id @db.VarChar(160)
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
+  @@map("pn_rate_limits")
+}
