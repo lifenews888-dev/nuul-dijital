@@ -440,6 +440,34 @@ try {
     }
   }
 
+  // ---- Аюулгүй байдлын толгойнууд ----------------------------------------
+  /*
+   * H1-H2: толгойнууд нь `next.config.js`-д, `vercel.json`-д БИШ.
+   * Эхнийх нь хаана ч ажиллана; хоёр дахь нь зөвхөн Vercel дээр, иймд
+   * локалд шалгах боломжгүй — шалгагдаагүй хамгаалалт нь байхгүйтэй адил.
+   */
+  const head = await guard("H толгойнууд", async () =>
+    page.evaluate(`fetch('/', { method: 'HEAD' }).then((r) => ({
+      nosniff: r.headers.get('x-content-type-options'),
+      referrer: r.headers.get('referrer-policy'),
+      frame: r.headers.get('x-frame-options'),
+    }))`),
+  );
+
+  if (head) {
+    check("H1 MIME таамаглал хаасан", head.nosniff === "nosniff", String(head.nosniff));
+    check(
+      "H2 iframe-д хийхийг хязгаарласан",
+      head.frame === "SAMEORIGIN" || head.frame === "DENY",
+      String(head.frame),
+    );
+    check(
+      "H3 referrer бодлого",
+      head.referrer === "strict-origin-when-cross-origin",
+      String(head.referrer),
+    );
+  }
+
   // ---- Спекийн хуудаснууд ------------------------------------------------
   /*
    * P1-P5: спек (§5.6) нэрлэсэн боловч байхгүй байсан дөрвөн хаяг.
