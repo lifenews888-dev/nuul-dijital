@@ -602,3 +602,68 @@ body:not(:has(.shelf)) .top .live {
     transition: none;
   }
 }
+
+/*
+ * ======================================================================
+ * ХУУЛИЙН ТӨСЛИЙН ХУУДАС — шатны зураас ИНТЕРАКТИВ БИШ
+ *
+ * Artifact-ийн `.trk` нь товчнуудаас бүрдэнэ: тэнд дарахад самбар
+ * солигддог. `/bill/<id>` дээр бүх шат нэг дор нээлттэй тул дарах зүйл
+ * байхгүй — `<span>`-ууд. Загварын дүрмүүд нь `.trk button`-д хавсарсан
+ * тул span-д давтав.
+ * ======================================================================
+ */
+.trk span {
+  position: relative;
+  font: 600 10.5px/1.2 var(--font-head);
+  color: #9a968c;
+  padding-top: 16px;
+  text-align: left;
+  min-height: 44px;
+}
+
+.trk span::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  background: #f7f2e7;
+  z-index: 1;
+}
+
+.trk span::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 9px;
+  right: 0;
+  height: 1.5px;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+.trk span:last-child::after {
+  display: none;
+}
+
+.trk span.dn {
+  color: var(--cob);
+}
+
+.trk span.dn::before {
+  background: var(--cob);
+}
+
+.trk span.cu {
+  color: var(--red);
+}
+
+.trk span.cu::before {
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--red) 22%, transparent);
+}
