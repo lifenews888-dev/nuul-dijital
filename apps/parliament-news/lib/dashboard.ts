@@ -34,6 +34,11 @@ export type DashboardData = {
   } | null;
   /** Сувгаар нийтлэгдсэн мэдээний тоо */
   channels: { name: string; count: number }[];
+  /**
+   * Автомат нийтлэлийн дараалал. `skipped` нь алдаа БИШ — тэр сувгийн
+   * холболт хараахан тохируулаагүй гэсэн үг.
+   */
+  socialQueue: { queued: number; sent: number; failed: number; skipped: number };
   team: { name: string; actions: number }[];
   /**
    * Чанарын шалгалт — нийтлэхэд бэлэн болоогүй мэдээ.
@@ -46,7 +51,9 @@ export type DashboardData = {
   comments_recent: { id: string; authorName: string; body: string; hidden: boolean }[];
 };
 
-const CHANNELS = ["Сайт", "Facebook", "YouTube", "Instagram", "TikTok"];
+/** admin.html-ийн `CH`. «Telegram» нь НЭМЭЛТ: гурван сүлжээнээс
+ *  зөвхөн түүний автомат нийтлэл бүрэн хэрэгжсэн. */
+const CHANNELS = ["Сайт", "Facebook", "YouTube", "Instagram", "TikTok", "Telegram"];
 
 export async function dashboardData(
   tenantId: string,
@@ -77,6 +84,7 @@ export async function dashboardData(
     candidates,
     mine,
     recentComments,
+    socialGroups,
   ] = await Promise.all([
     db.newsPost.groupBy({ by: ["status"], _count: { _all: true } }),
     db.newsPost.count({ where: { status: "PUBLISHED", publishedAt: { gte: weekAgo, lte: now } } }),
@@ -121,6 +129,7 @@ export async function dashboardData(
       take: 5,
       select: { id: true, authorName: true, body: true, hidden: true },
     }),
+    db.socialPost.groupBy({ by: ["status"], _count: { _all: true } }),
   ]);
 
   const counts = Object.fromEntries(ALL_STATUSES.map((s) => [s, 0])) as Record<
@@ -201,6 +210,12 @@ export async function dashboardData(
         }
       : null,
     channels: [...channelCount.entries()].map(([name, count]) => ({ name, count })),
+    socialQueue: {
+      queued: socialGroups.find((g) => g.status === "QUEUED")?._count._all ?? 0,
+      sent: socialGroups.find((g) => g.status === "SENT")?._count._all ?? 0,
+      failed: socialGroups.find((g) => g.status === "FAILED")?._count._all ?? 0,
+      skipped: socialGroups.find((g) => g.status === "SKIPPED")?._count._all ?? 0,
+    },
     team,
     issues,
     mine,

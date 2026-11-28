@@ -3,6 +3,9 @@ import { TRPCError } from "@trpc/server";
 import { revalidatePath } from "next/cache";
 import { router, editorialProcedure, ctxActor } from "@/lib/trpc";
 import { canAct, canDelete, canCreate, ACTION_STATUS } from "@/lib/permissions";
+import { enqueueSocial } from "@/lib/social-queue";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001";
 import { logActivity, NOTE_MAX } from "@/lib/activity";
 import { postInputSchema, pickEditable, storyUntilFrom } from "@/lib/studio-post-input";
 import { nextSlug } from "@/lib/slug";
@@ -428,6 +431,25 @@ export const studioNewsRouter = router({
        * харагдана.
        */
       revalidatePublic(post.slug);
+
+      /*
+       * Сошиал дараалал — нийтлэх үед Л. Илгээлт нь энд БИШ: редактор
+       * «Нийтлэх» дарахад Facebook-ийн хариу хүлээж зогсох учиргүй, мөн
+       * тэдний доголдол нийтлэлийг унагаах ёсгүй. Дараалалд оруулах нь
+       * бүтэлгүй болсон ч нийтлэл амжилттай хэвээр.
+       */
+      if (input.action === "publish") {
+        try {
+          /** `post` нь эрхийн шалгалтад хэрэгтэйг л агуулна; бүтнээр нь авна. */
+          const full = await ctx.db.newsPost.findFirst({
+            where: { id: post.id },
+            select: { id: true, slug: true, title: true, lead: true, channels: true },
+          });
+          if (full) await enqueueSocial(ctx.db, full, SITE_URL);
+        } catch (e) {
+          console.error("social: дараалалд оруулж чадсангүй —", e);
+        }
+      }
 
       return { status };
     }),

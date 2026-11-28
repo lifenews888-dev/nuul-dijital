@@ -347,6 +347,31 @@ export default async function StudioDashboard({
                 </li>
               ))}
             </ul>
+
+            {/*
+              Автомат нийтлэлийн дараалал. «Алдаа» л анхаарал шаардана;
+              «тохируулаагүй» нь холболт хийгдээгүй гэсэн үг, засах зүйл
+              нь код биш, Vercel дээрх токен.
+            */}
+            <div className="mt-3 border-t border-line pt-3">
+              <div className="mb-1.5 font-head text-[12px] font-semibold text-muted">
+                Автомат нийтлэл
+              </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 font-head text-[12.5px]">
+                <span className="text-muted">
+                  Хүлээгдэж буй <b className="text-ink tabular-nums">{d.socialQueue.queued}</b>
+                </span>
+                <span className="text-muted">
+                  Илгээсэн <b className="text-ink tabular-nums">{d.socialQueue.sent}</b>
+                </span>
+                <span className={d.socialQueue.failed > 0 ? "text-[#c0392b]" : "text-muted"}>
+                  Алдаа <b className="tabular-nums">{d.socialQueue.failed}</b>
+                </span>
+                <span className="text-muted">
+                  Тохируулаагүй <b className="text-ink tabular-nums">{d.socialQueue.skipped}</b>
+                </span>
+              </div>
+            </div>
           </section>
         </div>
       </div>

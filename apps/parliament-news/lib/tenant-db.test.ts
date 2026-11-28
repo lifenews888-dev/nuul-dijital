@@ -11,6 +11,12 @@ describe("TENANT_MODELS", () => {
     expect(TENANT_MODELS).toContain("FxRate");
     expect(TENANT_MODELS).toContain("TenantMember");
     expect(TENANT_MODELS).toContain("BillStage");
+    expect(TENANT_MODELS).toContain("SocialPost");
+    /*
+     * `RateLimit` нь ЗОРИУД энд БАЙХГҮЙ: нэвтрэлт нь tenant тодорхойлогдохоос
+     * өмнө болдог бөгөөд халдлага нэг байгууллагын хилээр хязгаарлагддаггүй.
+     */
+    expect(TENANT_MODELS).not.toContain("RateLimit");
     expect(TENANT_MODELS).not.toContain("User");
     expect(TENANT_MODELS).not.toContain("Website");
     expect(TENANT_MODELS).not.toContain("Tenant");
