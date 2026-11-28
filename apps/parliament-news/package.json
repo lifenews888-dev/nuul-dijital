@@ -11,7 +11,9 @@
     "test:unit": "vitest run lib --exclude \"**/*.db.test.ts\"",
     "test:db": "vitest run .db.test.ts",
     "check:browser": "node scripts/browser-check.mjs",
-    "check:studio": "python -I scripts/studio-check.py"
+    "check:studio": "python -I scripts/studio-check.py",
+    "check:load": "node scripts/load-test.mjs",
+    "db:backup": "node scripts/backup-db.mjs"
   },
   "dependencies": {
     "@nuul/db-news": "workspace:*",

@@ -440,6 +440,85 @@ try {
     }
   }
 
+  // ---- Аюулгүй байдлын толгойнууд ----------------------------------------
+  /*
+   * H1-H2: толгойнууд нь `next.config.js`-д, `vercel.json`-д БИШ.
+   * Эхнийх нь хаана ч ажиллана; хоёр дахь нь зөвхөн Vercel дээр, иймд
+   * локалд шалгах боломжгүй — шалгагдаагүй хамгаалалт нь байхгүйтэй адил.
+   */
+  const head = await guard("H толгойнууд", async () =>
+    page.evaluate(`fetch('/', { method: 'HEAD' }).then((r) => ({
+      nosniff: r.headers.get('x-content-type-options'),
+      referrer: r.headers.get('referrer-policy'),
+      frame: r.headers.get('x-frame-options'),
+    }))`),
+  );
+
+  if (head) {
+    check("H1 MIME таамаглал хаасан", head.nosniff === "nosniff", String(head.nosniff));
+    check(
+      "H2 iframe-д хийхийг хязгаарласан",
+      head.frame === "SAMEORIGIN" || head.frame === "DENY",
+      String(head.frame),
+    );
+    check(
+      "H3 referrer бодлого",
+      head.referrer === "strict-origin-when-cross-origin",
+      String(head.referrer),
+    );
+  }
+
+  // ---- Спекийн хуудаснууд ------------------------------------------------
+  /*
+   * P1-P5: спек (§5.6) нэрлэсэн боловч байхгүй байсан дөрвөн хаяг.
+   * Хуваалцах, индекслэх боломжгүй агуулга нь үгүй агуулгатай адил.
+   */
+  const paths = await guard("P хуудаснууд", async () => {
+    const out = {};
+    const sm = await page.evaluate(
+      `fetch('/sitemap.xml').then((r) => r.text())`,
+    );
+    const pick = (re) => (sm.match(re) || [])[0] || "";
+    const bill = pick(/\/bill\/[a-z0-9]+/);
+    const story = pick(/\/story\/[a-z0-9-]+/);
+
+    for (const [name, path] of [
+      ["live", "/live"],
+      ["ads", "/ads"],
+      ["bill", bill],
+      ["story", story],
+    ]) {
+      if (!path) {
+        out[name] = { skipped: true };
+        continue;
+      }
+      await page.goto(path);
+      out[name] = await page.evaluate(`({
+        path: location.pathname,
+        h1: (document.querySelector('h1')?.textContent || '').trim().slice(0, 50),
+        notFound: document.title.includes('404') || !!document.querySelector('[data-nextjs-error]'),
+      })`);
+    }
+    return out;
+  });
+
+  if (paths) {
+    for (const [name, got] of Object.entries(paths)) {
+      if (got.skipped) {
+        pass.push(`P ${name} — өгөгдөл алга, алгасав`);
+        continue;
+      }
+      check(`P ${name} хуудас нээгдэнэ`, got.h1.length > 0 && !got.notFound, JSON.stringify(got));
+    }
+  }
+
+  /** `/video` нь богино хаяг — 308-аар ангилал руу */
+  const vid = await guard("P video", async () => {
+    await page.goto("/video");
+    return page.evaluate(`location.pathname`);
+  });
+  if (vid) check("P video богино хаяг чиглүүлнэ", vid === "/c/video", `буусан зам: ${vid}`);
+
   // ---- Шууд дамжуулалт ---------------------------------------------------
   /*
    * L1-L2: шууд дамжуулалт АСААЛТТАЙ үед тоглуулагч гарна, УНТРААЛТТАЙ

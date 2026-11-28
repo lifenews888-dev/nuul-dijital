@@ -150,7 +150,15 @@ describe("dashboardData", () => {
       "YouTube",
       "Instagram",
       "TikTok",
+      "Telegram",
     ]);
+  });
+
+  it("автомат нийтлэлийн дараалал тоологдоно", async () => {
+    const d = await dashboardData(tenantId, userId);
+    for (const k of ["queued", "sent", "failed", "skipped"] as const) {
+      expect(d.socialQueue[k]).toBeGreaterThanOrEqual(0);
+    }
   });
 
   it("багийн идэвх — нэртэйгээ", async () => {

@@ -102,6 +102,8 @@ export type PostListItem = {
   imageUrl: string | null;
   /** Сторины БОСОО медиа. Нийтлэлийн зурагтай ХОЛБООГҮЙ, тусдаа багана. */
   storyUrl: string | null;
+  /** Стори мөн эсэх — `/story/<slug>` хаалгад хэрэгтэй */
+  story: boolean;
   featured: boolean;
 };
 
@@ -138,6 +140,7 @@ export function toListItem(row: PostRow): PostListItem {
     look: parseLook(row.look),
     imageUrl: row.media[0]?.url ?? null,
     storyUrl: row.storyUrl,
+    story: row.story,
     featured: row.featured,
   };
 }

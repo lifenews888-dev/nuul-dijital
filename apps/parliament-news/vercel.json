@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "cd ../../packages/db-news && pnpm exec prisma generate --schema=prisma/schema.prisma && cd ../../apps/parliament-news && pnpm exec next build",
+  "regions": [
+    "hkg1"
+  ],
+  "headers": [
+    {
+      "source": "/cover/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300, stale-while-revalidate=86400"
+        }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/social/dispatch",
+      "schedule": "*/10 * * * *"
+    }
+  ]
+}

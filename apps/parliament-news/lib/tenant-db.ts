@@ -23,6 +23,7 @@ export const TENANT_MODELS = [
   "TickerAd",
   "AdRate",
   "FxRate",
+  "SocialPost",
 ] as const;
 
 const SCOPED = new Set<string>(TENANT_MODELS);

@@ -10,7 +10,9 @@ import { canSetStatusManually, type Actor } from "../../../lib/permissions";
 import type { EditorState, EditorAction } from "../../../lib/editor-state";
 
 /** admin.html-ийн `CH` */
-const CHANNELS = ["Сайт", "Facebook", "YouTube", "Instagram", "TikTok"];
+/** admin.html-ийн `CH`. «Telegram» нь НЭМЭЛТ: гурван сүлжээнээс
+ *  зөвхөн түүний автомат нийтлэл бүрэн хэрэгжсэн. */
+const CHANNELS = ["Сайт", "Facebook", "YouTube", "Instagram", "TikTok", "Telegram"];
 
 /** admin.html-ийн `f_sdur` */
 const STORY_DURATIONS = [

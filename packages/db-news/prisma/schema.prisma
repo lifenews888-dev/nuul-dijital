@@ -63,6 +63,7 @@ model Tenant {
   tickerAds     TickerAd[]
   adRates       AdRate[]
   fxRates       FxRate[]
+  socialPosts   SocialPost[]
 
   @@map("pn_tenants")
 }
@@ -145,6 +146,7 @@ model NewsPost {
   comments      NewsComment[]
   slugRedirects NewsSlugRedirect[]
   bill          Bill?
+  social        SocialPost[]
 
   @@unique([tenantId, slug])
   @@unique([tenantId, id])
@@ -373,4 +375,48 @@ model FxRate {
 
   @@unique([tenantId, code])
   @@map("pn_fx_rates")
+}
+
+/// Хурдны хязгаарын тоолуур.
+///
+/// Tenant-д ХАМААРАХГҮЙ: нэвтрэлт нь tenant тодорхойлогдохоос ӨМНӨ
+/// болдог, мөн халдлага нь нэг байгууллагын хил дотор зогсдоггүй.
+/// `lib/tenant-db.ts`-ийн `TENANT_MODELS`-д ЗОРИУД ОРООГҮЙ.
+model RateLimit {
+  key     String   @id @db.VarChar(160)
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
+  @@map("pn_rate_limits")
+}
+
+/// Сошиал нийтлэлийн ДАРААЛАЛ.
+///
+/// Мэдээ нийтлэгдэхэд сонгосон суваг тутамд нэг мөр үүснэ. Илгээлтийг
+/// тусдаа ажиллагаа (`/api/social/dispatch`) хийнэ: нийтлэх үйлдлийг
+/// гадны API-гийн хурд, доголдолд холбох ёсгүй — Facebook удаан хариулж
+/// байгаагаас болж редактор «Нийтлэх» товчны ард хүлээх учиргүй.
+model SocialPost {
+  id        String    @id @default(cuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  postId    String
+  post      NewsPost  @relation(fields: [tenantId, postId], references: [tenantId, id], onDelete: Cascade)
+  /// `lib/social.ts`-ийн `ChannelKey`
+  channel   String    @db.VarChar(20)
+  /// QUEUED | SENT | FAILED | SKIPPED
+  status    String    @default("QUEUED") @db.VarChar(10)
+  text      String?   @db.VarChar(2400)
+  /// Гадны сүлжээн дэх постын хаяг — амжилттай болсны дараа
+  remoteUrl String?   @db.VarChar(400)
+  error     String?   @db.VarChar(400)
+  attempts  Int       @default(0)
+  sentAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([tenantId, postId, channel])
+  @@index([tenantId, status])
+  @@map("pn_social_posts")
 }

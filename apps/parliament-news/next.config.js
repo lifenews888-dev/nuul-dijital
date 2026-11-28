@@ -32,6 +32,39 @@ const nextConfig = {
     remotePatterns: REMOTE_PATTERNS,
     minimumCacheTTL: 2592000, // 30 хоног
   },
+
+  /**
+   * Аюулгүй байдлын толгойнууд ЭНД, `vercel.json`-д БИШ.
+   *
+   * `vercel.json`-ийн `headers` нь зөвхөн Vercel дээр үйлчилнэ: `next
+   * start`-аар локал эсвэл өөр орчинд ажиллуулахад толгой огт гарахгүй
+   * бөгөөд тэр нь шалгах боломжгүй гэсэн үг. Next-ийн `headers()` нь
+   * хаана ч ажиллана, Vercel ч түүнийг хүндэлнэ.
+   *
+   * `X-Frame-Options: SAMEORIGIN` — манай хуудсыг гадны сайт iframe-д
+   * хийж, дарлалыг хулгайлахаас (clickjacking) сэргийлнэ. Мэдээний сайтыг
+   * хуурамч хүрээнд оруулах нь улс төрийн агуулгад бодит эрсдэл.
+   */
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          {
+            key: "Permissions-Policy",
+            value: "geolocation=(), microphone=(), camera=(), interest-cohort=()",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
