@@ -1,5 +1,6 @@
 "use client";
 
+import { BannerPanel } from "./banner-panel";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { trpc, trpcMessage } from "../../../lib/trpc-client";
@@ -452,7 +453,10 @@ export function SettingsForm({ data }: { data: SettingsData }) {
         />
       </Panel>
 
-      {/* 7 — Зарын үнийн санал */}
+      {/* 7 — Сурталчилгааны баннер */}
+      <BannerPanel rows={data.banners} />
+
+      {/* 8 — Зарын үнийн санал */}
       <Panel title="Зарын үнийн санал" hint="«Сурталчилгаа байршуулах» хуудсанд хүснэгтээр гарна.">
         {rates.map((row, i) => (
           <div key={i} className="mb-2 grid grid-cols-[minmax(0,1fr)_120px_110px_110px_40px] gap-2">

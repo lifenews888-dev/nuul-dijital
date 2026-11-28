@@ -15,6 +15,9 @@ import { SEATS, SESSION_STATUSES, safeLink } from "@/lib/live-input";
  * хамгаалалт биш: эдгээрийг `fetch`-ээр гараар дуудаж болно.
  */
 
+const BANNER_BLOB = /^https:\/\/[a-z0-9-]+\.public\.blob\.vercel-storage\.com\//i;
+const DAY_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
 function requireSettings(ctx: Parameters<typeof ctxActor>[0]) {
   const actor = ctxActor(ctx);
   if (!canEditSettings(actor)) {
@@ -260,6 +263,75 @@ export const studioAdminRouter = router({
         postId: null,
         userId: actor.userId,
         action: "rates",
+      });
+      revalidatePath("/");
+      return { ok: true as const };
+    }),
+
+  /* ─────────────── Сурталчилгааны баннер ─────────────── */
+  /**
+   * Медиа нь ЗӨВХӨН манай blob-оос. Гадны хаяг зөвшөөрвөл: (1) `next/image`
+   * production-д 400 буцаана, (2) зар байршуулагч хожим файлаа сольж, бидний
+   * нэрээр өөр зүйл харуулж чадна.
+   */
+  banners: editorialProcedure
+    .input(
+      z.object({
+        rows: z
+          .array(
+            z.object({
+              imageUrl: z.string().trim().regex(BANNER_BLOB, "Зөвхөн сайтдаа байршуулсан файл"),
+              kind: z.enum(["image", "video"]),
+              linkUrl: z.string().trim().max(400).optional(),
+              title: z.string().trim().max(80).optional(),
+              placement: z.enum(["home", "article", "side", "both", "all"]),
+              startsOn: z.string().regex(DAY_ONLY).optional(),
+              endsOn: z.string().regex(DAY_ONLY).optional(),
+              paid: z.boolean().default(true),
+              amount: z.number().int().min(0).max(1_000_000_000).default(0),
+            }),
+          )
+          .max(20),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const actor = requireSettings(ctx);
+
+      for (const r of input.rows) {
+        if (r.linkUrl && !safeLink(r.linkUrl)) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Холбоос нь http эсвэл https байх ёстой" });
+        }
+        /** Эхлэхээс өмнө дуусах зар бол хэзээ ч гарахгүй — чимээгүй алдаа. */
+        if (r.startsOn && r.endsOn && r.startsOn > r.endsOn) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Дуусах огноо нь эхлэхээс өмнө байна" });
+        }
+      }
+
+      await ctx.db.banner.deleteMany({});
+      if (input.rows.length > 0) {
+        await ctx.db.banner.createMany({
+          data: input.rows.map((r, order) =>
+            tenantData({
+              imageUrl: r.imageUrl,
+              kind: r.kind,
+              linkUrl: r.linkUrl || null,
+              title: r.title || null,
+              placement: r.placement,
+              startsOn: r.startsOn ? new Date(r.startsOn) : null,
+              endsOn: r.endsOn ? new Date(r.endsOn) : null,
+              paid: r.paid,
+              amount: r.amount,
+              order,
+            }),
+          ),
+        });
+      }
+
+      await logActivity(ctx.db, {
+        tenantId: ctx.tenantId,
+        postId: null,
+        userId: actor.userId,
+        action: "banners",
       });
       revalidatePath("/");
       return { ok: true as const };
