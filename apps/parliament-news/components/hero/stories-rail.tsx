@@ -1,5 +1,6 @@
 import { orderStories } from "../../lib/stories";
 import { imageOrCover } from "../../lib/images";
+import { storyMedia } from "../../lib/story-media";
 import { coverUrl, plainCoverUrl } from "../../lib/cover-input";
 import { mnNumericDate } from "../../lib/format";
 import { Icon } from "../icon";
@@ -24,7 +25,7 @@ export function StoriesRail({ stories }: { stories: PostListItem[] }) {
   const items = orderStories(stories);
 
   const viewer: StoryItem[] = items.map((post) => {
-    const picked = imageOrCover(post.imageUrl);
+    const media = storyMedia(post);
     return {
       slug: post.slug,
       title: post.title,
@@ -37,7 +38,8 @@ export function StoriesRail({ stories }: { stories: PostListItem[] }) {
        * дээр нь хэвлэдэг. Зурвасын дугуй зураг нь бүтэн хавтас хэвээр —
        * тэнд текст нь 60px дотор ялгагдахгүй, зөвхөн өнгө, хээ харагдана.
        */
-      src: picked.useImage ? picked.src : plainCoverUrl(post.slug),
+      src: media.src,
+      video: media.video,
     };
   });
 

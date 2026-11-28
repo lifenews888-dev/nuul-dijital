@@ -12,6 +12,8 @@ export type StoryItem = {
   date: string;
   featured: boolean;
   src: string;
+  /** Босоо видео стори. Зураг бол `false`. */
+  video: boolean;
 };
 
 /** Давхарга дотор фокус барих — эдгээрээр л эргэнэ */
@@ -218,7 +220,24 @@ export function StoryViewer({ stories }: { stories: StoryItem[] }) {
           </div>
 
           <div className="svm" id="svm">
-            <img src={active.src} alt="" />
+            {/*
+              Видео нь ДУУГҮЙ эхэлнэ: стори нь уншигчийн зөвшөөрөлгүй нээгддэг
+              давхарга тул дуутай эхлэх нь түрэмгий. `key` нь слайд солигдоход
+              тоглуулагчийг ШИНЭЭР үүсгэнэ — эс бөгөөс өмнөх бичлэг үргэлжилнэ.
+            */}
+            {active.video ? (
+              <video
+                key={active.slug}
+                src={active.src}
+                autoPlay
+                muted
+                loop
+                playsInline
+                controls={false}
+              />
+            ) : (
+              <img src={active.src} alt="" />
+            )}
           </div>
 
           <div className="svt">

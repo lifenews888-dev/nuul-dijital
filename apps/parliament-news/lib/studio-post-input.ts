@@ -15,6 +15,9 @@ import { sectionsFor, canSetStatusManually, type Actor, type PostRef, type Secti
  */
 
 /** admin.html-ийн хязгаарууд (:577-672) */
+/** `server/routers/studio-admin.ts`-ийн `BANNER_BLOB`-тай ижил дүрэм */
+const STORY_BLOB = /^https:\/\/[a-z0-9-]+\.public\.blob\.vercel-storage\.com\//i;
+
 export const LIMITS = {
   title: 160,
   kicker: 40,
@@ -90,6 +93,16 @@ export const postInputSchema = z.object({
   channels: z.array(trimmedMax(40).min(1)).max(10).optional(),
   featured: z.boolean().optional(),
   story: z.boolean().optional(),
+  /**
+   * Сторины БОСОО медиа. Зөвхөн манай blob — гадны хаяг нь хожим
+   * солигдож, бидний стори дотор өөр зүйл гарч болно.
+   */
+  storyUrl: z
+    .string()
+    .trim()
+    .regex(STORY_BLOB, "Зөвхөн сайтдаа байршуулсан файл")
+    .or(z.literal(""))
+    .optional(),
   storyDays: z
     .number()
     .int()
@@ -141,6 +154,7 @@ export const FIELD_SECTION: Record<string, Section> = {
   channels: "pub",
   featured: "pub",
   story: "pub",
+  storyUrl: "pub",
   storyDays: "pub",
 };
 

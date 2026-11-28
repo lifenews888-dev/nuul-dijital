@@ -32,6 +32,7 @@ const POST: StudioPostFull = {
   channels: ["Сайт"],
   featured: true,
   story: false,
+  storyUrl: null,
   storyUntil: null,
   publishedAt: null,
   createdAt: new Date("2026-11-20T00:00:00Z"),
