@@ -27,17 +27,10 @@
 
 ## 2. Нэвтрэлт ба нууцлал
 
-- [ ] **`NEXTAUTH_SECRET` нь nuul.mn-ийнхээс ӨӨР.** Хоёр апп нэг секрет
-      хуваалцахгүй: домэйн хооронд cookie гардаггүй ч секретийг зориудаар
-      салгана, санамсаргүй давхцлаар биш.
-- [ ] `NEXTAUTH_URL` нь `https://parlamentnews.mn`.
-- [ ] Супер админыг `ADMIN_EMAIL` (мөн сонголттой `ADMIN_PASSWORD`)-аар
-      `cd packages/db-news && pnpm db:seed`-ээр үүсгэсэн. Автоматаар зохиосон
-      нууц үг зөвхөн терминал дээр нэг удаа хэвлэгдэнэ — тэндээсээ хуулж,
-      нэвтэрсний дараа сольсон.
-- [ ] Редакцын хэрэглэгч бүр `TenantMember` бичлэгтэй. Бичлэггүй хэрэглэгч
-      эрхгүй (`null`) — энэ нь зориудын шийдэл, тестээр тогтоогдсон.
-- [ ] Редактор, админд 2FA (2-р шат) хэзээ орохыг шийдсэн.
+- [ ] **`NEWS_NEXTAUTH_SECRET` тавигдсан** (`NEXTAUTH_SECRET` БИШ).
+      nuul.mn-ийнхээс өөр утга. Тавигдаагүй бол апп асахдаа чангаар
+      унана (`lib/auth-env.ts`) — чимээгүй хуваалцахаас дээр.
+      Cookie нь `pn-auth.` угтвартай, production-д `__Secure-`.
 
 ## 3. Tenant тусгаарлалт
 
@@ -137,3 +130,95 @@
       Дижиталынх, өгөгдөл нь захиалагчийнх» гэдгийг бичгээр тохирсон.
 - [ ] Hosting, Cloudflare, Vercel, Supabase-ийн зардлыг хэн хариуцахыг
       тохирсон.
+
+
+---
+
+## 6. 4-р шатны дараах нэмэлтүүд (2026-11-28)
+
+### 6.1 Vercel project үүсгэх — тодорхой алхмууд
+
+1. GitHub руу түлхэнэ (`master`). Энэ репо аль хэдийн холбогдсон.
+2. Vercel → **Add New → Project** → энэ репог сонгоно.
+3. **Root Directory = `apps/parliament-news`**. Энэ нь чухал: ингэснээр
+   `apps/parliament-news/vercel.json` нь ЗӨВХӨН энэ project-д үйлчилнэ,
+   nuul.mn-ийн тохиргоог хөндөхгүй. (Репогийн эхэд `vercel.json` тавьбал
+   хоёр project хоёулаа түүнийг уншина.)
+4. «Include source files outside of the Root Directory» = **ON**
+   (pnpm workspace тул `packages/db-news` хэрэгтэй).
+5. Build command, region, толгой, cron бүгд `vercel.json`-д бичигдсэн —
+   dashboard дээр давхар тохируулах шаардлагагүй.
+6. Env хувьсагчдыг `apps/parliament-news/.env.example`-ийн дагуу
+   dashboard дээр оруулна. **Нууц утгыг чат, repo, лог-д бүү оруул.**
+
+### 6.2 Deploy-ийн ДАРААХ шалгалт
+
+```bash
+# 1. Апп асаж байна уу (env дутуу бол 500)
+curl -s -o /dev/null -w '%{http_code}
+' https://parlamentnews.mn/
+
+# 2. Open Graph зураг — Windows дээр ХЭЗЭЭ Ч туршигдаагүй, энд л батлагдана
+curl -s -o /dev/null -w '%{http_code} %{content_type} %{size_download}
+'   https://parlamentnews.mn/news/<slug>/opengraph-image
+# Хүлээгдэх: 200 image/png, 0-ээс их. Зурагтай БА зураггүй мэдээ хоёуланг шалга.
+
+# 3. Хоцролт Монголоос
+pnpm --filter @nuul/news check:load https://parlamentnews.mn 10 100
+# p50 > 300мс бол Cloudflare-ийн HTML кэшийн шийдвэр (6.4-ийг үз)
+
+# 4. RSS нь parser-аар уншигдана
+curl -s https://parlamentnews.mn/rss.xml > /tmp/r.xml
+python -c "import xml.dom.minidom as m; m.parse('/tmp/r.xml'); print('OK')"
+
+# 5. Сошиал дараалал — нууцтай бол ажиллана, нууцгүй бол 404
+curl -s -o /dev/null -w '%{http_code}
+'   -H "Authorization: Bearer $SOCIAL_DISPATCH_SECRET"   https://parlamentnews.mn/api/social/dispatch
+```
+
+- [ ] Дээрх таван тушаал бүгд хүлээгдэж буй хариу өгсөн.
+- [ ] Blob байршуулалт жинхэнэ токентой ажиллав (студид зураг оруулж үз).
+
+### 6.3 Нөөц хуулбар
+
+- [ ] Supabase-ийн автомат нөөц асаалттай, хадгалах хугацаа тохирсон.
+- [ ] Нөөцийг нэг удаа ҮНЭХЭЭР сэргээж үзсэн. Сэргээгээгүй нөөц нь нөөц биш.
+- [ ] Локал хөгжүүлэлтэд: `pnpm --filter @nuul/news db:backup` — схем
+      өөрчлөхийн өмнө бүрт.
+
+### 6.4 Cloudflare
+
+- [ ] WAF, DDoS, bot хамгаалалт асаалттай.
+- [ ] Нэвтрэлтийн зам (`/api/auth/*`) дээр нэмэлт rate limit дүрэм.
+      Аппын дотоод хязгаар (цагт 10 буруу оролдлого) нь АРЫН ШУГАМ;
+      Cloudflare нь урд нь зогсоох ёстой.
+- [ ] Хэрэв p50 > 300мс бол: HTML кэшийн дүрэм бичиж `cf-cache-status: HIT`
+      болтол тохируулна. Анхаар — нийтлэх үед Vercel-ийн ISR БА
+      Cloudflare хоёуланг цэвэрлэх purge хэрэгтэй, эс бөгөөс шинэ мэдээ
+      хуучин кэшний ард үлдэнэ.
+
+### 6.5 Сошиал автомат нийтлэл
+
+- [ ] `SOCIAL_DISPATCH_SECRET` тавигдсан; эс бөгөөс cron нь 404 авна.
+- [ ] Vercel → Project → Cron Jobs дээр `/api/social/dispatch` 10 минут
+      тутам ажиллаж байгаа нь харагдаж байна.
+- [ ] Telegram: бот үүсгэж, сувагтаа админ болгосон; `TELEGRAM_BOT_TOKEN`,
+      `TELEGRAM_CHAT_ID` тавигдсан. Нэг мэдээ нийтлээд сувагт очсоныг нүдээр
+      шалгасан.
+- [ ] Facebook/Instagram/YouTube/TikTok нь хараахан тохируулаагүй —
+      дараалалд нь SKIPPED болж харагдана. Энэ нь АЛДАА БИШ. Токен орж
+      ирэхэд `lib/social/stub.ts`-ийг жинхэнэ адаптераар солино.
+
+### 6.6 Нээлтийн өмнөх эцсийн гүйлт
+
+```bash
+pnpm --filter @nuul/news test        # цэвэр функцууд
+pnpm --filter @nuul/news test:db     # tenant тусгаарлалт, хаалганууд
+pnpm --filter @nuul/news lint
+pnpm --filter @nuul/news exec tsc --noEmit
+pnpm --filter @nuul/news build
+pnpm --filter @nuul/news check:browser https://parlamentnews.mn
+```
+
+- [ ] Бүгд ногоон. `check:studio` нь зөвхөн DEV сервер дээр ажиллана
+      (production-д cookie нь `__Secure-`, https шаарддаг).
