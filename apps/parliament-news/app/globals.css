@@ -513,3 +513,59 @@ body:not(:has(.shelf)) .top .live {
 .adr2 > .hous {
   flex: 0 0 100%;
 }
+
+/*
+ * ======================================================================
+ * ШУУД ДАМЖУУЛАЛТЫН ТОГЛУУЛАГЧ
+ *
+ * Artifact-д шууд дамжуулалт нь зөвхөн товч бөгөөд дарахад «удахгүй»
+ * гэсэн мэдэгдэл гаргадаг (`liveMsg`) — жинхэнэ урсгал байгаагүй.
+ * ======================================================================
+ */
+.livebox {
+  margin: 18px 0 22px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--sheet);
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.lvhead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+}
+
+/*
+ * `.tst.on` нь улаан эмийн хэлбэртэй байх ёстой ч тэжээлийн гадна
+ * дэвсгэрээ алддаг — дүрмийг нь энд тодорхой давтав.
+ */
+.lvhead .tst.on {
+  background: #c8102e;
+  color: #fff;
+}
+
+.lvhead b {
+  font: 700 14px var(--font-head), sans-serif;
+  color: var(--ink);
+}
+
+.lvhead a {
+  margin-left: auto;
+  font: 600 12.5px var(--font-head), sans-serif;
+  color: var(--cob);
+}
+
+.lvframe {
+  position: relative;
+  background: #0b0f1e;
+}
+
+.lvframe iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}

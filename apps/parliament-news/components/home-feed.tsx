@@ -1,4 +1,5 @@
 import { AdSlot } from "./ads/ad-slot";
+import { LiveBox } from "./hero/live-box";
 import type { AdItem } from "../lib/banner";
 import { mnAgo, mnDate, ubToday } from "../lib/format";
 import { imageOrCover } from "../lib/images";
@@ -134,6 +135,9 @@ export function HomeFeed({
     <div className="feed" id="feed">
       <div className="fw">
         <Today live={live} agenda={agenda} />
+
+        {/* Чуулган шууд явж байвал урсгал нь ЭНД, гадагш явуулахгүй */}
+        <LiveBox live={live} />
 
         {/*
           Зар нь «Өнөөдөр» блокийн ДАРАА: уншигч тэжээлд ормогц хардаг
