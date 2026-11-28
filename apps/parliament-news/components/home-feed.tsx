@@ -1,5 +1,6 @@
 import { AdSlot } from "./ads/ad-slot";
 import { LiveBox } from "./hero/live-box";
+import { Reveal } from "./motion/reveal";
 import type { AdItem } from "../lib/banner";
 import { mnAgo, mnDate, ubToday } from "../lib/format";
 import { imageOrCover } from "../lib/images";
@@ -137,7 +138,9 @@ export function HomeFeed({
         <Today live={live} agenda={agenda} />
 
         {/* Чуулган шууд явж байвал урсгал нь ЭНД, гадагш явуулахгүй */}
-        <LiveBox live={live} />
+        <Reveal>
+          <LiveBox live={live} />
+        </Reveal>
 
         {/*
           Зар нь «Өнөөдөр» блокийн ДАРАА: уншигч тэжээлд ормогц хардаг
@@ -147,7 +150,8 @@ export function HomeFeed({
         <AdSlot place="home" items={ads} salesEmail={salesEmail} />
 
         {cards.length > 0 ? (
-          <section className="fsec">
+          <Reveal index={1}>
+            <section className="fsec">
             <h2 className="fh">
               <i />
               Онцлох мэдээ
@@ -172,10 +176,12 @@ export function HomeFeed({
                 </a>
               ))}
             </div>
-          </section>
+            </section>
+          </Reveal>
         ) : null}
 
-        <div className="fcols">
+        <Reveal index={2}>
+          <div className="fcols">
           <div className="fmain">
             <h2 className="fh">
               <i />
@@ -239,6 +245,7 @@ export function HomeFeed({
             </div>
           </aside>
         </div>
+        </Reveal>
       </div>
     </div>
   );

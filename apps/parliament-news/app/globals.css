@@ -569,3 +569,36 @@ body:not(:has(.shelf)) .top .live {
   height: 100%;
   border: 0;
 }
+
+/*
+ * ======================================================================
+ * ГҮЙЛГЭХЭД ИЛЧЛЭХ
+ *
+ * `.rv` анги нь ЗӨВХӨН хөтөч дээр, `prefers-reduced-motion` шалгасны
+ * ДАРАА тавигдана (`components/motion/reveal.tsx`). Иймд JS ажиллахгүй
+ * үед ч, хөдөлгөөн хаасан үед ч агуулга далдрахгүй — CSS-д `opacity:0`
+ * тавиад JS-ээр нээдэг арга нь яг тэр хоёр тохиолдолд сайтыг хоосолдог.
+ * ======================================================================
+ */
+.rv {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+.rv.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Хөдөлгөөн хаасан үед — хэрэв анги ямар нэгэн замаар үлдсэн бол ч */
+@media (prefers-reduced-motion: reduce) {
+  .rv {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
